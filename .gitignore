@@ -1,0 +1,9 @@
+node_modules
+.wxt
+.output
+output
+00_项目总览
+coverage
+playwright-report
+test-results
+.DS_Store
