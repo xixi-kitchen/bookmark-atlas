@@ -44,9 +44,17 @@ import {
   flattenUrlBookmarks,
   getBookmarkElementData,
   isSafeEmbeddableUrl,
+  type BookmarkElementData,
   type BookmarkImportEntry,
   type BookmarkImportGroup,
 } from './bookmarkElements';
+import {
+  createBookmarkReconciliationIndex,
+  isBookmarkEntryAlreadyImported,
+  migrateBookmarkElementsForCurrentTree,
+  resolveBookmarkElementData,
+  type BookmarkReconciliationIndex,
+} from './bookmarkReconciliation';
 import {
   backupFileName,
   createBookmarkAtlasBackup,
@@ -162,15 +170,13 @@ export function ExcalidrawCanvas({ roots }: Props) {
   const bookmarkEntries = useMemo(() => flattenUrlBookmarks(roots), [roots]);
   const importGroups = useMemo(() => buildBookmarkImportGroups(roots), [roots]);
   const topLevelImportGroups = useMemo(() => buildTopLevelBookmarkImportGroups(roots), [roots]);
-  const bookmarkLookup = useMemo(
-    () => new Map(bookmarkEntries.map((entry) => [entry.node.id, entry])),
-    [bookmarkEntries],
+  const bookmarkIndex = useMemo(() => createBookmarkReconciliationIndex(bookmarkEntries), [bookmarkEntries]);
+  const importedBookmarks = useMemo<BookmarkElementData[]>(
+    () => api?.getSceneElements().map(getBookmarkElementData).filter((data): data is BookmarkElementData => Boolean(data)) ?? [],
+    [api, sceneRevision],
   );
-  const importedBookmarkIds = useMemo(() => new Set(
-    api?.getSceneElements().map(getBookmarkElementData).filter(Boolean).map((data) => data!.bookmarkId) ?? [],
-  ), [api, sceneRevision]);
 
-  const [initialData] = useState<Promise<ImportedDataState>>(() => prepareInitialData().then(({ data, stored, syncManifest }) => {
+  const [initialData] = useState<Promise<ImportedDataState>>(() => prepareInitialData(bookmarkEntries).then(({ data, stored, syncManifest }) => {
     if (stored) {
       latestSceneRef.current = stored;
       libraryItemsRef.current = stored.libraryItems;
@@ -325,6 +331,18 @@ export function ExcalidrawCanvas({ roots }: Props) {
     if (api && latestSceneRef.current && !lastSyncManifest) scheduleSync();
   }, [api, lastSyncManifest, scheduleSync]);
 
+  useEffect(() => {
+    if (!api || !readyToPersistRef.current) return;
+    const migration = migrateBookmarkElementsForCurrentTree(api.getSceneElementsIncludingDeleted(), bookmarkIndex);
+    if (!migration.changed) return;
+
+    api.updateScene({
+      elements: migration.elements,
+      captureUpdate: CaptureUpdateAction.IMMEDIATELY,
+    });
+    setSceneRevision((revision) => revision + 1);
+  }, [api, bookmarkIndex]);
+
   const renderEmbeddable = useCallback<ExcalidrawRenderEmbeddable>((element, appState) => {
     const stored = getBookmarkElementData(element);
     if (!stored) {
@@ -345,32 +363,35 @@ export function ExcalidrawCanvas({ roots }: Props) {
       );
     }
 
-    const current = bookmarkLookup.get(stored.bookmarkId);
+    const resolution = resolveBookmarkElementData(stored, bookmarkIndex);
+    const current = resolution.status === 'matched' ? resolution.entry : null;
     return (
       <BookmarkEmbed
         title={current?.node.title ?? stored.title}
         url={current?.node.url ?? stored.url}
         folderPath={current?.folderPath ?? stored.folderPath}
-        missing={!current}
+        matchStatus={resolution.status}
       />
     );
-  }, [api, bookmarkLookup]);
+  }, [api, bookmarkIndex]);
 
   const handleLinkOpen = useCallback<ExcalidrawOnLinkOpen>((element, event) => {
     const stored = getBookmarkElementData(element);
     if (!stored) return;
 
     event.preventDefault();
-    const target = bookmarkLookup.get(stored.bookmarkId)?.node.url ?? stored.url;
+    const resolution = resolveBookmarkElementData(stored, bookmarkIndex);
+    const target = resolution.status === 'matched' ? resolution.entry.node.url : stored.url;
     if (target) window.open(target, '_blank', 'noopener,noreferrer');
-  }, [bookmarkLookup]);
+  }, [bookmarkIndex]);
 
   const addBookmark = useCallback((node: BookmarkNode, folderPath: string) => {
     if (!api || !node.url) return;
 
-    const existing = api.getSceneElements().find((element) => (
-      getBookmarkElementData(element)?.bookmarkId === node.id
-    ));
+    const existing = api.getSceneElements().find((element) => {
+      const data = getBookmarkElementData(element);
+      return data ? isBookmarkEntryAlreadyImported({ node, folderPath }, [data], bookmarkIndex) : false;
+    });
     if (existing) {
       api.updateScene({
         appState: { selectedElementIds: { [existing.id]: true } },
@@ -399,15 +420,14 @@ export function ExcalidrawCanvas({ roots }: Props) {
     api.scrollToContent(element, { animate: true, duration: 260 });
     api.setToast({ message: `已添加“${node.title || '未命名书签'}”。` });
     setSceneRevision((revision) => revision + 1);
-  }, [api]);
+  }, [api, bookmarkIndex]);
 
   const importBookmarkGroups = useCallback((groups: BookmarkImportGroup[]) => {
     if (!api) return;
 
-    const existingIds = new Set(api.getSceneElements().map(getBookmarkElementData).filter(Boolean).map((data) => data!.bookmarkId));
     const pendingGroups = groups.map((group) => ({
       ...group,
-      entries: group.entries.filter(({ node }) => !existingIds.has(node.id)),
+      entries: group.entries.filter((entry) => !isBookmarkEntryAlreadyImported(entry, importedBookmarks, bookmarkIndex)),
     })).filter((group) => group.entries.length > 0);
 
     if (pendingGroups.length === 0) {
@@ -450,7 +470,7 @@ export function ExcalidrawCanvas({ roots }: Props) {
     const importedCount = pendingGroups.reduce((total, group) => total + group.entries.length, 0);
     api.setToast({ message: `已导入 ${importedCount} 个书签。` });
     setSceneRevision((revision) => revision + 1);
-  }, [api]);
+  }, [api, bookmarkIndex, importedBookmarks]);
 
   const zoomBy = useCallback((factor: number) => {
     if (!api) return;
@@ -524,18 +544,28 @@ export function ExcalidrawCanvas({ roots }: Props) {
         renderEmbeddable={renderEmbeddable}
         renderTopRightUI={() => (
           <div className="atlas-excalidraw-actions">
-            <span className={`atlas-save-state is-${saveStatus}`} role="status">
+            <span
+              className={`atlas-save-state is-${saveStatus}`}
+              role="status"
+              aria-label={`本机画布：${saveStatusLabel(saveStatus)}`}
+              title={saveStatusTitle(saveStatus)}
+            >
               {saveStatus === 'saving' ? <Database size={14} /> : saveStatus === 'error' ? <X size={14} /> : <Check size={14} />}
-              {saveStatus === 'saving' ? '保存中' : saveStatus === 'error' ? '保存失败' : '已自动保存'}
+              <span className="visually-hidden">{saveStatusLabel(saveStatus)}</span>
             </span>
             <button
               type="button"
               className={`atlas-sync-state is-${remoteUpdate ? 'remote' : syncStatus}`}
               onClick={remoteUpdate ? () => window.location.reload() : undefined}
+              aria-disabled={!remoteUpdate}
+              tabIndex={remoteUpdate ? 0 : -1}
+              aria-label={remoteUpdate ? '其他设备有画布更新，点击重新加载' : `云端画布：${syncStatusLabel(syncStatus, lastSyncManifest)}`}
               title={syncStatusTitle(syncStatus, lastSyncManifest, remoteUpdate)}
             >
               <SyncStatusIcon status={syncStatus} remote={Boolean(remoteUpdate)} />
-              {remoteUpdate ? '其他设备有更新' : syncStatusLabel(syncStatus, lastSyncManifest)}
+              <span className="visually-hidden">
+                {remoteUpdate ? '其他设备有更新' : syncStatusLabel(syncStatus, lastSyncManifest)}
+              </span>
             </button>
             <div className="atlas-zoom-tools" role="group" aria-label="画布缩放">
               <button type="button" onClick={() => zoomBy(0.8)} aria-label="缩小画布"><ZoomOut size={15} /></button>
@@ -543,11 +573,11 @@ export function ExcalidrawCanvas({ roots }: Props) {
               <button type="button" onClick={() => fitElements(false)} aria-label="适应全部元素" title="适应全部元素（包含绘图、文字和书签）"><Maximize2 size={15} /></button>
               <button type="button" onClick={() => fitElements(true)} aria-label="聚焦全部书签" title="仅聚焦画布中的书签卡片"><BookmarkPlus size={15} /></button>
             </div>
-            <button type="button" className="atlas-excalidraw-button" onClick={() => setPickerOpen(true)}>
-              <FolderInput size={16} /> 导入书签
+            <button type="button" className="atlas-excalidraw-button is-icon" onClick={() => setPickerOpen(true)} aria-label="导入书签" title="导入 Chrome 书签">
+              <FolderInput size={16} />
             </button>
-            <button type="button" className="atlas-excalidraw-button is-secondary" onClick={() => setBackupOpen(true)}>
-              <DatabaseBackup size={16} /> 完整备份
+            <button type="button" className="atlas-excalidraw-button is-secondary is-icon" onClick={() => setBackupOpen(true)} aria-label="完整备份" title="导出或恢复完整备份">
+              <DatabaseBackup size={16} />
             </button>
           </div>
         )}
@@ -561,7 +591,8 @@ export function ExcalidrawCanvas({ roots }: Props) {
           entries={bookmarkEntries}
           groups={importGroups}
           allGroups={topLevelImportGroups}
-          importedIds={importedBookmarkIds}
+          importedBookmarks={importedBookmarks}
+          bookmarkIndex={bookmarkIndex}
           onAdd={addBookmark}
           onImportGroups={importBookmarkGroups}
           onClose={() => setPickerOpen(false)}
@@ -689,15 +720,22 @@ function BookmarkEmbed({
   title,
   url,
   folderPath,
-  missing,
+  matchStatus,
 }: {
   title: string;
   url: string;
   folderPath?: string;
-  missing: boolean;
+  matchStatus: 'matched' | 'missing' | 'ambiguous';
 }) {
+  const unresolved = matchStatus !== 'matched';
+  const statusLabel = matchStatus === 'matched'
+    ? 'Chrome 书签'
+    : matchStatus === 'ambiguous'
+      ? '存在同网址重复书签，未自动关联'
+      : '未匹配当前设备书签';
+
   return (
-    <div className={`atlas-bookmark-embed ${missing ? 'is-missing' : ''}`}>
+    <div className={`atlas-bookmark-embed ${unresolved ? 'is-missing' : ''}`}>
       <BookmarkFavicon title={title} url={url} size={42} className="atlas-bookmark-embed__favicon" />
       <div className="atlas-bookmark-embed__copy">
         <strong>{title || '未命名书签'}</strong>
@@ -705,7 +743,7 @@ function BookmarkEmbed({
         {folderPath && <small>{folderPath}</small>}
       </div>
       <div className="atlas-bookmark-embed__footer">
-        <span>{missing ? 'Chrome 书签已删除' : 'Chrome 书签'}</span>
+        <span>{statusLabel}</span>
         <span>使用链接按钮打开</span>
       </div>
     </div>
@@ -716,7 +754,8 @@ function BookmarkPicker({
   entries,
   groups,
   allGroups,
-  importedIds,
+  importedBookmarks,
+  bookmarkIndex,
   onAdd,
   onImportGroups,
   onClose,
@@ -724,7 +763,8 @@ function BookmarkPicker({
   entries: BookmarkImportEntry[];
   groups: BookmarkImportGroup[];
   allGroups: BookmarkImportGroup[];
-  importedIds: Set<string>;
+  importedBookmarks: BookmarkElementData[];
+  bookmarkIndex: BookmarkReconciliationIndex;
   onAdd: (node: BookmarkNode, folderPath: string) => void;
   onImportGroups: (groups: BookmarkImportGroup[]) => void;
   onClose: () => void;
@@ -741,9 +781,9 @@ function BookmarkPicker({
     ));
   }, [sourceEntries, query]);
   const visible = filtered.slice(0, 200);
-  const importedCount = entries.filter(({ node }) => importedIds.has(node.id)).length;
-  const remainingTotal = entries.filter(({ node }) => !importedIds.has(node.id)).length;
-  const remainingInGroup = sourceEntries.filter(({ node }) => !importedIds.has(node.id)).length;
+  const importedCount = entries.filter((entry) => isBookmarkEntryAlreadyImported(entry, importedBookmarks, bookmarkIndex)).length;
+  const remainingTotal = entries.filter((entry) => !isBookmarkEntryAlreadyImported(entry, importedBookmarks, bookmarkIndex)).length;
+  const remainingInGroup = sourceEntries.filter((entry) => !isBookmarkEntryAlreadyImported(entry, importedBookmarks, bookmarkIndex)).length;
 
   return (
     <div className="atlas-picker-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
@@ -803,7 +843,7 @@ function BookmarkPicker({
             </label>
             <div className="atlas-bookmark-picker__list">
               {visible.map(({ node, folderPath }) => {
-                const imported = importedIds.has(node.id);
+                const imported = isBookmarkEntryAlreadyImported({ node, folderPath }, importedBookmarks, bookmarkIndex);
                 return (
                   <button type="button" key={node.id} className={`atlas-bookmark-picker__item ${imported ? 'is-imported' : ''}`} disabled={imported} onClick={() => onAdd(node, folderPath)}>
                     <BookmarkFavicon node={node} size={30} />
@@ -825,7 +865,7 @@ function BookmarkPicker({
   );
 }
 
-async function prepareInitialData(): Promise<{
+async function prepareInitialData(bookmarkEntries: BookmarkImportEntry[]): Promise<{
   data: ImportedDataState;
   stored: StoredExcalidrawScene | null;
   syncManifest: CanvasSyncManifest | null;
@@ -835,17 +875,20 @@ async function prepareInitialData(): Promise<{
   const stored = useSynced && synced
     ? mergeSyncedSceneWithLocalFiles(synced.scene, local)
     : local;
-  if (useSynced && stored) await saveStoredScene(stored);
+  const reconciled = stored ? reconcileStoredScene(stored, bookmarkEntries) : null;
+  if (reconciled?.changed || (useSynced && reconciled?.scene)) await saveStoredScene(reconciled.scene);
 
-  if (stored) {
+  if (reconciled?.scene) {
     return {
-      stored,
-      syncManifest: useSynced ? synced?.manifest ?? null : null,
+      stored: reconciled.scene,
+      // A reconciled scene differs from the cloud payload and must be uploaded
+      // before the UI may claim that it is synced.
+      syncManifest: useSynced && !reconciled.changed ? synced?.manifest ?? null : null,
       data: {
-        elements: stored.elements,
-        appState: stored.appState,
-        files: stored.files,
-        libraryItems: stored.libraryItems,
+        elements: reconciled.scene.elements,
+        appState: reconciled.scene.appState,
+        files: reconciled.scene.files,
+        libraryItems: reconciled.scene.libraryItems,
         scrollToContent: false,
       },
     };
@@ -867,11 +910,40 @@ async function prepareInitialData(): Promise<{
   };
 }
 
+function reconcileStoredScene(scene: StoredExcalidrawScene, bookmarkEntries: BookmarkImportEntry[]) {
+  const migration = migrateBookmarkElementsForCurrentTree(
+    scene.elements,
+    createBookmarkReconciliationIndex(bookmarkEntries),
+  );
+  if (!migration.changed) return { scene, changed: false };
+
+  return {
+    scene: {
+      ...scene,
+      elements: migration.elements,
+      savedAt: Date.now(),
+    },
+    changed: true,
+  };
+}
+
 function SyncStatusIcon({ status, remote }: { status: SyncStatus; remote: boolean }) {
   if (remote) return <RefreshCw size={14} />;
   if (status === 'too-large' || status === 'error') return <CloudAlert size={14} />;
   if (status === 'unavailable') return <CloudOff size={14} />;
   return <Cloud size={14} className={status === 'syncing' ? 'is-pulsing' : ''} />;
+}
+
+function saveStatusLabel(status: SaveStatus) {
+  if (status === 'saving') return '保存中';
+  if (status === 'error') return '保存失败';
+  return '已自动保存';
+}
+
+function saveStatusTitle(status: SaveStatus) {
+  if (status === 'saving') return '正在把完整画布保存到本机。';
+  if (status === 'error') return '本机画布保存失败，请保留当前页面并重试。';
+  return '完整画布已自动保存到本机。';
 }
 
 function syncStatusLabel(status: SyncStatus, manifest: CanvasSyncManifest | null) {

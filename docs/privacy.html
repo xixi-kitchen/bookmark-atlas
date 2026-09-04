@@ -6,7 +6,7 @@
   <article class="document"><span class="eyebrow">Privacy / 2026-08-28</span><h1>隐私政策</h1><p>Bookmark Atlas 是本地优先的 Chrome 扩展。我们不出售、不分析、不上传用户的书签、标签页或浏览历史，也不包含广告或追踪器。</p>
     <h2>本地处理的数据</h2><ul><li>Chrome 书签：用于显示和执行用户主动发起的管理操作。</li><li>标签页与浏览历史：用于搜索框中的本地预搜索结果，不上传给开发者或搜索引擎。</li><li>Excalidraw 完整画布、图片和附件：保存在当前设备的 IndexedDB。</li></ul>
     <h2>跨设备同步</h2><p>图形、文字、书签引用、视口和素材库会在配额允许时压缩并写入 <strong>chrome.storage.sync</strong>。图片和二进制附件不会进入 Chrome Sync，只保存在添加它们的设备上。主题、视图和搜索设置也使用 Chrome Sync。</p>
-    <h2>发送给第三方的数据</h2><p>使用“Chrome 默认”或自定义搜索引擎时，扩展不会额外请求联想服务。用户主动选择百度、必应或 Google 后，输入词会发送给对应的固定联想接口。用户主动加载网页嵌入时，目标网站会按照浏览器规则接收网络请求。</p>
+    <h2>发送给第三方的数据</h2><p>使用“Chrome 默认”或自定义搜索引擎时，扩展不会额外请求联想服务。用户主动选择百度、必应或 Google 后，输入词会发送给对应的固定联想接口。画布中存在网页嵌入时，目标网站会在禁止跳转插件顶层和弹窗逃逸的 sandbox iframe 中接收网络请求。Bilibili 具体视频使用关闭自动播放的官方播放器，可直接在画布内播放或由用户切换到完整视频页面。</p>
     <h2>YouTube 播放器</h2><p>仅对 Bookmark Atlas 自己创建的 YouTube 官方播放器请求，扩展设置固定客户端 Referer 以满足 YouTube Error 153 的识别要求。规则不读取请求内容，也不作用于其他网页的播放器。</p>
     <h2>删除数据</h2><p>卸载扩展会删除本机扩展数据。Chrome 账号中的同步数据由 Chrome 管理。卸载不会删除用户的 Chrome 书签。用户也可以从扩展内导出或恢复完整画布备份。</p>
     <h2>Limited Use</h2><p>The use of information received from Google APIs will adhere to the Chrome Web Store User Data Policy, including the Limited Use requirements.</p>

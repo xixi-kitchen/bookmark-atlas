@@ -37,6 +37,8 @@ describe('Excalidraw bookmark elements', () => {
     expect(getBookmarkElementData(element)).toMatchObject({
       kind: 'bookmark',
       bookmarkId: 'bookmark-1',
+      bookmarkKey: 'https://openai.com/\nopenai\n',
+      normalizedUrl: 'https://openai.com/',
       title: 'OpenAI',
       url: 'https://openai.com',
     });
@@ -70,4 +72,5 @@ describe('Excalidraw bookmark elements', () => {
     expect(bookmarks.map((bookmark) => bookmark!.bookmarkId)).toEqual(['bookmark-1', 'bookmark-2']);
     expect(bookmarks.every((bookmark) => bookmark!.folderPath?.startsWith('工作'))).toBe(true);
   });
+
 });

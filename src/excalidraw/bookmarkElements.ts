@@ -9,6 +9,8 @@ import type { BookmarkNode } from '../bookmarks/types';
 export type BookmarkElementData = {
   kind: 'bookmark';
   bookmarkId: string;
+  bookmarkKey: string;
+  normalizedUrl: string;
   title: string;
   url: string;
   folderPath?: string;
@@ -65,6 +67,8 @@ export function createBookmarkElement(
         bookmarkAtlas: {
           kind: 'bookmark',
           bookmarkId: node.id,
+          bookmarkKey: createBookmarkKey(node, options.folderPath),
+          normalizedUrl: normalizeBookmarkUrl(node.url),
           title: node.title,
           url: node.url,
           folderPath: options.folderPath,
@@ -150,12 +154,22 @@ export function getBookmarkElementData(element: Pick<ExcalidrawElement, 'customD
     return null;
   }
 
+  const folderPath = typeof data.folderPath === 'string' ? data.folderPath : undefined;
+  const title = typeof data.title === 'string' ? data.title : '';
+  const normalizedUrl = typeof data.normalizedUrl === 'string' && data.normalizedUrl
+    ? data.normalizedUrl
+    : normalizeBookmarkUrl(data.url);
+
   return {
     kind: 'bookmark',
     bookmarkId: data.bookmarkId,
-    title: typeof data.title === 'string' ? data.title : '',
+    bookmarkKey: typeof data.bookmarkKey === 'string' && data.bookmarkKey
+      ? data.bookmarkKey
+      : createBookmarkKey({ title, url: data.url }, folderPath),
+    normalizedUrl,
+    title,
     url: data.url,
-    folderPath: typeof data.folderPath === 'string' ? data.folderPath : undefined,
+    folderPath,
   };
 }
 
@@ -244,6 +258,44 @@ export function isSafeEmbeddableUrl(link: string): boolean {
   } catch {
     return false;
   }
+}
+
+export function normalizeBookmarkUrl(link: string): string {
+  try {
+    const url = new URL(link.trim());
+    url.protocol = url.protocol.toLowerCase();
+    url.hostname = url.hostname.toLowerCase();
+    if ((url.protocol === 'https:' && url.port === '443') || (url.protocol === 'http:' && url.port === '80')) {
+      url.port = '';
+    }
+    url.hash = '';
+    if (url.pathname.length > 1) url.pathname = url.pathname.replace(/\/+$/, '');
+    if (url.searchParams.size > 1) {
+      const sorted = Array.from(url.searchParams.entries()).sort(([keyA, valueA], [keyB, valueB]) => (
+        keyA.localeCompare(keyB) || valueA.localeCompare(valueB)
+      ));
+      url.search = '';
+      for (const [key, value] of sorted) url.searchParams.append(key, value);
+    }
+    return url.toString();
+  } catch {
+    return link.trim();
+  }
+}
+
+export function createBookmarkKey(
+  node: Pick<BookmarkNode, 'title' | 'url'>,
+  folderPath = '',
+): string {
+  return [
+    normalizeBookmarkUrl(node.url ?? ''),
+    normalizeBookmarkText(node.title),
+    normalizeBookmarkText(folderPath),
+  ].join('\n');
+}
+
+function normalizeBookmarkText(value = ''): string {
+  return value.trim().replace(/\s+/g, ' ').toLocaleLowerCase();
 }
 
 function createBookmarkFrame(
