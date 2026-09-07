@@ -33,19 +33,19 @@ describe('BookmarkCard', () => {
 
     const { container } = render(<BookmarkCard node={bookmark} selected cardSize="lg" onSelect={onSelect} onEdit={onEdit} />);
 
-    const card = screen.getByRole('button', { name: '书签：Example' });
+    const card = screen.getByRole('button', { name: 'Bookmark: Example' });
     fireEvent.click(card);
-    fireEvent.click(screen.getByRole('button', { name: 'Example 的操作' }));
-    fireEvent.click(screen.getByRole('menuitem', { name: '编辑' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Actions for Example' }));
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Edit' }));
 
     expect(card).toHaveAttribute('data-card-size', 'lg');
     expect(card).toHaveAttribute('aria-pressed', 'true');
     expect(onSelect).toHaveBeenCalledWith(bookmark);
     expect(open).toHaveBeenCalledWith(bookmark.url, '_self', 'noopener,noreferrer');
     expect(onEdit).toHaveBeenCalledWith(bookmark);
-    expect(screen.queryByLabelText('调整真实书签结构')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Edit real bookmark structure')).not.toBeInTheDocument();
     expect(screen.queryByLabelText('删除 Example')).not.toBeInTheDocument();
-    expect(screen.getByLabelText('拖动调整分组或顺序')).toBeInTheDocument();
+    expect(screen.getByLabelText('Drag to reorganize')).toBeInTheDocument();
     expect(container.querySelector('.bookmark-favicon img')).toHaveAttribute(
       'src',
       expect.stringContaining(encodeURIComponent(bookmark.url!)),
@@ -55,7 +55,7 @@ describe('BookmarkCard', () => {
   it('does not expose edit controls for readonly folders', () => {
     render(<BookmarkCard node={{ id: '2', title: 'Managed', readonly: true, children: [] }} />);
 
-    expect(screen.getByRole('button', { name: '文件夹：Managed' })).toHaveClass('is-readonly');
+    expect(screen.getByRole('button', { name: 'Folder: Managed' })).toHaveClass('is-readonly');
     expect(screen.queryByLabelText('编辑 Managed')).not.toBeInTheDocument();
     expect(screen.queryByLabelText('删除 Managed')).not.toBeInTheDocument();
   });
@@ -64,7 +64,7 @@ describe('BookmarkCard', () => {
     const onMove = vi.fn();
     render(<BookmarkCard node={{ id: 'folder', title: 'Folder', children: [] }} onMove={onMove} />);
 
-    const card = screen.getByRole('button', { name: '文件夹：Folder' });
+    const card = screen.getByRole('button', { name: 'Folder: Folder' });
     const dataTransfer = makeDataTransfer({ 'application/x-bookmark-atlas-node': 'child' });
 
     fireEvent.dragOver(card, { dataTransfer });

@@ -11,23 +11,18 @@ import { ToolbarSelectMenu } from './components/ToolbarSelectMenu';
 import { GridView } from './components/views/GridView';
 import { ExcalidrawCanvas } from './excalidraw/ExcalidrawCanvas';
 import { ensureYoutubeEmbedIdentityRule } from './excalidraw/youtubeIdentity';
+import { t, type MessageKey } from './i18n';
 import { useBookmarkStore } from './store/bookmarkStore';
-import { usePreferencesStore } from './store/preferencesStore';
+import { listenForPreferenceSyncChanges, usePreferencesStore } from './store/preferencesStore';
 import { applyTheme, THEMES, type ThemeId } from './themes';
 import type { CardSize, ViewMode } from './types/ui';
 import packageMetadata from '../package.json';
 
-const VIEW_OPTIONS: { id: ViewMode; label: string; icon: typeof Grid3X3 }[] = [
-  { id: 'grid', label: '列视图', icon: Grid3X3 },
-  { id: 'canvas', label: 'Excalidraw 画布', icon: Columns3 },
+const VIEW_OPTIONS: { id: ViewMode; label: MessageKey; icon: typeof Grid3X3 }[] = [
+  { id: 'grid', label: 'viewGrid', icon: Grid3X3 },
+  { id: 'canvas', label: 'viewCanvas', icon: Columns3 },
 ];
 
-const SIZE_LABELS: Record<CardSize, string> = { sm: '小卡片', md: '中卡片', lg: '大卡片' };
-const SIZE_OPTIONS = Object.entries(SIZE_LABELS).map(([value, label]) => ({
-  value,
-  label,
-  description: value === 'sm' ? '更紧凑，显示更多内容' : value === 'lg' ? '更醒目，信息更易读' : '平衡密度与可读性',
-}));
 const APP_VERSION = globalThis.chrome?.runtime?.getManifest?.().version ?? packageMetadata.version;
 
 export function App() {
@@ -44,12 +39,33 @@ export function App() {
   useEffect(() => {
     void bookmarkState.initialize();
     void preferences.hydrate();
+    const stopPreferenceSync = listenForPreferenceSyncChanges();
     void ensureYoutubeEmbedIdentityRule().finally(() => setEmbedIdentityReady(true));
+    return () => stopPreferenceSync();
   }, []);
 
   useEffect(() => {
     applyTheme(preferences.themeId);
   }, [preferences.themeId]);
+
+  useEffect(() => {
+    let refreshTimer: ReturnType<typeof setTimeout> | undefined;
+    const refreshBookmarks = () => {
+      if (refreshTimer) clearTimeout(refreshTimer);
+      refreshTimer = setTimeout(() => void useBookmarkStore.getState().refresh(), 250);
+    };
+    const refreshWhenVisible = () => {
+      if (document.visibilityState === 'visible') refreshBookmarks();
+    };
+
+    window.addEventListener('focus', refreshBookmarks);
+    document.addEventListener('visibilitychange', refreshWhenVisible);
+    return () => {
+      if (refreshTimer) clearTimeout(refreshTimer);
+      window.removeEventListener('focus', refreshBookmarks);
+      document.removeEventListener('visibilitychange', refreshWhenVisible);
+    };
+  }, []);
 
   useEffect(() => {
     if (!bookmarkState.lastDeleteSnapshot) return;
@@ -68,6 +84,11 @@ export function App() {
     ?? folders.find((folder) => !folder.readonly)
     ?? folders[0];
   const managedParentId = activeFolder?.id ?? defaultWritableFolder?.id ?? bookmarkState.roots[0]?.id;
+  const sizeOptions = useMemo(() => ([
+    { value: 'sm', label: t('sizeSmall'), description: t('sizeSmallDescription') },
+    { value: 'md', label: t('sizeMedium'), description: t('sizeMediumDescription') },
+    { value: 'lg', label: t('sizeLarge'), description: t('sizeLargeDescription') },
+  ]), []);
 
   useEffect(() => {
     if (activeFolderId && (!activeFolder || activeFolder.url)) setActiveFolderId(undefined);
@@ -122,7 +143,7 @@ export function App() {
       <header className="topbar">
         <div className="brand">
           <div className="brand__mark"><AppLogo /></div>
-          <div><h1>Bookmark Atlas</h1><small>v{APP_VERSION} · {countBookmarks(visibleRoots)} bookmarks · local first</small></div>
+          <div><h1>{t('brandName')}</h1><small>v{APP_VERSION} · {t('bookmarksCount', String(countBookmarks(visibleRoots)))} · {t('appTagline')}</small></div>
         </div>
 
         <SearchBar
@@ -133,45 +154,45 @@ export function App() {
         />
 
         <div className="topbar__actions">
-          <div className="segmented" role="group" aria-label="视图">
+          <div className="segmented" role="group" aria-label={t('viewGroup')}>
             {VIEW_OPTIONS.map(({ id, label, icon: Icon }) => (
-              <button key={id} className={preferences.viewMode === id ? 'is-active' : ''} onClick={() => preferences.setViewMode(id)} title={label} aria-label={label}>
+              <button key={id} className={preferences.viewMode === id ? 'is-active' : ''} onClick={() => preferences.setViewMode(id)} title={t(label)} aria-label={t(label)}>
                 <Icon size={15} />
               </button>
             ))}
           </div>
           <ToolbarSelectMenu
-            label="卡片大小"
+            label={t('cardSize')}
             value={preferences.cardSize}
-            options={SIZE_OPTIONS}
+            options={sizeOptions}
             variant="size"
             onChange={(value) => preferences.setCardSize(value as CardSize)}
           />
           <ToolbarSelectMenu
-            label="UI 风格"
+            label={t('uiStyle')}
             value={preferences.themeId}
             options={Object.values(THEMES).map((theme) => ({
               value: theme.id,
-              label: theme.name,
+              label: t(theme.nameKey),
               color: theme.tokens.color.accent,
             }))}
             variant="theme"
             onChange={(value) => preferences.setThemeId(value as ThemeId)}
           />
-          <button className="primary-button" onClick={() => openCreate(activeFolder && activeFolder.readonlyReason !== 'root' && activeFolder.readonlyReason !== 'managed' ? activeFolder.id : defaultWritableFolder?.id)} title="创建真实的 Chrome 书签或文件夹"><Plus size={16} /> 新建 Chrome 书签</button>
+          <button className="primary-button" onClick={() => openCreate(activeFolder && activeFolder.readonlyReason !== 'root' && activeFolder.readonlyReason !== 'managed' ? activeFolder.id : defaultWritableFolder?.id)} title={t('newChromeBookmark')}><Plus size={16} /> {t('newChromeBookmark')}</button>
         </div>
       </header>
 
       <section className="workspace">
         {bookmarkState.loading && bookmarkState.roots.length === 0 ? (
-          <div className="workspace__status"><div className="empty-state__panel"><Sparkles size={24} /><h2>正在展开书签宇宙</h2><p>从当前 Chrome 配置文件读取书签树…</p></div></div>
+          <div className="workspace__status"><div className="empty-state__panel"><Sparkles size={24} /><h2>{t('loadingBookmarksTitle')}</h2><p>{t('loadingBookmarksBody')}</p></div></div>
         ) : bookmarkState.error && bookmarkState.roots.length === 0 ? (
-          <div className="workspace__status"><div className="empty-state__panel"><h2>读取失败</h2><p>{bookmarkState.error}</p><button className="primary-button" onClick={() => void bookmarkState.refresh()}>重试</button></div></div>
+          <div className="workspace__status"><div className="empty-state__panel"><h2>{t('readFailed')}</h2><p>{bookmarkState.error}</p><button className="primary-button" onClick={() => void bookmarkState.refresh()}>{t('retry')}</button></div></div>
         ) : preferences.viewMode === 'canvas' ? (
           embedIdentityReady ? (
             <ExcalidrawCanvas roots={visibleRoots} />
           ) : (
-            <div className="workspace__status"><div className="empty-state__panel"><Sparkles size={24} /><h2>正在准备网页嵌入</h2><p>初始化安全的播放器客户端标识…</p></div></div>
+            <div className="workspace__status"><div className="empty-state__panel"><Sparkles size={24} /><h2>{t('preparingEmbedsTitle')}</h2><p>{t('preparingEmbedsBody')}</p></div></div>
           )
         ) : (
           <div className="managed-view">
@@ -220,7 +241,7 @@ export function App() {
       {deleteNode && <DeleteConfirm node={deleteNode} onConfirm={confirmDelete} onClose={() => setDeleteNode(null)} />}
       {enginesOpen && <EngineManager engines={preferences.engines} onChange={preferences.setEngines} onClose={() => setEnginesOpen(false)} />}
       {undoVisible && bookmarkState.lastDeleteSnapshot && (
-        <div className="toast" role="status">已删除“{bookmarkState.lastDeleteSnapshot.node.title}”<button onClick={() => void bookmarkState.undoDelete().then(() => setUndoVisible(false))}>撤销</button></div>
+        <div className="toast" role="status">{t('deletedToast', bookmarkState.lastDeleteSnapshot.node.title)}<button onClick={() => void bookmarkState.undoDelete().then(() => setUndoVisible(false))}>{t('undo')}</button></div>
       )}
       {bookmarkState.error && bookmarkState.roots.length > 0 && <div className="toast" role="alert">{bookmarkState.error}</div>}
     </main>

@@ -1,105 +1,222 @@
-# Chrome Web Store 上架资料：Bookmark Atlas
+# Chrome Web Store Listing: Bookmark Atlas
 
-## 基本信息
+This file is the working copy for the Chrome Web Store listing and review
+answers. Use English as the default language for global distribution, then add
+Simplified Chinese as a `zh_CN` localization.
+
+## Default Listing: English
+
+| Field | Suggested value |
+|---|---|
+| Store name | Bookmark Atlas – Excalidraw New Tab |
+| Category | Productivity |
+| Default language | English |
+| Single purpose | Bookmark Atlas turns Chrome bookmarks, search, and an Excalidraw canvas into one local-first new tab workspace. |
+| Homepage URL | Use the published `docs/index.html` URL. |
+| Support URL | Use the published `docs/support.html` URL. |
+| Privacy policy URL | Use the published `docs/privacy.html` URL. |
+
+### Short Description
+
+Turn Chrome bookmarks, search, and an Excalidraw canvas into a local-first new
+tab workspace.
+
+### Detailed Description
+
+Bookmark Atlas replaces the default new tab with a local-first visual workspace
+for Chrome bookmarks, search, web embeds, and Excalidraw.
+
+You can keep using Chrome's native bookmarks while arranging selected bookmarks
+on an infinite Excalidraw canvas alongside drawings, text, frames, links, and
+embedded web pages. Bookmark folders remain editable through Chrome's own
+bookmark APIs, and bookmark cards can be opened, moved, sorted, edited, or
+removed without leaving the new tab.
+
+Main features:
+
+- Full Excalidraw drawing experience, including text, images, frames, links,
+  undo, import, and export.
+- Chrome bookmark folder view with create, edit, delete, move, precise sorting,
+  breadcrumbs, and folder navigation.
+- Import a single bookmark, one folder group, or all bookmarks into the canvas.
+- Search open tabs, browsing history, and Chrome bookmarks from the new tab.
+- Use Chrome's default search service, or switch to Baidu, Bing, Google, or a
+  custom search template.
+- Remote suggestions for the supported built-in search engines only.
+- Real favicons from Chrome's local favicon cache for bookmarks and search
+  engines.
+- HTTPS web embeds with iframe sandboxing that prevents embedded pages from
+  navigating the extension page.
+- YouTube and Bilibili video embeds through official players where available.
+  Bilibili video pages load with autoplay disabled.
+- Six visual themes and multiple bookmark card sizes.
+- Near-real-time lightweight canvas sync through Chrome Sync for devices signed
+  into the same Chrome account, plus live updates across open extension tabs.
+
+Sync note:
+
+Bookmark Atlas stores the full canvas and binary attachments on the current
+device. Lightweight canvas data such as shapes, text, bookmark references,
+viewport, and library items may sync through Chrome Sync when quota allows.
+Open extension tabs receive same-device updates through BroadcastChannel and
+cross-device updates through Chrome storage change events. Visible tabs also
+check for newer cloud state on focus, on visibility return, and every 30
+seconds as a fallback. Images and binary attachments do not sync through Chrome
+Sync; users can export a full JSON backup when they need a complete copy.
+
+Privacy note:
+
+Bookmark Atlas does not sell, analyze, or upload bookmarks, tabs, browsing
+history, or canvas content to a developer server. It does not include ads,
+trackers, or remote extension code.
+
+## Localized Listing: zh_CN
 
 | 字段 | 建议内容 |
 |---|---|
-| 名称 | Bookmark Atlas |
-| 类别 | Productivity |
-| 默认语言 | 中文（简体） |
-| 单一用途 | 把 Chrome 书签、搜索与 Excalidraw 画布整合为一个可同步的新标签页工作空间。 |
-| 支持邮箱 | 待发布者填写 |
-| 官方网站 | 待发布者填写 |
-| 隐私政策 URL | 待发布者将 `PRIVACY.md` 部署到公开 HTTPS 页面后填写 |
+| 商店名称 | Bookmark Atlas – Excalidraw 书签画布 |
+| 类别 | 效率工具 |
+| 语言 | 中文（简体） |
+| 单一用途 | Bookmark Atlas 将 Chrome 书签、搜索和 Excalidraw 画布整合为一个本地优先的新标签页工作空间。 |
+| 主页 URL | 使用已发布的 `docs/index.html` 页面地址。 |
+| 支持 URL | 使用已发布的 `docs/support.html` 页面地址。 |
+| 隐私政策 URL | 使用已发布的 `docs/privacy.html` 页面地址。 |
 
-## 简短说明
+### 简短说明
 
-把 Chrome 书签、搜索和完整 Excalidraw 画布放进同一个可同步的新标签页。
+把 Chrome 书签、搜索和 Excalidraw 画布放进本地优先的新标签页工作空间。
 
-## 详细说明
+### 详细说明
 
-Bookmark Atlas 把新标签页变成一个本地优先的可视化工作空间。你可以继续使用 Chrome 原生书签，也可以把常用书签导入完整的 Excalidraw 无限画布，与绘图、文字、箭头、框架和网页嵌入放在一起。
+Bookmark Atlas 把默认新标签页变成一个本地优先的可视化工作空间，用来管理
+Chrome 书签、搜索、网页嵌入和 Excalidraw 画布。
+
+你可以继续使用 Chrome 原生书签，也可以把常用书签导入无限画布，与绘图、
+文字、框架、链接和网页嵌入放在一起。书签仍通过 Chrome 原生书签 API 管理，
+可以在新标签页内打开、移动、排序、编辑或删除。
 
 主要功能：
 
 - 完整 Excalidraw 绘图体验，包括文字、图片、框架、链接、撤销、导入和导出。
-- Chrome 书签文件夹视图，支持新建、编辑、删除、跨文件夹移动和精确排序。
-- 将单个书签、文件夹组或全部书签导入画布，书签仍由 Chrome 原生管理。
+- Chrome 书签文件夹视图，支持新建、编辑、删除、移动、精确排序、面包屑和文件夹导航。
+- 将单个书签、文件夹组或全部书签导入画布。
 - 搜索已打开标签页、浏览历史和 Chrome 书签。
-- 默认跟随 Chrome 当前搜索服务；也可以主动选择百度、必应或 Google 并获得远程输入联想。
-- 支持高自由度 HTTPS 网页嵌入，并通过 sandbox 禁止 iframe 跳转插件顶层或让弹窗逃逸；YouTube 与 Bilibili 视频使用官方播放器，Bilibili 关闭自动播放并支持切换完整视频页面。
-- 六套视觉主题、三种卡片尺寸和完整备份导入/导出。
-- 图形、文字、书签引用、视口和素材库通过 Chrome Sync 在同一账号的设备之间同步。
+- 默认使用 Chrome 当前搜索服务，也可以切换到百度、必应、Google 或自定义搜索模板。
+- 仅对内置支持的搜索引擎提供远程输入联想。
+- 使用 Chrome 本地 favicon 缓存显示真实网站和搜索引擎图标。
+- 支持 HTTPS 网页嵌入，并通过 iframe sandbox 防止嵌入网页覆盖跳转插件页面。
+- YouTube 和 Bilibili 视频尽量使用官方播放器；Bilibili 视频默认关闭自动播放。
+- 六套视觉主题和多种书签卡片尺寸。
+- 同一 Chrome 账号设备之间可通过 Chrome Sync 同步轻量画布数据。
 
-画布完整内容会保存在当前设备。为符合 Chrome Sync 配额，图片和二进制附件不会上传，只在添加它们的设备上可用。用户可随时导出包含附件的完整 JSON 备份。
+同步说明：
 
-Bookmark Atlas 不出售、不分析、不上传用户的书签、标签页或浏览历史，也不包含广告、追踪器或远程执行代码。
+Bookmark Atlas 会把完整画布和二进制附件保存在当前设备。图形、文字、书签
+引用、视口和素材库等轻量数据会在 Chrome Sync 配额允许时同步。Chrome Sync
+是事件驱动的，通常接近实时，但 Chrome 不保证跨设备或多标签页的固定到达
+时间。图片和二进制附件不会通过 Chrome Sync 同步；需要完整复制时，可以导出
+JSON 备份。
 
-## 隐私实践填写建议
+隐私说明：
 
-### 用户数据类别
+Bookmark Atlas 不出售、不分析、不上传用户的书签、标签页、浏览历史或画布
+内容，也不包含广告、追踪器或远程扩展代码。
 
-应声明处理：
+## Privacy Form Answers
 
-- Web history：用于用户可见的预搜索历史结果，仅在本地处理。
-- Website content / URLs：书签 URL、标签页 URL 和用户主动嵌入的 URL，仅用于对应功能。
-- User-generated content：Excalidraw 图形、文字、素材库和附件。
+### Single Purpose
 
-### 数据使用
+Bookmark Atlas turns Chrome bookmarks, search, and an Excalidraw canvas into one
+local-first new tab workspace.
 
-- 核心功能：是。
-- 个性化：仅用户主动选择的主题、视图和搜索引擎设置。
-- 广告、分析、信用评估：否。
-- 出售或分享用户数据：否。
+### Permission Justification
 
-### 远程传输
-
-- 使用百度、必应或 Google 时，输入词会发送到对应联想接口。
-- 使用 Chrome 默认或自定义搜索引擎时，不发送额外远程联想请求。
-- 画布中存在网页嵌入时，目标网站会按浏览器规则接收请求。
-- 轻量画布数据通过 Chrome Sync 保存；二进制附件不进入 Chrome Sync。
-
-## 权限说明
-
-| 权限 | 用户可见用途 |
+| Permission | Justification |
 |---|---|
-| `bookmarks` | 显示并管理用户主动操作的 Chrome 书签。 |
-| `storage` | 保存设置、本地画布回退数据和轻量跨设备画布数据。 |
-| `favicon` | 从 Chrome 本地图标缓存显示网站与搜索引擎图标。 |
-| `history` | 在用户输入时显示匹配的浏览历史；结果不上传。 |
-| `tabs` | 显示并切换已经打开的网页标签；不读取网页正文。 |
-| `search` | 使用用户当前的 Chrome 默认搜索服务，不修改默认设置。 |
-| `declarativeNetRequestWithHostAccess` | 只为 Bookmark Atlas 自己创建的 YouTube 官方播放器请求补充客户端身份 Referer。 |
+| `bookmarks` | Required to display the user's Chrome bookmark tree and perform user-requested bookmark create, edit, move, sort, and delete actions. |
+| `storage` | Required to save extension preferences, local canvas fallback data, and lightweight Chrome Sync canvas state. |
+| `favicon` | Required to show bookmark and search engine icons from Chrome's local favicon cache. |
+| `history` | Required to show local browsing history matches in the pre-search panel. Results are processed locally and are not uploaded. |
+| `tabs` | Required to show and switch to currently open tabs from the pre-search panel. The extension does not read page body content. |
+| `search` | Required to submit searches through the user's current Chrome default search service without changing browser search settings. |
+| `declarativeNetRequestWithHostAccess` | Required only to add a fixed client referrer to official YouTube embed player requests created by Bookmark Atlas. |
 
-### 主机权限
+### Host Permission Justification
 
-- `suggestion.baidu.com`、`api.bing.com`、`suggestqueries.google.com`：固定远程联想接口。
-- `www.youtube.com`：官方嵌入播放器的客户端识别规则。
-- 不请求 `https://*/*`、`<all_urls>` 或任意网站权限。
+| Host | Justification |
+|---|---|
+| `https://suggestion.baidu.com/*` | Used only when the user selects Baidu to fetch search suggestions from Baidu's fixed suggestion endpoint. |
+| `https://api.bing.com/*` | Used only when the user selects Bing to fetch search suggestions from Bing's fixed suggestion endpoint. |
+| `https://suggestqueries.google.com/*` | Used only when the user selects Google to fetch search suggestions from Google's fixed suggestion endpoint. |
+| `https://www.youtube.com/*` | Used only for official YouTube embed player requests and the limited client referrer rule described above. |
 
-## 测试说明
+### Remote Code Answer
 
-1. 安装后打开新标签页。
-2. 搜索框默认显示“Chrome 默认”，提交搜索时使用浏览器当前搜索服务。
-3. 输入关键词可看到本地标签页、历史和书签结果；切换到百度、必应或 Google 后还会显示远程联想。
-4. 切换到列视图，验证书签的创建、编辑、移动与删除。
-5. 切换到 Excalidraw 画布，导入书签并绘制任意元素。
-6. 等待顶部状态变为“画布已同步”或“轻量同步 · 附件仅本机”。
-7. 在同一 Chrome 账号的另一台设备打开扩展，验证轻量画布恢复。
-8. 粘贴具体 YouTube 与 Bilibili 视频链接，确认 Bilibili 打开画布时不自动播放，可以在画布内手动播放，并可切换到完整视频页面。
-9. 粘贴普通 HTTPS 网页和 Bilibili 首页，确认内容直接显示、可以交互，同时不会跳转插件顶层；无法嵌入时可使用外部打开按钮。
+Select: No, I am not using remote code.
 
-无需测试账号或外部登录凭据。
+Justification if asked:
 
-## 图像资产
+All extension JavaScript and assets are bundled in the submitted package. Remote
+search suggestion responses, favicons, and embedded web pages are data or iframe
+content for user-facing features; they are not loaded or executed as extension
+code.
 
-| 资产 | 文件 | 状态 |
+### User Data Categories
+
+Declare these categories:
+
+- Web history: used locally for user-visible pre-search history results.
+- Website content / URLs: bookmark URLs, tab URLs, and user-added embed URLs
+  used for the corresponding features.
+- User-generated content: Excalidraw shapes, text, library items, and user-added
+  attachments.
+
+Do not declare data sale, advertising, creditworthiness, or unrelated data use.
+
+### Data Handling Certifications
+
+The listing should certify that Bookmark Atlas:
+
+- Does not sell or transfer user data to third parties outside approved use
+  cases.
+- Does not use or transfer user data for purposes unrelated to its single
+  purpose.
+- Does not use or transfer user data to determine creditworthiness or for
+  lending purposes.
+
+## Test Instructions
+
+1. Install the extension and open a new tab.
+2. Confirm the search box uses Chrome Default until another engine is selected.
+3. Type a query and confirm local tab, history, and bookmark results appear.
+4. Switch to Baidu, Bing, or Google and confirm remote suggestions appear.
+5. Open the bookmark list view and test create, edit, move, sort, and delete.
+6. Open the Excalidraw canvas, import bookmarks, and draw a shape or text.
+7. Confirm the sync status reaches a saved or synced state. For cross-device
+   behavior, use another Chrome device signed into the same account with Chrome
+   Sync enabled.
+8. Add YouTube and Bilibili video URLs. Confirm video embeds do not navigate the
+   extension page, and Bilibili video embeds do not autoplay on extension load.
+9. Add a regular HTTPS web page and confirm it can be interacted with when the
+   website allows iframe embedding.
+
+No test account or external credentials are required.
+
+## Graphic Assets
+
+| Asset | File | Status |
 |---|---|---|
-| 商店图标 128×128 | `public/icons/icon-128.png` | 已准备，包含透明留白 |
-| 小型宣传图 440×280 | `docs/store-assets/promo-440x280.png` | 已准备 |
-| 截图 1280×800 | `docs/store-assets/screenshots/` | 已准备列视图与 Excalidraw 画布各一张；公开前建议再补一张真实 Chrome Sync 状态截图 |
-| Marquee 1400×560 | 可选 | 暂不阻塞首发 |
+| Store icon 128 x 128 | `public/icons/icon-128.png` | Prepared |
+| Small promo tile 440 x 280 | `docs/store-assets/promo-440x280.png` | Prepared |
+| Marquee promo tile 1400 x 560 | `docs/store-assets/marquee-1400x560.png` | Prepared |
+| English screenshots 1280 x 800 | `docs/store-assets/screenshots/*-en-1280x800.png` | Prepared |
+| Simplified Chinese screenshots 1280 x 800 | `docs/store-assets/screenshots/*-zh-1280x800.png` | Prepared |
+| Editable icon source | `docs/store-assets/icon-source.svg` | Prepared |
+| Editable small promo source | `docs/store-assets/promo-source.svg` | Prepared |
+| Editable marquee source | `docs/store-assets/marquee-source.svg` | Prepared |
 
-## 发布建议
+## Distribution Note
 
-首次上传建议使用非公开或可信测试者渠道完成双设备同步验收；确认权限提示、搜索行为、YouTube 播放器与画布同步后，再切换为公开发布。
+Use all available regions unless a legal, policy, or support constraint is
+identified. Search indexing can lag after publication and after metadata
+updates; direct item links may work before keyword search does.

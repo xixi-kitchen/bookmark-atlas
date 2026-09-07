@@ -3,8 +3,12 @@ import ReactDOM from 'react-dom/client';
 import '@excalidraw/excalidraw/index.css';
 import './style.css';
 import { App } from '../../src/App';
+import { getUiLanguage } from '../../src/i18n';
+import { isStoreScreenshotMode } from '../../src/storeScreenshot';
 
-if (new URLSearchParams(window.location.search).has('store-screenshot')) {
+document.documentElement.lang = getUiLanguage();
+
+if (isStoreScreenshotMode()) {
   document.body.dataset.storeScreenshot = 'true';
 }
 

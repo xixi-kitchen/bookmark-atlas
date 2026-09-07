@@ -19,14 +19,14 @@ describe('WebEmbed', () => {
   it('renders ordinary third-party pages immediately', () => {
     render(<WebEmbed elementId="web-1" url="https://example.com/page" active={false} />);
 
-    expect(screen.getByTitle('嵌入网页：example.com')).toHaveAttribute('src', 'https://example.com/page');
-    expect(screen.getByText('点击中央进入网页交互')).toBeInTheDocument();
+    expect(screen.getByTitle('Embedded page: example.com')).toHaveAttribute('src', 'https://example.com/page');
+    expect(screen.getByText('Click the center to interact with this page')).toBeInTheDocument();
   });
 
   it('keeps broad iframe features while preventing top navigation and popup escape', () => {
     render(<WebEmbed elementId="web-1" url="https://example.com/page" active />);
 
-    const frame = screen.getByTitle('嵌入网页：example.com');
+    const frame = screen.getByTitle('Embedded page: example.com');
     expect(frame).toHaveAttribute('src', 'https://example.com/page');
     expect(frame).toHaveAttribute('scrolling', 'auto');
     expect(frame).toHaveAttribute('sandbox', WEB_EMBED_SANDBOX);
@@ -35,7 +35,7 @@ describe('WebEmbed', () => {
     expect(WEB_EMBED_SANDBOX).toContain('allow-popups');
     expect(WEB_EMBED_SANDBOX).not.toMatch(/allow-popups-to-escape-sandbox|allow-top-navigation/);
     expect(frame).not.toHaveAttribute('allowfullscreen');
-    const toolbar = screen.getByRole('toolbar', { name: '嵌入网页操作' });
+    const toolbar = screen.getByRole('toolbar', { name: 'Embedded web page actions' });
     const viewport = frame.closest('.atlas-web-embed__viewport');
     expect(toolbar).toBeInTheDocument();
     expect(viewport).toBeInTheDocument();
@@ -47,27 +47,27 @@ describe('WebEmbed', () => {
     const onExitInteraction = vi.fn();
     const open = vi.spyOn(window, 'open').mockImplementation(() => null);
     render(<WebEmbed elementId="web-2" url="https://example.com/page" active onExitInteraction={onExitInteraction} />);
-    const originalFrame = screen.getByTitle('嵌入网页：example.com');
+    const originalFrame = screen.getByTitle('Embedded page: example.com');
 
-    fireEvent.click(screen.getByRole('button', { name: '刷新这个嵌入网页' }));
-    expect(screen.getByTitle('嵌入网页：example.com')).not.toBe(originalFrame);
+    fireEvent.click(screen.getByRole('button', { name: 'Refresh this embedded page' }));
+    expect(screen.getByTitle('Embedded page: example.com')).not.toBe(originalFrame);
 
-    fireEvent.click(screen.getByRole('button', { name: '在新标签页打开' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Open in new tab' }));
     expect(open).toHaveBeenCalledWith('https://example.com/page', '_blank', 'noopener,noreferrer');
 
-    fireEvent.click(screen.getByRole('button', { name: '退出网页交互' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Exit page interaction' }));
     expect(onExitInteraction).toHaveBeenCalledOnce();
-    expect(screen.getByTitle('嵌入网页：example.com')).toBeInTheDocument();
+    expect(screen.getByTitle('Embedded page: example.com')).toBeInTheDocument();
   });
 
   it('keeps an embedded page visible when interaction is no longer active', () => {
     const { rerender } = render(<WebEmbed elementId="web-3" url="https://example.com/page" active />);
-    expect(screen.getByTitle('嵌入网页：example.com')).toBeInTheDocument();
+    expect(screen.getByTitle('Embedded page: example.com')).toBeInTheDocument();
 
     rerender(<WebEmbed elementId="web-3" url="https://example.com/page" active={false} />);
 
-    expect(screen.getByTitle('嵌入网页：example.com')).toBeInTheDocument();
-    expect(screen.getByText('点击中央进入网页交互')).toBeInTheDocument();
+    expect(screen.getByTitle('Embedded page: example.com')).toBeInTheDocument();
+    expect(screen.getByText('Click the center to interact with this page')).toBeInTheDocument();
   });
 
   it('keeps generic pages unchanged and preserves Excalidraw provider URL conversions', () => {
@@ -85,7 +85,7 @@ describe('WebEmbed', () => {
   it('shows the Bilibili homepage directly inside the canvas', () => {
     render(<WebEmbed elementId="bilibili-home" url="https://www.bilibili.com/" active={false} />);
 
-    expect(screen.getByTitle('嵌入网页：bilibili.com')).toHaveAttribute('src', 'https://www.bilibili.com/');
+    expect(screen.getByTitle('Embedded page: bilibili.com')).toHaveAttribute('src', 'https://www.bilibili.com/');
     expect(getWebEmbedIssue('https://www.bilibili.com/')).toBeNull();
   });
 
@@ -93,12 +93,12 @@ describe('WebEmbed', () => {
     const open = vi.spyOn(window, 'open').mockImplementation(() => null);
     render(<WebEmbed elementId="bilibili-video" url="https://www.bilibili.com/video/BV1xx?p=2" active />);
 
-    const frame = screen.getByTitle('嵌入网页：bilibili.com');
+    const frame = screen.getByTitle('Embedded page: bilibili.com');
     expect(frame).toHaveAttribute('src', 'https://player.bilibili.com/player.html?autoplay=0&poster=1&bvid=BV1xx&p=2');
     expect(frame).toHaveAttribute('allow', BILIBILI_VIDEO_ALLOW);
     expect(BILIBILI_VIDEO_ALLOW).not.toContain('autoplay');
     expect(frame).not.toHaveClass('is-bilibili-video-preview');
-    expect(screen.queryByRole('button', { name: '在新标签页播放 Bilibili 视频' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Play Bilibili video in a new tab' })).not.toBeInTheDocument();
     expect(open).not.toHaveBeenCalled();
   });
 
@@ -106,23 +106,23 @@ describe('WebEmbed', () => {
     const open = vi.spyOn(window, 'open').mockImplementation(() => null);
     render(<WebEmbed elementId="bilibili-video" url="https://www.bilibili.com/video/BV1xx?p=2" active />);
 
-    fireEvent.click(screen.getByRole('button', { name: '切换到完整 Bilibili 视频页面' }));
-    expect(screen.getByTitle('嵌入网页：bilibili.com')).toHaveAttribute('src', 'https://www.bilibili.com/video/BV1xx?p=2');
-    expect(screen.getByText('完整视频页')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Switch to the full Bilibili video page' }));
+    expect(screen.getByTitle('Embedded page: bilibili.com')).toHaveAttribute('src', 'https://www.bilibili.com/video/BV1xx?p=2');
+    expect(screen.getByText('Full video page')).toBeInTheDocument();
     expect(open).not.toHaveBeenCalled();
 
-    fireEvent.click(screen.getByRole('button', { name: '切换到 Bilibili 官方播放器' }));
-    expect(screen.getByTitle('嵌入网页：bilibili.com')).toHaveAttribute('src', 'https://player.bilibili.com/player.html?autoplay=0&poster=1&bvid=BV1xx&p=2');
-    expect(screen.getByText('官方播放器')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Switch to the Bilibili official player' }));
+    expect(screen.getByTitle('Embedded page: bilibili.com')).toHaveAttribute('src', 'https://player.bilibili.com/player.html?autoplay=0&poster=1&bvid=BV1xx&p=2');
+    expect(screen.getByText('Official player')).toBeInTheDocument();
     expect(open).not.toHaveBeenCalled();
   });
 
   it('replaces an unembeddable YouTube homepage with actionable guidance', () => {
     render(<WebEmbed elementId="youtube-home" url="https://www.youtube.com/" active />);
 
-    expect(screen.getByRole('note', { name: 'YouTube 首页不能直接嵌入' })).toBeInTheDocument();
-    expect(screen.getByText(/具体视频、Shorts、直播或播放列表/)).toBeInTheDocument();
-    expect(screen.queryByTitle('嵌入网页：youtube.com')).not.toBeInTheDocument();
+    expect(screen.getByRole('note', { name: 'YouTube home pages cannot be embedded directly' })).toBeInTheDocument();
+    expect(screen.getByText(/video, Shorts, live, or playlist URL/)).toBeInTheDocument();
+    expect(screen.queryByTitle('Embedded page: youtube.com')).not.toBeInTheDocument();
     expect(getWebEmbedIssue('https://www.youtube.com/')).not.toBeNull();
     expect(getWebEmbedIssue('https://www.youtube.com/watch?v=abc123')).toBeNull();
   });
@@ -131,12 +131,12 @@ describe('WebEmbed', () => {
     const open = vi.spyOn(window, 'open').mockImplementation(() => null);
     render(<WebEmbed elementId="bilibili-short" url="https://b23.tv/abc123" active />);
 
-    expect(screen.getByRole('note', { name: 'Bilibili 短链需要在新标签页打开' })).toBeInTheDocument();
-    expect(screen.queryByTitle('嵌入网页：b23.tv')).not.toBeInTheDocument();
+    expect(screen.getByRole('note', { name: 'Open Bilibili short links in a new tab' })).toBeInTheDocument();
+    expect(screen.queryByTitle('Embedded page: b23.tv')).not.toBeInTheDocument();
     expect(open).not.toHaveBeenCalled();
     expect(getWebEmbedIssue('https://b23.tv/abc123')).not.toBeNull();
 
-    fireEvent.click(screen.getAllByRole('button', { name: '在新标签页打开' }).at(-1)!);
+    fireEvent.click(screen.getAllByRole('button', { name: 'Open in new tab' }).at(-1)!);
     expect(open).toHaveBeenCalledWith('https://b23.tv/abc123', '_blank', 'noopener,noreferrer');
   });
 
@@ -156,9 +156,9 @@ describe('WebEmbed', () => {
     const open = vi.spyOn(window, 'open').mockImplementation(() => null);
     render(<WebEmbed elementId="unsafe" url={url} active />);
 
-    expect(screen.getByRole('note', { name: '这个地址不能在画布中打开' })).toBeInTheDocument();
-    expect(screen.queryByTitle(/嵌入网页/)).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: '在新标签页打开' })).not.toBeInTheDocument();
+    expect(screen.getByRole('note', { name: 'This address cannot open on the canvas' })).toBeInTheDocument();
+    expect(screen.queryByTitle(/Embedded page/)).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Open in new tab' })).not.toBeInTheDocument();
     expect(open).not.toHaveBeenCalled();
   });
 });

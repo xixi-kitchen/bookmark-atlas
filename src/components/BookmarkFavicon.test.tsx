@@ -37,7 +37,7 @@ describe('BookmarkFavicon', () => {
       />,
     );
 
-    const icon = screen.getByRole('img', { name: 'Example Docs 的网站图标' });
+    const icon = screen.getByRole('img', { name: 'Site icon for Example Docs' });
     expect(icon).toHaveAttribute(
       'src',
       'chrome-extension://abc/_favicon/?pageUrl=https%3A%2F%2Fexample.com%2Fdocs&size=20',
@@ -51,7 +51,7 @@ describe('BookmarkFavicon', () => {
 
     render(<BookmarkFavicon title="Example Docs" url="https://docs.example.com" />);
 
-    expect(screen.getByRole('img', { name: 'Example Docs 的网站图标' })).toHaveTextContent('D');
+    expect(screen.getByRole('img', { name: 'Site icon for Example Docs' })).toHaveTextContent('D');
   });
 
   it('falls back when the favicon image fails to load', () => {
@@ -59,9 +59,9 @@ describe('BookmarkFavicon', () => {
 
     render(<BookmarkFavicon title="Example Docs" url="https://example.com/docs" />);
 
-    fireEvent.error(screen.getByRole('img', { name: 'Example Docs 的网站图标' }));
+    fireEvent.error(screen.getByRole('img', { name: 'Site icon for Example Docs' }));
 
-    expect(screen.getByRole('img', { name: 'Example Docs 的网站图标' })).toHaveTextContent('E');
+    expect(screen.getByRole('img', { name: 'Site icon for Example Docs' })).toHaveTextContent('E');
   });
 });
 

@@ -7,6 +7,7 @@ import {
   folderMatchesQuery,
   isFolderNode,
 } from './navigationUtils';
+import { t } from '../../i18n';
 
 export type FolderNavigatorProps = {
   roots: BookmarkNode[];
@@ -20,8 +21,8 @@ export type FolderNavigatorProps = {
 export function FolderNavigator({
   roots,
   selectedFolderId,
-  rootLabel = '全部书签',
-  searchPlaceholder = '筛选文件夹',
+  rootLabel = t('allBookmarks'),
+  searchPlaceholder = t('filterFolders'),
   className = '',
   onSelectFolder,
 }: FolderNavigatorProps) {
@@ -51,10 +52,10 @@ export function FolderNavigator({
   const classes = ['view-navigator', className].filter(Boolean).join(' ');
 
   return (
-    <nav className={classes} aria-label="书签文件夹导航">
+    <nav className={classes} aria-label={t('folderNavigator')}>
       <label className="view-navigator__search">
         <Search size={15} aria-hidden="true" />
-        <span className="view-navigator__search-label">搜索文件夹</span>
+        <span className="view-navigator__search-label">{t('searchFolders')}</span>
         <input
           type="search"
           value={query}
@@ -63,7 +64,7 @@ export function FolderNavigator({
         />
       </label>
 
-      <div className="folder-tree" role="tree" aria-label="文件夹树">
+      <div className="folder-tree" role="tree" aria-label={t('folderTree')}>
         <button
           className={`folder-tree__button ${selectedFolderId ? '' : 'is-selected'}`.trim()}
           type="button"
@@ -90,7 +91,7 @@ export function FolderNavigator({
             />
           ))
         ) : (
-          <p className="folder-tree__empty">没有匹配的文件夹</p>
+          <p className="folder-tree__empty">{t('noMatchingFolders')}</p>
         )}
       </div>
     </nav>
@@ -128,7 +129,7 @@ function FolderTreeItem({
         <button
           className="folder-tree__toggle"
           type="button"
-          aria-label={`${expanded ? '折叠' : '展开'} ${folder.title || '未命名文件夹'}`}
+          aria-label={expanded ? t('collapseFolder', folder.title || t('unnamedFolder')) : t('expandFolder', folder.title || t('unnamedFolder'))}
           aria-expanded={expanded}
           disabled={!hasChildFolders}
           onClick={() => onToggle(folder.id)}
@@ -144,7 +145,7 @@ function FolderTreeItem({
           onClick={() => onSelectFolder?.(folder)}
         >
           <Folder size={16} aria-hidden="true" />
-          <span className="folder-tree__title">{folder.title || '未命名文件夹'}</span>
+          <span className="folder-tree__title">{folder.title || t('unnamedFolder')}</span>
           <span className="folder-tree__count">{count.direct} / {count.total}</span>
         </button>
       </div>

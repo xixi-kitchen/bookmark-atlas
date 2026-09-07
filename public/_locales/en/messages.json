@@ -1,0 +1,1023 @@
+{
+  "appName": {
+    "message": "Bookmark Atlas – Excalidraw New Tab",
+    "description": "Extension name shown in Chrome and the Chrome Web Store."
+  },
+  "brandName": {
+    "message": "Bookmark Atlas"
+  },
+  "appShortName": {
+    "message": "Atlas",
+    "description": "Short extension name."
+  },
+  "appDescription": {
+    "message": "An Excalidraw-powered new tab with persistent web embeds and Chrome bookmark cards.",
+    "description": "Extension description shown in Chrome and the Chrome Web Store."
+  },
+  "appTagline": {
+    "message": "local first"
+  },
+  "viewGrid": {
+    "message": "Grid view"
+  },
+  "viewCanvas": {
+    "message": "Excalidraw canvas"
+  },
+  "viewGroup": {
+    "message": "View"
+  },
+  "cardSize": {
+    "message": "Card size"
+  },
+  "uiStyle": {
+    "message": "UI style"
+  },
+  "newChromeBookmark": {
+    "message": "New Chrome bookmark"
+  },
+  "loadingBookmarksTitle": {
+    "message": "Opening your bookmark map"
+  },
+  "loadingBookmarksBody": {
+    "message": "Reading the bookmark tree from the current Chrome profile..."
+  },
+  "readFailed": {
+    "message": "Read failed"
+  },
+  "retry": {
+    "message": "Retry"
+  },
+  "preparingEmbedsTitle": {
+    "message": "Preparing web embeds"
+  },
+  "preparingEmbedsBody": {
+    "message": "Initializing the protected player identity..."
+  },
+  "bookmarksCount": {
+    "message": "$ARG_1$ bookmarks",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "deletedToast": {
+    "message": "Deleted \"$ARG_1$\"",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "undo": {
+    "message": "Undo"
+  },
+  "sizeSmall": {
+    "message": "Small cards"
+  },
+  "sizeMedium": {
+    "message": "Medium cards"
+  },
+  "sizeLarge": {
+    "message": "Large cards"
+  },
+  "sizeSmallDescription": {
+    "message": "Denser, shows more content"
+  },
+  "sizeMediumDescription": {
+    "message": "Balances density and readability"
+  },
+  "sizeLargeDescription": {
+    "message": "Larger, easier to read"
+  },
+  "selectValue": {
+    "message": "$ARG_1$: $ARG_2$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      },
+      "arg_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "selectMenu": {
+    "message": "Choose $ARG_1$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionCount": {
+    "message": "$ARG_1$ options",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "themeExcalidraw": {
+    "message": "Excalidraw"
+  },
+  "themeSwiss": {
+    "message": "Swiss International"
+  },
+  "themeBauhaus": {
+    "message": "Bauhaus"
+  },
+  "themeSurreal": {
+    "message": "Surrealism"
+  },
+  "themeMemphis": {
+    "message": "Memphis"
+  },
+  "themePop": {
+    "message": "Pop Art"
+  },
+  "themePixel": {
+    "message": "Pixel"
+  },
+  "close": {
+    "message": "Close"
+  },
+  "cancel": {
+    "message": "Cancel"
+  },
+  "save": {
+    "message": "Save"
+  },
+  "saving": {
+    "message": "Saving..."
+  },
+  "delete": {
+    "message": "Delete"
+  },
+  "edit": {
+    "message": "Edit"
+  },
+  "open": {
+    "message": "Open"
+  },
+  "folder": {
+    "message": "Folder"
+  },
+  "bookmark": {
+    "message": "Bookmark"
+  },
+  "unnamed": {
+    "message": "Untitled"
+  },
+  "unnamedBookmark": {
+    "message": "Untitled bookmark"
+  },
+  "unnamedFolder": {
+    "message": "Untitled folder"
+  },
+  "rootFolder": {
+    "message": "Root"
+  },
+  "allBookmarks": {
+    "message": "All bookmarks"
+  },
+  "topLevelBookmarks": {
+    "message": "Top-level bookmarks"
+  },
+  "itemCount": {
+    "message": "$ARG_1$ items",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "directItemCount": {
+    "message": "$ARG_1$ direct items",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "totalItemCount": {
+    "message": "$ARG_1$ total items",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "directTotalItemCount": {
+    "message": "$ARG_1$ direct items · $ARG_2$ total items",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      },
+      "arg_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "createInFolder": {
+    "message": "Create in $ARG_1$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "editFolder": {
+    "message": "Edit folder"
+  },
+  "deleteFolder": {
+    "message": "Delete folder"
+  },
+  "folderGroupActions": {
+    "message": "$ARG_1$ group actions",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "moveToFolder": {
+    "message": "Move to \"$ARG_1$\"",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "moveToFolderEnd": {
+    "message": "to the end of \"$ARG_1$\"",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "moveBeforeItem": {
+    "message": "before \"$ARG_1$\"",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "moveAfterItem": {
+    "message": "after \"$ARG_1$\"",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "movingBookmark": {
+    "message": "Moving \"$ARG_1$\" $ARG_2$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      },
+      "arg_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "movedBookmark": {
+    "message": "Moved \"$ARG_1$\" $ARG_2$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      },
+      "arg_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "moveBookmarkFailed": {
+    "message": "Could not move \"$ARG_1$\" $ARG_2$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      },
+      "arg_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "gridViewLabel": {
+    "message": "Grid view"
+  },
+  "emptyBookmarksTitle": {
+    "message": "No bookmarks yet"
+  },
+  "emptyBookmarksBody": {
+    "message": "New or synced Chrome bookmarks will appear here."
+  },
+  "dragReorder": {
+    "message": "Drag to reorganize"
+  },
+  "nodeLabel": {
+    "message": "$ARG_1$: $ARG_2$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      },
+      "arg_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "nodeActions": {
+    "message": "Actions for $ARG_1$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "openFolder": {
+    "message": "Open folder"
+  },
+  "createHere": {
+    "message": "Create here"
+  },
+  "faviconAlt": {
+    "message": "Site icon for $ARG_1$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "chromeDefaultSearchEngine": {
+    "message": "Chrome default search engine"
+  },
+  "switchSearchEngine": {
+    "message": "Switch search engine"
+  },
+  "selectSearchEngine": {
+    "message": "Select search engine"
+  },
+  "searchEngines": {
+    "message": "Search engines"
+  },
+  "enabledEnginesCount": {
+    "message": "$ARG_1$ enabled",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "searchShortcut": {
+    "message": "Search"
+  },
+  "manageSearchEngines": {
+    "message": "Manage search engines"
+  },
+  "noSearchEngineSelected": {
+    "message": "None selected"
+  },
+  "searchPlaceholder": {
+    "message": "Search web, tabs, history, and bookmarks with $ARG_1$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "searchPlaceholderNoEngine": {
+    "message": "Enable a search engine first"
+  },
+  "searchContent": {
+    "message": "Search content"
+  },
+  "search": {
+    "message": "Search"
+  },
+  "defaultEngineSuggestions": {
+    "message": "Chrome default search"
+  },
+  "engineSuggestions": {
+    "message": "$ARG_1$ suggestions",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "searchSuggestions": {
+    "message": "Search suggestions"
+  },
+  "openTabs": {
+    "message": "Open tabs"
+  },
+  "currentTab": {
+    "message": "Current tab"
+  },
+  "chromeBookmarks": {
+    "message": "Chrome bookmarks"
+  },
+  "chromeBookmarksUnavailable": {
+    "message": "Chrome bookmark permission is unavailable. Check the extension permissions and reload."
+  },
+  "browsingHistory": {
+    "message": "Browsing history"
+  },
+  "recentVisits": {
+    "message": "Recent visits"
+  },
+  "predictiveResults": {
+    "message": "Search suggestions"
+  },
+  "quickContinue": {
+    "message": "Quick continue"
+  },
+  "loadingSuggestions": {
+    "message": "Loading suggestions..."
+  },
+  "chooseOpenHint": {
+    "message": "Up/down to choose · Enter to open"
+  },
+  "noSuggestionsYet": {
+    "message": "Type to search"
+  },
+  "searchDirectlyWith": {
+    "message": "Search directly with $ARG_1$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "remoteSuggestionTerm": {
+    "message": "Remote suggestion"
+  },
+  "suggestionKindSearch": {
+    "message": "Search"
+  },
+  "suggestionKindSwitch": {
+    "message": "Switch"
+  },
+  "suggestionKindBookmark": {
+    "message": "Bookmark"
+  },
+  "suggestionKindHistory": {
+    "message": "History"
+  },
+  "suggestionPrivacyNote": {
+    "message": "Remote suggestions come from the selected search engine; local results stay on this device."
+  },
+  "engineChromeDefaultDescription": {
+    "message": "Always follows Chrome's current default search service"
+  },
+  "enableEngine": {
+    "message": "Enable $ARG_1$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "moveUp": {
+    "message": "Move up"
+  },
+  "moveDown": {
+    "message": "Move down"
+  },
+  "engineName": {
+    "message": "Name"
+  },
+  "engineUrlTemplate": {
+    "message": "Search URL template"
+  },
+  "engineShortcut": {
+    "message": "Shortcut"
+  },
+  "addSearchEngine": {
+    "message": "Add search engine"
+  },
+  "engineValidationQuery": {
+    "message": "The URL template must contain exactly one {query}."
+  },
+  "engineValidationHttps": {
+    "message": "HTTPS is required by default; localhost HTTP URLs are allowed for development."
+  },
+  "engineValidationUrl": {
+    "message": "Enter a valid URL."
+  },
+  "engineValidationName": {
+    "message": "Enter a search engine name."
+  },
+  "editBookmarkTitle": {
+    "message": "Edit bookmark"
+  },
+  "createBookmarkTitle": {
+    "message": "New item"
+  },
+  "itemType": {
+    "message": "Item type"
+  },
+  "name": {
+    "message": "Name"
+  },
+  "url": {
+    "message": "URL"
+  },
+  "parentFolder": {
+    "message": "Parent folder"
+  },
+  "saveTo": {
+    "message": "Save to"
+  },
+  "enterName": {
+    "message": "Enter a name."
+  },
+  "bookmarkUrlHttpOnly": {
+    "message": "Bookmarks must use an http or https URL."
+  },
+  "enterValidUrl": {
+    "message": "Enter a valid URL."
+  },
+  "confirmDelete": {
+    "message": "Confirm delete"
+  },
+  "deleteConfirmBody": {
+    "message": "Delete \"$ARG_1$\"$ARG_2$. This change syncs immediately to Chrome bookmarks.",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      },
+      "arg_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "deleteConfirmDescendants": {
+    "message": " and $ARG_1$ items inside it",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "folderNavigator": {
+    "message": "Bookmark folder navigation"
+  },
+  "searchFolders": {
+    "message": "Search folders"
+  },
+  "filterFolders": {
+    "message": "Filter folders"
+  },
+  "folderTree": {
+    "message": "Folder tree"
+  },
+  "noMatchingFolders": {
+    "message": "No matching folders"
+  },
+  "collapseFolder": {
+    "message": "Collapse $ARG_1$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "expandFolder": {
+    "message": "Expand $ARG_1$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "goBack": {
+    "message": "Back"
+  },
+  "goTop": {
+    "message": "Back to top level"
+  },
+  "currentLocation": {
+    "message": "Current location"
+  },
+  "saveStatusLocalCanvas": {
+    "message": "Local canvas: $ARG_1$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "syncStatusCloudCanvas": {
+    "message": "Cloud canvas: $ARG_1$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "remoteCanvasAvailable": {
+    "message": "Another tab or device has a canvas update. Click to apply it."
+  },
+  "remoteUpdatePending": {
+    "message": "Update available"
+  },
+  "canvasZoom": {
+    "message": "Canvas zoom"
+  },
+  "zoomOutCanvas": {
+    "message": "Zoom out canvas"
+  },
+  "zoomInCanvas": {
+    "message": "Zoom in canvas"
+  },
+  "fitAllElements": {
+    "message": "Fit all elements"
+  },
+  "fitAllElementsTitle": {
+    "message": "Fit all drawings, text, and bookmarks"
+  },
+  "focusAllBookmarks": {
+    "message": "Focus all bookmarks"
+  },
+  "focusAllBookmarksTitle": {
+    "message": "Fit bookmark cards only"
+  },
+  "importBookmarks": {
+    "message": "Import bookmarks"
+  },
+  "importChromeBookmarks": {
+    "message": "Import Chrome bookmarks"
+  },
+  "fullBackup": {
+    "message": "Full backup"
+  },
+  "backupTitle": {
+    "message": "Export or restore a full backup"
+  },
+  "excalidrawCanvasLabel": {
+    "message": "Excalidraw bookmark canvas"
+  },
+  "remoteAppliedLocalTab": {
+    "message": "Applied the canvas update from another tab."
+  },
+  "remoteAppliedOtherDevice": {
+    "message": "Applied the canvas update from another device."
+  },
+  "keepLocalToast": {
+    "message": "Kept this local version. It will sync as the latest canvas."
+  },
+  "applyRemoteFailed": {
+    "message": "Could not apply the incoming canvas update. Try again."
+  },
+  "bookmarkAlreadyOnCanvas": {
+    "message": "This bookmark is already on the canvas."
+  },
+  "bookmarkAdded": {
+    "message": "Added \"$ARG_1$\".",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "selectedBookmarksAlreadyImported": {
+    "message": "All selected bookmarks are already on the canvas."
+  },
+  "importedBookmarks": {
+    "message": "Imported $ARG_1$ bookmarks.",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "noBookmarkCardsOnCanvas": {
+    "message": "There are no bookmark cards on the canvas yet."
+  },
+  "canvasEmpty": {
+    "message": "The canvas is empty."
+  },
+  "canvasNotReady": {
+    "message": "The canvas is not ready yet. Try again in a moment."
+  },
+  "syncConflictTitle": {
+    "message": "Another tab or device updated the canvas"
+  },
+  "syncConflictBody": {
+    "message": "This page also has unsynced changes. Choose which version to keep; Bookmark Atlas will not overwrite silently."
+  },
+  "keepLocal": {
+    "message": "Keep local"
+  },
+  "useIncomingUpdate": {
+    "message": "Use incoming update"
+  },
+  "exportFailed": {
+    "message": "Export failed. Try again."
+  },
+  "backupReadFailed": {
+    "message": "Could not read the backup file."
+  },
+  "restoreFailed": {
+    "message": "Restore did not complete. Try again."
+  },
+  "backupPanelDescription": {
+    "message": "One JSON file contains the canvas, images and attachments, library, view, theme, and search engine settings."
+  },
+  "exportBackupTitle": {
+    "message": "Export current full backup"
+  },
+  "backupStats": {
+    "message": "$ARG_1$ canvas elements · $ARG_2$ files · $ARG_3$ library items",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      },
+      "arg_2": {
+        "content": "$2"
+      },
+      "arg_3": {
+        "content": "$3"
+      }
+    }
+  },
+  "readingCanvas": {
+    "message": "Reading canvas..."
+  },
+  "downloadBackup": {
+    "message": "Download backup"
+  },
+  "downloadingBackup": {
+    "message": "Exporting..."
+  },
+  "restoreBackupTitle": {
+    "message": "Restore from full backup"
+  },
+  "restoreBackupDescription": {
+    "message": "Choose a previously exported JSON file. Restoring overwrites the local canvas, library, and extension settings, then reloads the page."
+  },
+  "chooseBackupFile": {
+    "message": "Choose backup file"
+  },
+  "backupVerified": {
+    "message": "Backup verified"
+  },
+  "backupVerifiedStats": {
+    "message": "$ARG_1$ · $ARG_2$ elements · $ARG_3$ library items",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      },
+      "arg_2": {
+        "content": "$2"
+      },
+      "arg_3": {
+        "content": "$3"
+      }
+    }
+  },
+  "restoringBackup": {
+    "message": "Restoring..."
+  },
+  "confirmRestore": {
+    "message": "Overwrite and restore"
+  },
+  "backupChromeBookmarksNote": {
+    "message": "Chrome native bookmarks remain managed by Chrome. Restoring an extension backup will not delete or replace them."
+  },
+  "bookmarkMatchMatched": {
+    "message": "Chrome bookmark"
+  },
+  "bookmarkMatchAmbiguous": {
+    "message": "Duplicate URL on this device; not linked automatically"
+  },
+  "bookmarkMatchMissing": {
+    "message": "No matching bookmark on this device"
+  },
+  "openWithLinkButton": {
+    "message": "Open with the link button"
+  },
+  "importPickerDescription": {
+    "message": "Bookmarks added in Chrome appear here automatically. Add them one by one, by folder, or all at once."
+  },
+  "alreadyOnCanvas": {
+    "message": "On canvas"
+  },
+  "allImported": {
+    "message": "All imported"
+  },
+  "importRemaining": {
+    "message": "Import $ARG_1$ remaining",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "bookmarkFolderGroups": {
+    "message": "Bookmark folder groups"
+  },
+  "allChromeBookmarks": {
+    "message": "All Chrome bookmarks"
+  },
+  "importGroupDone": {
+    "message": "Group imported"
+  },
+  "importGroupRemaining": {
+    "message": "Import $ARG_1$ from this group",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "bookmarkPickerSearchPlaceholder": {
+    "message": "Search title, URL, or folder"
+  },
+  "noMatchingBookmarks": {
+    "message": "No matching bookmarks."
+  },
+  "visibleLimitNotice": {
+    "message": "Showing the first $ARG_1$ items. Keep typing to narrow the results.",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "saveStatusSaving": {
+    "message": "Saving"
+  },
+  "saveStatusError": {
+    "message": "Save failed"
+  },
+  "saveStatusSaved": {
+    "message": "Autosaved"
+  },
+  "saveTitleSaving": {
+    "message": "Saving the full canvas to this device."
+  },
+  "saveTitleError": {
+    "message": "Local canvas save failed. Keep this page open and try again."
+  },
+  "saveTitleSaved": {
+    "message": "The full canvas is autosaved on this device."
+  },
+  "syncStatusSyncing": {
+    "message": "Syncing"
+  },
+  "syncStatusTooLarge": {
+    "message": "Too large, local only"
+  },
+  "syncStatusError": {
+    "message": "Sync failed"
+  },
+  "syncStatusUnavailable": {
+    "message": "Local only"
+  },
+  "syncStatusLight": {
+    "message": "Light sync · attachments local"
+  },
+  "syncStatusSynced": {
+    "message": "Canvas synced"
+  },
+  "syncStatusIdle": {
+    "message": "Waiting to sync"
+  },
+  "syncTitleRemote": {
+    "message": "Another tab or device saved an update. Click to apply the newer canvas without reloading."
+  },
+  "syncTitleTooLarge": {
+    "message": "The compressed canvas exceeds the Chrome Sync safety limit. The full content is still saved on this device."
+  },
+  "syncTitleError": {
+    "message": "Chrome Sync write failed; full content is still saved on this device."
+  },
+  "syncTitleUnavailable": {
+    "message": "Chrome Sync is not available in this environment; full content is saved on this device."
+  },
+  "syncTitleLight": {
+    "message": "Shapes and settings are synced; $ARG_1$ images or attachments are stored only on this device.",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "syncTitleSynced": {
+    "message": "Shapes, text, bookmark references, viewport, and library are saved to Chrome Sync."
+  },
+  "webEmbedToolbar": {
+    "message": "Embedded web page actions"
+  },
+  "webEmbedYoutubeProvider": {
+    "message": "YouTube iframe"
+  },
+  "webEmbedBilibiliProvider": {
+    "message": "Bilibili short link"
+  },
+  "webEmbedBlockedProvider": {
+    "message": "Blocked link"
+  },
+  "webEmbedFullVideoPage": {
+    "message": "Full video page"
+  },
+  "webEmbedOfficialPlayer": {
+    "message": "Official player"
+  },
+  "webEmbedInteracting": {
+    "message": "Interacting with page"
+  },
+  "webEmbedRefresh": {
+    "message": "Refresh this embedded page"
+  },
+  "webEmbedOpenNewTab": {
+    "message": "Open in new tab"
+  },
+  "webEmbedSwitchBilibiliPlayer": {
+    "message": "Switch to the Bilibili official player"
+  },
+  "webEmbedSwitchBilibiliPage": {
+    "message": "Switch to the full Bilibili video page"
+  },
+  "webEmbedSwitchPlayerTitle": {
+    "message": "Switch to player"
+  },
+  "webEmbedSwitchPageTitle": {
+    "message": "Switch to full video page"
+  },
+  "webEmbedExit": {
+    "message": "Exit page interaction"
+  },
+  "webEmbedExitTitle": {
+    "message": "Exit page interaction (Esc also works)"
+  },
+  "webEmbedSupportedLinks": {
+    "message": "Supported link types"
+  },
+  "webEmbedVideo": {
+    "message": "Video"
+  },
+  "webEmbedLive": {
+    "message": "Live"
+  },
+  "webEmbedPlaylist": {
+    "message": "Playlist"
+  },
+  "webEmbedBvVideo": {
+    "message": "BV video"
+  },
+  "webEmbedAvVideo": {
+    "message": "av video"
+  },
+  "webEmbedPlayerLink": {
+    "message": "Player link"
+  },
+  "webEmbedHttpsOnly": {
+    "message": "HTTPS and local development URLs only"
+  },
+  "webEmbedIframeTitle": {
+    "message": "Embedded page: $ARG_1$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "webEmbedHint": {
+    "message": "Click the center to interact with this page"
+  },
+  "webEmbedBlockedTitle": {
+    "message": "This address cannot open on the canvas"
+  },
+  "webEmbedBlockedDescription": {
+    "message": "To protect the extension and local data, Bookmark Atlas allows only HTTPS pages and localhost, 127.0.0.1, or [::1] development addresses."
+  },
+  "webEmbedBilibiliShortTitle": {
+    "message": "Open Bilibili short links in a new tab"
+  },
+  "webEmbedBilibiliShortDescription": {
+    "message": "Short links cannot be resolved to a concrete video ID before redirecting. Use the original BV/av video URL for a paused preview, or open the short link in a new tab."
+  },
+  "webEmbedYoutubeHomeTitle": {
+    "message": "YouTube home pages cannot be embedded directly"
+  },
+  "webEmbedYoutubeHomeDescription": {
+    "message": "YouTube exposes iframe players only for specific content. Change this element link to a video, Shorts, live, or playlist URL."
+  },
+  "backupParseReadError": {
+    "message": "Could not read this file. Choose a JSON backup exported by Bookmark Atlas."
+  },
+  "backupParseFormatError": {
+    "message": "The backup file format is invalid."
+  },
+  "backupParseInvalidError": {
+    "message": "This is not a valid Bookmark Atlas full backup."
+  },
+  "backupParsePreferencesError": {
+    "message": "The backup is missing interface settings."
+  }
+}

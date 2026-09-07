@@ -57,6 +57,7 @@ export type ThemeMotion = {
 export type ThemeDefinition = {
   id: ThemeId;
   name: string;
+  nameKey: 'themeExcalidraw' | 'themeSwiss' | 'themeBauhaus' | 'themeSurreal' | 'themeMemphis' | 'themePop' | 'themePixel';
   tokens: {
     color: ThemeColors;
     typography: ThemeTypography;
@@ -72,6 +73,7 @@ export const THEMES: Record<ThemeId, ThemeDefinition> = {
   excalidraw: {
     id: 'excalidraw',
     name: 'Excalidraw',
+    nameKey: 'themeExcalidraw',
     tokens: {
       color: {
         background: '#f5f5f7',
@@ -106,7 +108,8 @@ export const THEMES: Record<ThemeId, ThemeDefinition> = {
   },
   swiss: {
     id: 'swiss',
-    name: '瑞士国际主义',
+    name: 'Swiss International',
+    nameKey: 'themeSwiss',
     tokens: {
       color: {
         background: '#f7f7f3',
@@ -139,7 +142,8 @@ export const THEMES: Record<ThemeId, ThemeDefinition> = {
   },
   bauhaus: {
     id: 'bauhaus',
-    name: '包豪斯几何功能主义',
+    name: 'Bauhaus',
+    nameKey: 'themeBauhaus',
     tokens: {
       color: {
         background: '#f2eadf',
@@ -172,7 +176,8 @@ export const THEMES: Record<ThemeId, ThemeDefinition> = {
   },
   surreal: {
     id: 'surreal',
-    name: '超现实主义',
+    name: 'Surrealism',
+    nameKey: 'themeSurreal',
     tokens: {
       color: {
         background: '#eef3f1',
@@ -208,7 +213,8 @@ export const THEMES: Record<ThemeId, ThemeDefinition> = {
   },
   memphis: {
     id: 'memphis',
-    name: '孟菲斯风格',
+    name: 'Memphis',
+    nameKey: 'themeMemphis',
     tokens: {
       color: {
         background: '#fff9ed',
@@ -241,7 +247,8 @@ export const THEMES: Record<ThemeId, ThemeDefinition> = {
   },
   pop: {
     id: 'pop',
-    name: '波普风格',
+    name: 'Pop Art',
+    nameKey: 'themePop',
     tokens: {
       color: {
         background: '#fff200',
@@ -273,7 +280,8 @@ export const THEMES: Record<ThemeId, ThemeDefinition> = {
   },
   pixel: {
     id: 'pixel',
-    name: '像素风',
+    name: 'Pixel',
+    nameKey: 'themePixel',
     tokens: {
       color: {
         background: '#c7d8c6',

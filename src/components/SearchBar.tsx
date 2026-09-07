@@ -4,6 +4,7 @@ import { activateBrowserSearchResult, searchLocalBrowserContent, type BrowserSea
 import { fetchRemoteSuggestions, runSearch, type SearchEngine } from '../search';
 import { SearchEngineIcon } from './SearchEngineIcon';
 import { BookmarkFavicon } from './BookmarkFavicon';
+import { t } from '../i18n';
 
 type Props = {
   engines: SearchEngine[];
@@ -35,7 +36,7 @@ export function SearchBar({ engines, activeEngineId, onEngineChange, onManage }:
     return [
       {
         id: 'remote',
-        label: active?.kind === 'chrome-default' ? 'Chrome 默认搜索' : active ? `${active.name} 联想` : '搜索建议',
+        label: active?.kind === 'chrome-default' ? t('defaultEngineSuggestions') : active ? t('engineSuggestions', active.name) : t('searchSuggestions'),
         items: trimmedQuery && active
           ? [
               { id: `search:${trimmedQuery}`, kind: 'search' as const, title: trimmedQuery },
@@ -43,9 +44,9 @@ export function SearchBar({ engines, activeEngineId, onEngineChange, onManage }:
             ]
           : [],
       },
-      { id: 'tabs', label: '已打开的标签页', items: localResults.tabs },
-      { id: 'bookmarks', label: 'Chrome 书签', items: localResults.bookmarks },
-      { id: 'history', label: trimmedQuery ? '浏览历史' : '最近访问', items: localResults.history },
+      { id: 'tabs', label: t('openTabs'), items: localResults.tabs },
+      { id: 'bookmarks', label: t('chromeBookmarks'), items: localResults.bookmarks },
+      { id: 'history', label: trimmedQuery ? t('browsingHistory') : t('recentVisits'), items: localResults.history },
     ].filter((group) => group.items.length > 0);
   }, [active, localResults, query, remoteSuggestions]);
 
@@ -144,7 +145,7 @@ export function SearchBar({ engines, activeEngineId, onEngineChange, onManage }:
         <button
           type="button"
           className="search-engine-switcher__trigger"
-          aria-label="切换搜索引擎"
+          aria-label={t('switchSearchEngine')}
           aria-haspopup="listbox"
           aria-expanded={engineMenuOpen}
           onClick={() => {
@@ -153,12 +154,12 @@ export function SearchBar({ engines, activeEngineId, onEngineChange, onManage }:
           }}
         >
           {active ? <SearchEngineIcon engine={active} /> : <span className="search-engine-mark">?</span>}
-          <span>{active?.name ?? '未选择'}</span>
+          <span>{active?.name ?? t('noSearchEngineSelected')}</span>
           <ChevronDown size={14} />
         </button>
         {engineMenuOpen && (
-          <div className="search-engine-menu" role="listbox" aria-label="选择搜索引擎">
-            <header><strong>搜索引擎</strong><small>{enabled.length} 个已启用</small></header>
+          <div className="search-engine-menu" role="listbox" aria-label={t('selectSearchEngine')}>
+            <header><strong>{t('searchEngines')}</strong><small>{t('enabledEnginesCount', String(enabled.length))}</small></header>
             {enabled.map((engine) => {
               const selected = engine.id === active?.id;
               return (
@@ -174,7 +175,7 @@ export function SearchBar({ engines, activeEngineId, onEngineChange, onManage }:
                   }}
                 >
                   <SearchEngineIcon engine={engine} />
-                  <span><strong>{engine.name}</strong><small>{engine.shortcut || '搜索'}</small></span>
+                  <span><strong>{engine.name}</strong><small>{engine.shortcut || t('searchShortcut')}</small></span>
                   {selected && <Check size={16} />}
                 </button>
               );
@@ -187,7 +188,7 @@ export function SearchBar({ engines, activeEngineId, onEngineChange, onManage }:
                 onManage();
               }}
             >
-              <Settings2 size={15} /> 管理搜索引擎
+              <Settings2 size={15} /> {t('manageSearchEngines')}
             </button>
           </div>
         )}
@@ -212,17 +213,17 @@ export function SearchBar({ engines, activeEngineId, onEngineChange, onManage }:
           setActiveIndex(-1);
         }}
         onKeyDown={handleInputKeyDown}
-        placeholder={active ? `使用 ${active.name} 搜索网页、标签页、历史和书签` : '请先启用一个搜索引擎'}
-        aria-label="搜索内容"
+        placeholder={active ? t('searchPlaceholder', active.name) : t('searchPlaceholderNoEngine')}
+        aria-label={t('searchContent')}
         autoComplete="off"
       />
-      <button type="submit" aria-label="搜索"><Search size={18} /></button>
+      <button type="submit" aria-label={t('search')}><Search size={18} /></button>
 
       {suggestionsOpen && (
-        <div className="search-suggestions" id="unified-search-suggestions" role="listbox" aria-label="预搜索结果">
+        <div className="search-suggestions" id="unified-search-suggestions" role="listbox" aria-label={t('predictiveResults')}>
           <header className="search-suggestions__header">
-            <strong>{query.trim() ? '预搜索' : '快速继续'}</strong>
-            <span>{loading ? '正在联想…' : '↑↓ 选择 · Enter 打开'}</span>
+            <strong>{query.trim() ? t('predictiveResults') : t('quickContinue')}</strong>
+            <span>{loading ? t('loadingSuggestions') : t('chooseOpenHint')}</span>
           </header>
           {groups.length > 0 ? groups.map((group) => (
             <section className="search-suggestion-group" key={group.id} aria-label={group.label}>
@@ -251,9 +252,9 @@ export function SearchBar({ engines, activeEngineId, onEngineChange, onManage }:
               })}
             </section>
           )) : (
-            <div className="search-suggestions__empty"><Search size={18} /><span>{loading ? '正在获取建议…' : '输入关键词开始搜索'}</span></div>
+            <div className="search-suggestions__empty"><Search size={18} /><span>{loading ? t('loadingSuggestions') : t('noSuggestionsYet')}</span></div>
           )}
-          <footer>远程联想由当前搜索引擎提供；本地结果不会上传。</footer>
+          <footer>{t('suggestionPrivacyNote')}</footer>
         </div>
       )}
     </form>
@@ -268,16 +269,16 @@ function SuggestionIcon({ item, activeEngine }: { item: SuggestionItem; activeEn
 }
 
 function suggestionSubtitle(item: SuggestionItem, activeEngine?: SearchEngine) {
-  if (item.kind === 'search') return `直接使用 ${activeEngine?.name ?? '当前引擎'} 搜索`;
-  if (item.kind === 'remote') return '远程联想词';
+  if (item.kind === 'search') return t('searchDirectlyWith', activeEngine?.name ?? t('searchEngines'));
+  if (item.kind === 'remote') return t('remoteSuggestionTerm');
   return 'subtitle' in item ? item.subtitle : '';
 }
 
 function suggestionKind(item: SuggestionItem) {
-  if (item.kind === 'search' || item.kind === 'remote') return '搜索';
-  if (item.kind === 'tab') return '切换';
-  if (item.kind === 'bookmark') return '书签';
-  return '历史';
+  if (item.kind === 'search' || item.kind === 'remote') return t('suggestionKindSearch');
+  if (item.kind === 'tab') return t('suggestionKindSwitch');
+  if (item.kind === 'bookmark') return t('suggestionKindBookmark');
+  return t('suggestionKindHistory');
 }
 
 function shouldOpenNewTab(event: MouseEvent<HTMLButtonElement>) {

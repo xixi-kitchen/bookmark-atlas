@@ -1,5 +1,6 @@
 import { createDemoBookmarkTree } from './demoData';
 import { flattenSubtree, normalizeBookmarkTree } from './normalize';
+import { t } from '../i18n';
 import type {
   BookmarkAdapter,
   BookmarkCreateInput,
@@ -421,7 +422,7 @@ export function createBookmarkAdapter(): BookmarkAdapter {
 }
 
 function createUnavailableBookmarkAdapter(): BookmarkAdapter {
-  const failure = () => Promise.reject(new Error('Chrome 书签权限不可用，请检查扩展权限后重新加载。'));
+  const failure = () => Promise.reject(new Error(t('chromeBookmarksUnavailable')));
   return {
     getTree: failure,
     create: failure,

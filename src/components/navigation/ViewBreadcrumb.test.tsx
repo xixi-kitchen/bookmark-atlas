@@ -37,19 +37,19 @@ describe('ViewBreadcrumb', () => {
   it('builds a trail from parent ids and summarizes the current folder', () => {
     render(<ViewBreadcrumb nodes={nodes} currentFolderId="research" />);
 
-    expect(screen.getByRole('navigation', { name: '当前位置' })).toHaveTextContent('全部书签');
+    expect(screen.getByRole('navigation', { name: 'Current location' })).toHaveTextContent('All bookmarks');
     expect(screen.getByRole('button', { name: 'Design' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Research' })).toHaveAttribute('aria-current', 'page');
-    expect(screen.getByText('1 个直接项目')).toBeInTheDocument();
-    expect(screen.getByText('1 个总项目')).toBeInTheDocument();
+    expect(screen.getByText('1 direct items')).toBeInTheDocument();
+    expect(screen.getByText('1 total items')).toBeInTheDocument();
   });
 
   it('navigates backward, home, and to crumb folders', () => {
     const onNavigate = vi.fn();
     render(<ViewBreadcrumb nodes={nodes} currentFolderId="research" onNavigate={onNavigate} />);
 
-    fireEvent.click(screen.getByRole('button', { name: '后退' }));
-    fireEvent.click(screen.getByRole('button', { name: '回到顶层' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Back' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Back to top level' }));
     fireEvent.click(screen.getByRole('button', { name: 'Design' }));
 
     expect(onNavigate).toHaveBeenNthCalledWith(1, expect.objectContaining({ id: 'design' }));
@@ -60,10 +60,10 @@ describe('ViewBreadcrumb', () => {
   it('disables root-only controls and exposes expected semantic classes', () => {
     const { container } = render(<ViewBreadcrumb nodes={nodes} />);
 
-    expect(screen.getByRole('button', { name: '后退' })).toBeDisabled();
-    expect(screen.getByRole('button', { name: '回到顶层' })).toBeDisabled();
-    expect(screen.getByText('2 个直接项目')).toBeInTheDocument();
-    expect(screen.getByText('5 个总项目')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Back' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Back to top level' })).toBeDisabled();
+    expect(screen.getByText('2 direct items')).toBeInTheDocument();
+    expect(screen.getByText('5 total items')).toBeInTheDocument();
     expect(container.querySelector('.view-breadcrumb')).toBeInTheDocument();
     expect(container.querySelector('.view-breadcrumb__trail')).toBeInTheDocument();
     expect(container.querySelector('.view-breadcrumb__summary')).toBeInTheDocument();

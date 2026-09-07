@@ -1,56 +1,102 @@
 # Bookmark Atlas
 
-一个把完整 Excalidraw 画布、网页嵌入和 Chrome 书签结合到一起的新标签页扩展。
+Bookmark Atlas is a local-first Chrome new tab extension that combines Chrome
+bookmarks, search, persistent web embeds, and a full Excalidraw canvas.
 
-## 功能
+简体中文说明见本文件下方的「中文说明」。
 
-- Manifest V3 新标签页覆盖。
-- 读取并双向同步当前 Chrome 配置文件的书签树。
-- 新建、编辑、移动、排序、删除和限时撤销。
-- 完整保留 Excalidraw 原生的绘图、文字、图片、框架、链接、撤销/重做、导入导出、缩放和协作界面。
-- 画布完整内容和二进制附件自动保存在本地 IndexedDB；图形、文字、书签引用、视口和素材库经压缩分块后保存到 Chrome Sync，图片与附件仅保存在本机。
-- Excalidraw 的网页嵌入允许 HTTPS 地址与本地开发地址；普通网页会直接显示并保留滚动、表单、媒体、下载与弹窗等常用能力，同时通过 sandbox 禁止跳转插件顶层或让弹窗逃逸限制。
-- YouTube 视频、Shorts、直播和播放列表链接会自动转换成官方 iframe 播放器；YouTube 首页或频道等不允许嵌入的页面会显示明确引导，不再呈现浏览器拒绝连接灰屏。
-- Bilibili 首页和普通页面继续直接显示；具体视频页、BV/av 地址和包含 `bvid` 的播放页会转换成关闭自动播放的官方播放器，可直接在画布中播放，并能在工具栏切换到受保护的完整视频页面。
-- Excalidraw 第一次打开保持空白；“导入书签”支持逐个添加、按文件夹组导入或一键导入全部，并自动排除已经在画布中的书签。
-- 导入后的书签卡片显示 Chrome 本地 favicon、标题、域名和文件夹路径，并通过卡片链接按钮打开真实网址。
-- 跨设备画布使用规范化 URL、标题和文件夹路径重新关联本机 Chrome 书签，不把只在当前 Profile 内有效的书签 ID 当作跨设备主键。
-- 列视图与 Excalidraw 两种视图；单击网站书签立即打开，文件夹卡片和分组标题可以进入文件夹，并提供在组内新建、编辑、删除、跨文件夹拖动、同文件夹精确排序、面包屑与文件夹导航。拖动结果直接写入 Chrome 书签顺序。
-- 顶部“新建 Chrome 书签”负责创建真实浏览器书签；Excalidraw 中“导入书签”只负责把已有 Chrome 书签放到画布。
-- 每个网站书签从 Chrome 本地图标缓存显示对应 favicon，加载失败时自动使用文字占位。
-- 默认跟随 Chrome 当前搜索服务；用户也可以主动切换到百度、必应、Google 或安全的自定义搜索模板。
-- 搜索框输入时同时显示当前搜索引擎的远程联想词、已打开标签页、浏览历史和 Chrome 书签；支持方向键选择与 Enter 打开。
-- 搜索引擎使用对应站点的 Chrome 本地 favicon；新增自定义引擎后会自动从其搜索域名获取图标。远程联想仅连接内置的三个精确域名。
-- 搜索引擎、卡片大小和 UI 风格均使用自绘切换菜单，不使用浏览器原生下拉框。
-- 画布“适应全部元素”会包含绘图、文字和书签；“聚焦全部书签”只适配书签卡片。
-- 瑞士、包豪斯、超现实、孟菲斯、波普和像素六套主题。
+## Features
 
-## 本地开发
+- Manifest V3 new tab override.
+- Reads and manages the current Chrome profile's native bookmark tree.
+- Supports creating, editing, moving, sorting, deleting, and timed undo for
+  bookmark changes.
+- Keeps Excalidraw's native drawing, text, image, frame, link, undo/redo,
+  import/export, zoom, and collaboration UI.
+- Saves the full canvas and binary attachments to local IndexedDB, with
+  `chrome.storage.local` as a fallback.
+- Writes lightweight canvas state to Chrome Sync when quota allows: shapes,
+  text, bookmark references, viewport, and library items are compressed and
+  chunked. Images and binary attachments remain local to the device where they
+  were added.
+- Chrome Sync updates are event-driven and near real time when Chrome sync is
+  available, but Chrome does not guarantee an exact delivery latency across
+  devices or open tabs.
+- Reconciles synced bookmark cards by normalized URL, title, and folder path
+  instead of treating Chrome's profile-local bookmark IDs as cross-device keys.
+- Shows Chrome bookmark folders in list and Excalidraw views, with folder
+  navigation, breadcrumbs, group import, drag sorting, cross-folder movement,
+  and precise same-folder ordering.
+- Lets the search box show remote suggestions for supported built-in engines
+  plus local results from open tabs, browsing history, and Chrome bookmarks.
+- Follows the current Chrome default search service by default. Users may
+  switch to Baidu, Bing, Google, or a safe custom search template.
+- Uses Chrome's local favicon cache for bookmark cards and search engines, with
+  text fallbacks when an icon is unavailable.
+- Allows HTTPS web embeds and local development URLs. Custom iframes are
+  sandboxed so embedded pages cannot navigate the extension's top-level page or
+  escape through popups.
+- Converts YouTube watch, Shorts, live, and playlist URLs into official iframe
+  players when possible.
+- Shows Bilibili home and regular pages directly. Bilibili video URLs are
+  converted to the official player with autoplay disabled, and can be switched
+  to a protected full video page from the embed toolbar.
+- Includes Swiss, Bauhaus, Surreal, Memphis, Pop, and Pixel visual themes.
+
+## Local Development
 
 ```bash
 npm install
 npm run dev
 ```
 
-## 验证与构建
+## Verification and Build
 
 ```bash
 npm run check
 ```
 
-构建产物位于可见目录 `output/chrome-mv3/`。在 `chrome://extensions` 开启开发者模式后，选择“加载已解压的扩展程序”并载入该目录。
+The unpacked extension build is written to the visible directory
+`output/chrome-mv3/`. In `chrome://extensions`, enable Developer mode, choose
+"Load unpacked", and select that directory.
 
-## 权限
+## Permissions
 
-- `bookmarks`：读取和修改用户主动管理的 Chrome 书签。
-- `favicon`：从 Chrome 本地缓存读取书签网站图标，不直接请求网站。
-- `storage`：保存主题、视图、搜索引擎配置，并作为 IndexedDB 不可用时的画布保存回退方案。
-- `search`：在默认模式下使用用户当前选择的 Chrome 搜索服务，不修改浏览器默认搜索设置。
-- `tabs`：在预搜索面板中匹配并切换已经打开的网页标签。
-- `history`：在预搜索面板中匹配浏览历史。
-- `declarativeNetRequestWithHostAccess` 与 YouTube 精确域名权限：仅为 `/embed/` 播放器请求补充 Bookmark Atlas 客户端 Referer，满足 YouTube Error 153 的客户端识别要求。
-- 百度、必应和 Google 的精确主机权限：仅在用户主动选择对应引擎时获取输入联想词。
+- `bookmarks`: display and manage Chrome bookmarks that the user acts on.
+- `favicon`: read website icons from Chrome's local favicon cache.
+- `storage`: save settings, local fallback canvas data, and lightweight synced
+  canvas state.
+- `search`: use the user's current Chrome search service without changing the
+  browser's default search settings.
+- `tabs`: match and switch open tabs in the pre-search panel.
+- `history`: match browsing history in the pre-search panel.
+- `declarativeNetRequestWithHostAccess` and the exact YouTube host permission:
+  add a fixed Bookmark Atlas client referrer only to official YouTube `/embed/`
+  player requests created by the extension.
+- Exact host permissions for Baidu, Bing, and Google suggestion endpoints:
+  fetch remote suggestions only when the user selects the corresponding built-in
+  search engine.
 
-网页嵌入会遵循目标网站自己的 iframe 策略。若网站通过 `X-Frame-Options` 或 CSP `frame-ancestors` 禁止嵌入，浏览器仍会阻止显示；这不是扩展白名单可以绕过的限制。
+Web embeds still follow each website's own iframe policy. If a site blocks
+embedding with `X-Frame-Options` or CSP `frame-ancestors`, the browser will
+block display; an extension cannot override that safely.
 
-扩展不读取网页正文，不请求任意网站权限，也不执行远程代码。
+Bookmark Atlas does not read page content, request arbitrary website access,
+sell user data, include ads or trackers, or execute remote code.
+
+## 中文说明
+
+Bookmark Atlas 是一个本地优先的 Chrome 新标签页扩展，把 Chrome 书签、
+搜索、网页嵌入和完整 Excalidraw 画布放在同一个工作空间里。
+
+主要能力：
+
+- 读取并管理当前 Chrome 配置文件的原生书签树。
+- 在列表视图和 Excalidraw 画布中查看、导入、移动、排序和打开书签。
+- 保留完整 Excalidraw 绘图体验，包括文字、图片、框架、链接、导入导出和撤销重做。
+- 完整画布和附件保存在当前设备；图形、文字、书签引用、视口和素材库在配额允许时写入 Chrome Sync。
+- Chrome Sync 是事件驱动的近实时同步，但 Chrome 不承诺跨设备或多标签页的固定到达时间；图片和二进制附件只保存在添加它们的设备上。
+- 搜索框可以同时显示远程联想、已打开标签页、浏览历史和 Chrome 书签。
+- 普通 HTTPS 网页可以嵌入画布；iframe 会被限制，不能覆盖跳转插件页面。YouTube 和 Bilibili 视频使用官方播放器，Bilibili 视频默认关闭自动播放。
+
+构建产物在可见目录 `output/chrome-mv3/`，可在 Chrome 扩展管理页面中作为未打包扩展加载。

@@ -33,6 +33,8 @@ const defaults: PersistedPreferences = {
 };
 
 let saveTimer: ReturnType<typeof setTimeout> | undefined;
+let unsubscribeExternalChanges: (() => void) | undefined;
+let pendingLocalChanges: Partial<PersistedPreferences> = {};
 
 async function readPreferences(): Promise<Partial<PersistedPreferences>> {
   if (typeof chrome !== 'undefined' && chrome.storage?.sync) {
@@ -93,11 +95,21 @@ export function getPreferencesSnapshot(): PersistedPreferences {
   };
 }
 
-function scheduleSave(state: PreferencesState) {
+function scheduleSave(changes: Partial<PersistedPreferences>) {
+  pendingLocalChanges = { ...pendingLocalChanges, ...changes };
   if (saveTimer) clearTimeout(saveTimer);
   saveTimer = setTimeout(() => {
-    const { viewMode, cardSize, themeId, activeEngineId, engines } = state;
-    void persist({ viewMode, cardSize, themeId, activeEngineId, engines });
+    const { viewMode, cardSize, themeId, activeEngineId, engines } = usePreferencesStore.getState();
+    const next = sanitizePreferences({
+      viewMode,
+      cardSize,
+      themeId,
+      activeEngineId,
+      engines,
+      ...pendingLocalChanges,
+    });
+    pendingLocalChanges = {};
+    void persist(next);
   }, 280);
 }
 
@@ -114,30 +126,55 @@ export const usePreferencesStore = create<PreferencesState>((set, get) => ({
   },
   setViewMode: (viewMode) => {
     set({ viewMode });
-    scheduleSave({ ...get(), viewMode });
+    scheduleSave({ viewMode });
   },
   setCardSize: (cardSize) => {
     set({ cardSize });
-    scheduleSave({ ...get(), cardSize });
+    scheduleSave({ cardSize });
   },
   setThemeId: (themeId) => {
     set({ themeId });
-    scheduleSave({ ...get(), themeId });
+    scheduleSave({ themeId });
   },
   setActiveEngineId: (activeEngineId) => {
     set({ activeEngineId });
-    scheduleSave({ ...get(), activeEngineId });
+    scheduleSave({ activeEngineId });
   },
   setEngines: (engines) => {
     const activeEngineId = engines.some((engine) => engine.id === get().activeEngineId && engine.enabled)
       ? get().activeEngineId
       : (engines.find((engine) => engine.enabled)?.id ?? '');
     set({ engines, activeEngineId });
-    scheduleSave({ ...get(), engines, activeEngineId });
+    scheduleSave({ engines, activeEngineId });
   },
   restorePreferences: async (preferences) => {
     const restored = sanitizePreferences(preferences);
+    if (saveTimer) clearTimeout(saveTimer);
+    saveTimer = undefined;
+    pendingLocalChanges = {};
     set({ ...restored, hydrated: true });
     await persist(restored);
   },
 }));
+
+export function listenForPreferenceSyncChanges() {
+  if (unsubscribeExternalChanges) return unsubscribeExternalChanges;
+  const event = globalThis.chrome?.storage?.onChanged;
+  if (!event?.addListener) return () => undefined;
+
+  const handleChange = (changes: Record<string, chrome.storage.StorageChange>, areaName: string) => {
+    if (areaName !== 'sync' || !changes[KEY]) return;
+    const next = changes[KEY].newValue as Partial<PersistedPreferences> | undefined;
+    if (!next) return;
+    usePreferencesStore.setState({
+      ...sanitizePreferences({ ...next, ...pendingLocalChanges }),
+      hydrated: true,
+    });
+  };
+  event.addListener(handleChange);
+  unsubscribeExternalChanges = () => {
+    event.removeListener(handleChange);
+    unsubscribeExternalChanges = undefined;
+  };
+  return unsubscribeExternalChanges;
+}

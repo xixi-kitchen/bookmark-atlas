@@ -66,10 +66,10 @@ describe('GroupCanvas', () => {
     render(<GroupCanvas roots={tree} cardSize="md" onEdit={vi.fn()} onDelete={vi.fn()} onMove={vi.fn()} />);
 
     expect(await screen.findByLabelText('Design 分组')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '书签：Figma' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '文件夹：Tools' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '文件夹：Deep' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '书签：Deep link' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Bookmark: Figma' })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Tools 文件夹分组' })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Deep 文件夹分组' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Bookmark: Deep link' })).toBeInTheDocument();
   });
 
   it('calculates near-square bookmark rows and grows the outer group around nested content', () => {

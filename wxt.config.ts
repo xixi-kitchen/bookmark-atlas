@@ -4,8 +4,10 @@ export default defineConfig({
   modules: ['@wxt-dev/module-react'],
   outDir: 'output',
   manifest: {
-    name: 'Bookmark Atlas',
-    description: 'An Excalidraw-powered new tab with persistent web embeds and Chrome bookmark cards.',
+    name: '__MSG_appName__',
+    short_name: '__MSG_appShortName__',
+    description: '__MSG_appDescription__',
+    default_locale: 'en',
     permissions: ['bookmarks', 'storage', 'favicon', 'history', 'tabs', 'search', 'declarativeNetRequestWithHostAccess'],
     host_permissions: [
       'https://suggestion.baidu.com/*',

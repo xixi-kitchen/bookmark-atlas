@@ -5,6 +5,7 @@ import {
   countFolderItems,
   countNodeMapTopItems,
 } from './navigationUtils';
+import { t } from '../../i18n';
 
 export type ViewBreadcrumbProps = {
   nodes: Record<string, BookmarkNode>;
@@ -17,7 +18,7 @@ export type ViewBreadcrumbProps = {
 export function ViewBreadcrumb({
   nodes,
   currentFolderId,
-  rootLabel = '全部书签',
+  rootLabel = t('allBookmarks'),
   className = '',
   onNavigate,
 }: ViewBreadcrumbProps) {
@@ -34,7 +35,7 @@ export function ViewBreadcrumb({
         <button
           className="view-breadcrumb__button"
           type="button"
-          aria-label="后退"
+          aria-label={t('goBack')}
           disabled={!currentFolder}
           onClick={() => onNavigate?.(parentFolder)}
         >
@@ -43,7 +44,7 @@ export function ViewBreadcrumb({
         <button
           className="view-breadcrumb__button"
           type="button"
-          aria-label="回到顶层"
+          aria-label={t('goTop')}
           disabled={!currentFolder}
           onClick={() => onNavigate?.()}
         >
@@ -51,7 +52,7 @@ export function ViewBreadcrumb({
         </button>
       </div>
 
-      <nav className="view-breadcrumb__trail" aria-label="当前位置">
+      <nav className="view-breadcrumb__trail" aria-label={t('currentLocation')}>
         <button
           className="view-breadcrumb__crumb"
           type="button"
@@ -70,7 +71,7 @@ export function ViewBreadcrumb({
               aria-current={active ? 'page' : undefined}
               onClick={() => onNavigate?.(folder)}
             >
-              {folder.title || '未命名文件夹'}
+              {folder.title || t('unnamedFolder')}
             </button>
           );
         })}
@@ -78,8 +79,8 @@ export function ViewBreadcrumb({
 
       <div className="view-breadcrumb__summary" aria-live="polite">
         <strong>{title}</strong>
-        <span>{count.direct} 个直接项目</span>
-        <span>{count.total} 个总项目</span>
+        <span>{t('directItemCount', String(count.direct))}</span>
+        <span>{t('totalItemCount', String(count.total))}</span>
       </div>
     </header>
   );

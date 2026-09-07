@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Check, ChevronDown } from 'lucide-react';
+import { t } from '../i18n';
 
 export type ToolbarSelectOption = {
   value: string;
@@ -35,21 +36,21 @@ export function ToolbarSelectMenu({ label, value, options, variant, onChange }: 
       <button
         type="button"
         className="toolbar-select__trigger"
-        aria-label={`${label}：${selected?.label ?? '未选择'}`}
+        aria-label={t('selectValue', [label, selected?.label ?? ''])}
         aria-haspopup="listbox"
         aria-expanded={open}
         onClick={() => setOpen((current) => !current)}
       >
         <OptionMark option={selected} variant={variant} />
-        <span>{selected?.label ?? '未选择'}</span>
+        <span>{selected?.label ?? ''}</span>
         <ChevronDown size={13} />
       </button>
 
       {open && (
-        <div className="toolbar-select__menu" role="listbox" aria-label={`选择${label}`}>
+        <div className="toolbar-select__menu" role="listbox" aria-label={t('selectMenu', label)}>
           <header>
             <strong>{label}</strong>
-            <small>{options.length} 个选项</small>
+            <small>{t('optionCount', String(options.length))}</small>
           </header>
           {options.map((option) => {
             const isSelected = option.value === value;

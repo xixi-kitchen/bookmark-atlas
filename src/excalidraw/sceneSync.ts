@@ -15,6 +15,8 @@ export type CanvasSyncManifest = {
   revision: string;
   updatedAt: number;
   deviceId: string;
+  contextId?: string;
+  fingerprint?: string;
   codec: SyncCodec;
   chunkCount: number;
   encodedLength: number;
@@ -30,7 +32,22 @@ export type CanvasSyncSaveResult =
 
 type SyncableScene = Pick<StoredExcalidrawScene, 'version' | 'elements' | 'appState' | 'libraryItems' | 'savedAt'>;
 
-export async function saveSceneToSync(scene: StoredExcalidrawScene): Promise<CanvasSyncSaveResult> {
+export type CanvasSyncSaveOptions = {
+  contextId?: string;
+  fingerprint?: string;
+};
+
+export type CanvasSyncLoadOptions = {
+  manifest?: CanvasSyncManifest;
+  revision?: string;
+  retries?: number;
+  retryDelayMs?: number;
+};
+
+export async function saveSceneToSync(
+  scene: StoredExcalidrawScene,
+  options: CanvasSyncSaveOptions = {},
+): Promise<CanvasSyncSaveResult> {
   const storage = globalThis.chrome?.storage?.sync;
   if (!storage) return { status: 'unavailable' };
 
@@ -42,7 +59,8 @@ export async function saveSceneToSync(scene: StoredExcalidrawScene): Promise<Can
       libraryItems: scene.libraryItems,
       savedAt: scene.savedAt,
     };
-    const encoded = await encodePayload(JSON.stringify(payload));
+    const payloadText = JSON.stringify(payload);
+    const encoded = await encodePayload(payloadText);
     if (encoded.data.length > MAX_ENCODED_LENGTH) {
       return { status: 'too-large', encodedLength: encoded.data.length, limit: MAX_ENCODED_LENGTH };
     }
@@ -58,6 +76,8 @@ export async function saveSceneToSync(scene: StoredExcalidrawScene): Promise<Can
       revision: createRevision(),
       updatedAt: scene.savedAt,
       deviceId: await getCanvasSyncDeviceId(),
+      ...(options.contextId ? { contextId: options.contextId } : {}),
+      fingerprint: options.fingerprint ?? hashText(payloadText),
       codec: encoded.codec,
       chunkCount: chunks.length,
       encodedLength: encoded.data.length,
@@ -79,17 +99,22 @@ export async function saveSceneToSync(scene: StoredExcalidrawScene): Promise<Can
   }
 }
 
-export async function loadSceneFromSync(): Promise<{ scene: StoredExcalidrawScene; manifest: CanvasSyncManifest } | null> {
+export async function loadSceneFromSync(
+  options: CanvasSyncLoadOptions = {},
+): Promise<{ scene: StoredExcalidrawScene; manifest: CanvasSyncManifest } | null> {
   const storage = globalThis.chrome?.storage?.sync;
   if (!storage) return null;
 
   try {
-    const manifest = await getCanvasSyncManifest();
+    const manifest = options.manifest ?? await getCanvasSyncManifest();
     if (!manifest || manifest.chunkCount < 1 || manifest.chunkCount > MAX_CHUNKS) return null;
+    if (options.revision && manifest.revision !== options.revision) return null;
     const keys = Array.from({ length: manifest.chunkCount }, (_, index) => chunkKey(index));
-    const result = await storage.get(keys);
-    const encoded = keys.map((key) => result[key]).filter((value): value is string => typeof value === 'string').join('');
-    if (!encoded || encoded.length !== manifest.encodedLength) return null;
+    const encoded = await readCompleteEncodedPayload(storage, keys, manifest.encodedLength, {
+      retries: options.retries,
+      retryDelayMs: options.retryDelayMs,
+    });
+    if (!encoded) return null;
     const parsed = JSON.parse(await decodePayload(encoded, manifest.codec)) as Partial<SyncableScene>;
     const scene = normalizeStoredScene({ ...parsed, version: 2, files: {} });
     return scene ? { scene, manifest } : null;
@@ -140,6 +165,29 @@ export function mergeSyncedSceneWithLocalFiles(
   local: StoredExcalidrawScene | null,
 ): StoredExcalidrawScene {
   return { ...synced, files: local?.files ?? {} };
+}
+
+async function readCompleteEncodedPayload(
+  storage: chrome.storage.StorageArea,
+  keys: string[],
+  expectedLength: number,
+  options: Pick<CanvasSyncLoadOptions, 'retries' | 'retryDelayMs'>,
+) {
+  const attempts = Math.max(1, (options.retries ?? 2) + 1);
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    const result = await storage.get(keys);
+    const chunks = keys.map((key) => result[key]);
+    if (chunks.every((value): value is string => typeof value === 'string')) {
+      const encoded = chunks.join('');
+      if (encoded.length === expectedLength) return encoded;
+    }
+    if (attempt < attempts - 1) await wait(options.retryDelayMs ?? 50);
+  }
+  return null;
+}
+
+function wait(delayMs: number) {
+  return new Promise((resolve) => setTimeout(resolve, delayMs));
 }
 
 async function encodePayload(value: string): Promise<{ codec: SyncCodec; data: string }> {
@@ -197,11 +245,17 @@ function normalizeManifest(value: unknown): CanvasSyncManifest | null {
     || typeof manifest.revision !== 'string'
     || typeof manifest.updatedAt !== 'number'
     || typeof manifest.deviceId !== 'string'
+    || (manifest.contextId !== undefined && typeof manifest.contextId !== 'string')
+    || (manifest.fingerprint !== undefined && typeof manifest.fingerprint !== 'string')
     || (manifest.codec !== 'gzip-base64' && manifest.codec !== 'plain-base64')
     || typeof manifest.chunkCount !== 'number'
     || typeof manifest.encodedLength !== 'number'
   ) return null;
-  return manifest as CanvasSyncManifest;
+  return {
+    ...manifest,
+    elementCount: typeof manifest.elementCount === 'number' ? manifest.elementCount : 0,
+    excludedFileCount: typeof manifest.excludedFileCount === 'number' ? manifest.excludedFileCount : 0,
+  } as CanvasSyncManifest;
 }
 
 function createRevision() {
@@ -210,4 +264,13 @@ function createRevision() {
 
 function createDeviceId() {
   return globalThis.crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2);
+}
+
+function hashText(value: string) {
+  let hash = 0x811c9dc5;
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return `fnv1a:${(hash >>> 0).toString(36)}`;
 }

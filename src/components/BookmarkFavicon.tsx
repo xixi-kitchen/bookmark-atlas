@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { BookmarkNode } from '../bookmarks/types';
+import { t } from '../i18n';
 
 export type BookmarkFaviconProps = {
   node?: Pick<BookmarkNode, 'title' | 'url'>;
@@ -47,7 +48,7 @@ export function BookmarkFavicon({
       <span
         className={`${classes} bookmark-favicon--fallback`}
         style={style}
-        aria-label={`${resolvedTitle || fallback} 的网站图标`}
+        aria-label={t('faviconAlt', resolvedTitle || fallback)}
         role="img"
       >
         {fallback}
@@ -61,7 +62,7 @@ export function BookmarkFavicon({
         src={faviconUrl}
         width={iconSize}
         height={iconSize}
-        alt={`${resolvedTitle || fallback} 的网站图标`}
+        alt={t('faviconAlt', resolvedTitle || fallback)}
         loading="lazy"
         decoding="async"
         onError={() => setFailed(true)}

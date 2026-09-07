@@ -21,13 +21,13 @@ describe('SearchBar', () => {
       />,
     );
 
-    expect(screen.queryByRole('combobox', { name: '搜索引擎' })).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: '切换搜索引擎' }));
-    fireEvent.click(screen.getByRole('option', { name: /必应/ }));
+    expect(screen.queryByRole('combobox', { name: 'Search engines' })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Switch search engine' }));
+    fireEvent.click(screen.getByRole('option', { name: /Bing/ }));
     expect(onEngineChange).toHaveBeenCalledWith('bing');
 
-    fireEvent.click(screen.getByRole('button', { name: '切换搜索引擎' }));
-    fireEvent.click(screen.getByRole('button', { name: '管理搜索引擎' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Switch search engine' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Manage search engines' }));
     expect(onManage).toHaveBeenCalledTimes(1);
   });
 
@@ -48,7 +48,7 @@ describe('SearchBar', () => {
       />,
     );
 
-    const input = screen.getByRole('combobox', { name: '搜索内容' });
+    const input = screen.getByRole('combobox', { name: 'Search content' });
     fireEvent.focus(input);
     fireEvent.change(input, { target: { value: 'atlas' } });
 

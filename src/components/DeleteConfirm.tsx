@@ -1,5 +1,6 @@
 import { AlertTriangle, X } from 'lucide-react';
 import type { BookmarkNode } from '../bookmarks/types';
+import { t } from '../i18n';
 
 type Props = {
   node: BookmarkNode;
@@ -13,16 +14,19 @@ export function DeleteConfirm({ node, onConfirm, onClose }: Props) {
     <div className="modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
       <section className="modal" role="alertdialog" aria-modal="true" aria-labelledby="delete-title">
         <header className="modal__header">
-          <h2 id="delete-title">确认删除</h2>
-          <button className="icon-button" onClick={onClose} aria-label="关闭"><X size={18} /></button>
+          <h2 id="delete-title">{t('confirmDelete')}</h2>
+          <button className="icon-button" onClick={onClose} aria-label={t('close')}><X size={18} /></button>
         </header>
         <div className="modal__body">
           <AlertTriangle size={30} />
-          <p>将删除“{node.title || '未命名'}”{descendants > 0 ? `以及其中的 ${descendants} 个项目` : ''}。删除会立即同步到 Chrome 书签。</p>
+          <p>{t('deleteConfirmBody', [
+            node.title || t('unnamed'),
+            descendants > 0 ? t('deleteConfirmDescendants', String(descendants)) : '',
+          ])}</p>
         </div>
         <footer className="modal__footer">
-          <button className="secondary-button" onClick={onClose}>取消</button>
-          <button className="danger-button" onClick={() => void onConfirm()}>删除</button>
+          <button className="secondary-button" onClick={onClose}>{t('cancel')}</button>
+          <button className="danger-button" onClick={() => void onConfirm()}>{t('delete')}</button>
         </footer>
       </section>
     </div>

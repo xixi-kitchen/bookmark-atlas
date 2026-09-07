@@ -36,8 +36,8 @@ describe('FolderNavigator', () => {
   it('renders recursive folders with direct and total counts', () => {
     render(<FolderNavigator roots={roots} selectedFolderId="research" />);
 
-    expect(screen.getByRole('tree', { name: '文件夹树' })).toBeInTheDocument();
-    expect(screen.getByRole('treeitem', { name: /全部书签/ })).toHaveTextContent('2 / 6');
+    expect(screen.getByRole('tree', { name: 'Folder tree' })).toBeInTheDocument();
+    expect(screen.getByRole('treeitem', { name: /All bookmarks/ })).toHaveTextContent('2 / 6');
     expect(screen.getByRole('treeitem', { name: /Design/ })).toHaveTextContent('2 / 3');
     expect(screen.getByRole('treeitem', { name: /Research/ })).toHaveTextContent('1 / 1');
     expect(screen.getByRole('treeitem', { name: /Research/ })).toHaveClass('is-selected');
@@ -47,7 +47,7 @@ describe('FolderNavigator', () => {
     const onSelectFolder = vi.fn();
     render(<FolderNavigator roots={roots} onSelectFolder={onSelectFolder} />);
 
-    fireEvent.click(screen.getByRole('treeitem', { name: /全部书签/ }));
+    fireEvent.click(screen.getByRole('treeitem', { name: /All bookmarks/ }));
     fireEvent.click(screen.getByRole('treeitem', { name: /Development/ }));
 
     expect(onSelectFolder).toHaveBeenNthCalledWith(1);
@@ -57,7 +57,7 @@ describe('FolderNavigator', () => {
   it('collapses folders and filters by descendant text', () => {
     render(<FolderNavigator roots={roots} />);
 
-    fireEvent.click(screen.getByRole('button', { name: '折叠 Design' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Collapse Design' }));
     expect(screen.queryByRole('treeitem', { name: /Research/ })).not.toBeInTheDocument();
 
     fireEvent.change(screen.getByRole('searchbox'), { target: { value: 'papers' } });

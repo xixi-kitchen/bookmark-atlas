@@ -16,6 +16,6 @@ describe('Bookmark Atlas backup', () => {
   });
 
   it('rejects unrelated JSON files', () => {
-    expect(() => parseBookmarkAtlasBackup('{"hello":"world"}')).toThrow(/有效|格式/);
+    expect(() => parseBookmarkAtlasBackup('{"hello":"world"}')).toThrow(/valid|format/i);
   });
 });

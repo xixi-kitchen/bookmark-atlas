@@ -15,7 +15,7 @@ import {
 } from '@excalidraw/excalidraw';
 import type { ExcalidrawElement, ExcalidrawEmbeddableElement } from '@excalidraw/excalidraw/element/types';
 import type { ImportedDataState } from '@excalidraw/excalidraw/data/types';
-import type { AppState, BinaryFiles, LibraryItems } from '@excalidraw/excalidraw/types';
+import type { AppState, BinaryFileData, BinaryFiles, LibraryItems } from '@excalidraw/excalidraw/types';
 import {
   BookmarkPlus,
   Check,
@@ -36,6 +36,7 @@ import {
 } from 'lucide-react';
 import type { BookmarkNode } from '../bookmarks/types';
 import { BookmarkFavicon } from '../components/BookmarkFavicon';
+import { getExcalidrawLanguage, t } from '../i18n';
 import {
   buildBookmarkImportGroups,
   buildTopLevelBookmarkImportGroups,
@@ -69,13 +70,24 @@ import {
   type StoredExcalidrawScene,
 } from './sceneStorage';
 import {
-  getCanvasSyncDeviceId,
+  getCanvasSyncManifest,
   loadSceneFromSync,
   mergeSyncedSceneWithLocalFiles,
   saveSceneToSync,
   subscribeToCanvasSync,
   type CanvasSyncManifest,
 } from './sceneSync';
+import {
+  assessSyncCompletion,
+  createCanvasContextId,
+  decideIncomingScene,
+  getLiveSyncedAppState,
+  isOwnSyncManifest,
+  LOCAL_SCENE_CHANNEL,
+  normalizeLocalSceneSignal,
+  SYNC_POLL_INTERVAL_MS,
+  type LocalSceneSignal,
+} from './realtimeSceneSync';
 import { shouldUseNativeExcalidrawEmbed, WebEmbed } from './WebEmbed';
 
 type Props = {
@@ -84,6 +96,11 @@ type Props = {
 
 type SaveStatus = 'saved' | 'saving' | 'error';
 type SyncStatus = 'idle' | 'syncing' | 'synced' | 'too-large' | 'error' | 'unavailable';
+type PendingRemoteScene = {
+  scene: StoredExcalidrawScene;
+  manifest?: CanvasSyncManifest;
+  source: 'local-tab' | 'chrome-sync';
+};
 type ExcalidrawOnChange = (
   elements: readonly ExcalidrawElement[],
   appState: AppState,
@@ -114,6 +131,7 @@ type CanvasApi = {
     appState?: Partial<AppState>;
     captureUpdate?: (typeof CaptureUpdateAction)[keyof typeof CaptureUpdateAction];
   }) => void;
+  addFiles: (files: BinaryFileData[]) => void;
   scrollToContent: (
     target: ExcalidrawElement | readonly ExcalidrawElement[],
     options?: {
@@ -154,18 +172,24 @@ export function ExcalidrawCanvas({ roots }: Props) {
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('saved');
   const [syncStatus, setSyncStatus] = useState<SyncStatus>('idle');
   const [lastSyncManifest, setLastSyncManifest] = useState<CanvasSyncManifest | null>(null);
-  const [remoteUpdate, setRemoteUpdate] = useState<CanvasSyncManifest | null>(null);
-  const remoteUpdateRef = useRef<CanvasSyncManifest | null>(null);
+  const [remoteUpdate, setRemoteUpdate] = useState<PendingRemoteScene | null>(null);
+  const remoteUpdateRef = useRef<PendingRemoteScene | null>(null);
   const readyToPersistRef = useRef(false);
   const latestSceneRef = useRef<StoredExcalidrawScene | null>(null);
   const libraryItemsRef = useRef<LibraryItems>([]);
   const latestFingerprintRef = useRef('');
   const lastSyncedFingerprintRef = useRef('');
+  const lastWrittenSyncRevisionRef = useRef('');
+  const lastAppliedSyncRevisionRef = useRef('');
+  const lastBroadcastFingerprintRef = useRef('');
+  const contextIdRef = useRef(createCanvasContextId());
+  const hasLocalChangesRef = useRef(false);
+  const applyingIncomingRef = useRef(false);
   const syncInFlightRef = useRef<Promise<void> | null>(null);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const syncTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const deviceIdRef = useRef('');
   const mountedRef = useRef(true);
+  const localBroadcastRef = useRef<BroadcastChannel | null>(null);
 
   const bookmarkEntries = useMemo(() => flattenUrlBookmarks(roots), [roots]);
   const importGroups = useMemo(() => buildBookmarkImportGroups(roots), [roots]);
@@ -182,11 +206,13 @@ export function ExcalidrawCanvas({ roots }: Props) {
       libraryItemsRef.current = stored.libraryItems;
       latestFingerprintRef.current = sceneFingerprint(stored);
     }
-    if (syncManifest) {
-      lastSyncedFingerprintRef.current = latestFingerprintRef.current;
+    if (syncManifest && stored) {
+      lastSyncedFingerprintRef.current = syncManifest.fingerprint || sceneSyncFingerprint(stored);
+      lastAppliedSyncRevisionRef.current = syncManifest.revision;
       setLastSyncManifest(syncManifest);
       setSyncStatus('synced');
     }
+    hasLocalChangesRef.current = Boolean(stored && !syncManifest);
     readyToPersistRef.current = true;
     return data;
   }));
@@ -194,11 +220,20 @@ export function ExcalidrawCanvas({ roots }: Props) {
   const persistLatest = useCallback(async () => {
     const scene = latestSceneRef.current;
     if (!scene) return;
-    if (remoteUpdateRef.current) return;
 
     setSaveStatus('saving');
     try {
       await saveStoredScene(scene);
+      const fingerprint = sceneSyncFingerprint(scene);
+      if (fingerprint !== lastBroadcastFingerprintRef.current) {
+        lastBroadcastFingerprintRef.current = fingerprint;
+        localBroadcastRef.current?.postMessage({
+          type: 'scene-saved',
+          contextId: contextIdRef.current,
+          savedAt: scene.savedAt,
+          fingerprint,
+        } satisfies LocalSceneSignal);
+      }
       if (mountedRef.current) setSaveStatus('saved');
     } catch {
       if (mountedRef.current) setSaveStatus('error');
@@ -208,21 +243,36 @@ export function ExcalidrawCanvas({ roots }: Props) {
   const syncLatest = useCallback(async () => {
     const scene = latestSceneRef.current;
     if (!scene) return;
-    const fingerprint = latestFingerprintRef.current;
+    if (remoteUpdateRef.current) return;
+    const fingerprint = sceneSyncFingerprint(scene);
     if (fingerprint && fingerprint === lastSyncedFingerprintRef.current) return;
     if (syncInFlightRef.current) return syncInFlightRef.current;
 
+    let shouldSyncAgain = false;
     const operation = (async () => {
       setSyncStatus('syncing');
-      const result = await saveSceneToSync(scene);
+      const result = await saveSceneToSync(scene, {
+        contextId: contextIdRef.current,
+        fingerprint,
+      });
       if (!mountedRef.current) return;
 
       if (result.status === 'synced') {
         lastSyncedFingerprintRef.current = fingerprint;
+        lastWrittenSyncRevisionRef.current = result.manifest.revision;
+        lastAppliedSyncRevisionRef.current = result.manifest.revision;
         setLastSyncManifest(result.manifest);
-        remoteUpdateRef.current = null;
-        setRemoteUpdate(null);
-        setSyncStatus('synced');
+        const currentFingerprint = latestSceneRef.current
+          ? sceneSyncFingerprint(latestSceneRef.current)
+          : '';
+        const completion = assessSyncCompletion(fingerprint, currentFingerprint);
+        hasLocalChangesRef.current = completion.hasNewerLocalChanges;
+        shouldSyncAgain = completion.hasNewerLocalChanges;
+        if (completion.syncedCurrentScene && !remoteUpdateRef.current) {
+          setSyncStatus('synced');
+        } else {
+          setSyncStatus('idle');
+        }
       } else if (result.status === 'too-large') {
         setSyncStatus('too-large');
       } else if (result.status === 'unavailable') {
@@ -230,7 +280,10 @@ export function ExcalidrawCanvas({ roots }: Props) {
       } else {
         setSyncStatus('error');
       }
-    })().finally(() => { syncInFlightRef.current = null; });
+    })().finally(() => {
+      syncInFlightRef.current = null;
+      if (shouldSyncAgain && !remoteUpdateRef.current) void syncLatest();
+    });
     syncInFlightRef.current = operation;
     return operation;
   }, []);
@@ -241,15 +294,14 @@ export function ExcalidrawCanvas({ roots }: Props) {
   }, [syncLatest]);
 
   const handleChange = useCallback<ExcalidrawOnChange>((elements, appState, files) => {
-    if (!readyToPersistRef.current) return;
+    if (!readyToPersistRef.current || applyingIncomingRef.current) return;
     const scene = createStoredScene(elements, appState, files, libraryItemsRef.current);
     const fingerprint = sceneFingerprint(scene);
     if (fingerprint === latestFingerprintRef.current) return;
 
     latestFingerprintRef.current = fingerprint;
     latestSceneRef.current = scene;
-    remoteUpdateRef.current = null;
-    setRemoteUpdate(null);
+    hasLocalChangesRef.current = true;
     setSaveStatus('saving');
 
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
@@ -259,7 +311,7 @@ export function ExcalidrawCanvas({ roots }: Props) {
 
   const handleLibraryChange = useCallback((libraryItems: LibraryItems) => {
     libraryItemsRef.current = libraryItems;
-    if (!readyToPersistRef.current) return;
+    if (!readyToPersistRef.current || applyingIncomingRef.current) return;
 
     const current = latestSceneRef.current;
     const scene = current
@@ -273,12 +325,141 @@ export function ExcalidrawCanvas({ roots }: Props) {
     if (fingerprint === latestFingerprintRef.current) return;
     latestFingerprintRef.current = fingerprint;
     latestSceneRef.current = scene;
-    remoteUpdateRef.current = null;
-    setRemoteUpdate(null);
+    hasLocalChangesRef.current = true;
     setSaveStatus('saving');
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(() => void persistLatest(), SAVE_DELAY_MS);
     scheduleSync();
+  }, [api, persistLatest, scheduleSync]);
+
+  const applyPendingScene = useCallback(async (pending: PendingRemoteScene) => {
+    if (!api || !mountedRef.current) return;
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    if (syncTimerRef.current) clearTimeout(syncTimerRef.current);
+
+    const current = latestSceneRef.current;
+    const withFiles = pending.source === 'chrome-sync'
+      ? mergeSyncedSceneWithLocalFiles(pending.scene, current)
+      : pending.scene;
+    const reconciled = reconcileStoredScene(withFiles, bookmarkEntries);
+    const incoming = reconciled.scene;
+    const incomingFingerprint = sceneSyncFingerprint(incoming);
+
+    applyingIncomingRef.current = true;
+    try {
+      const files = Object.values(incoming.files);
+      if (files.length > 0) api.addFiles(files);
+      await api.updateLibrary({
+        libraryItems: incoming.libraryItems,
+        merge: false,
+        prompt: false,
+        openLibraryMenu: false,
+      });
+      api.updateScene({
+        elements: incoming.elements,
+        appState: getLiveSyncedAppState(incoming.appState),
+        captureUpdate: CaptureUpdateAction.NEVER,
+      });
+      await saveStoredScene(incoming);
+
+      latestSceneRef.current = incoming;
+      latestFingerprintRef.current = sceneFingerprint(incoming);
+      libraryItemsRef.current = incoming.libraryItems;
+      hasLocalChangesRef.current = reconciled.changed;
+      remoteUpdateRef.current = null;
+      setRemoteUpdate(null);
+      setSaveStatus('saved');
+
+      if (pending.manifest) {
+        lastAppliedSyncRevisionRef.current = pending.manifest.revision;
+        lastSyncedFingerprintRef.current = pending.manifest.fingerprint || incomingFingerprint;
+        setLastSyncManifest(pending.manifest);
+        setSyncStatus(reconciled.changed ? 'idle' : 'synced');
+      } else {
+        setSyncStatus('idle');
+      }
+
+      api.setToast({
+        message: pending.source === 'local-tab'
+          ? t('remoteAppliedLocalTab')
+          : t('remoteAppliedOtherDevice'),
+      });
+      setSceneRevision((revision) => revision + 1);
+      if (reconciled.changed) scheduleSync();
+    } catch {
+      remoteUpdateRef.current = pending;
+      setRemoteUpdate(pending);
+      setSaveStatus('error');
+      setSyncStatus('error');
+      api.setToast({ message: t('applyRemoteFailed') });
+    } finally {
+      window.setTimeout(() => { applyingIncomingRef.current = false; }, 0);
+    }
+  }, [api, bookmarkEntries, scheduleSync]);
+
+  const queueOrApplyIncomingScene = useCallback(async (pending: PendingRemoteScene, force = false) => {
+    const currentFingerprint = latestSceneRef.current ? sceneSyncFingerprint(latestSceneRef.current) : '';
+    const incomingFingerprint = pending.manifest?.fingerprint || sceneSyncFingerprint(pending.scene);
+    const decision = force
+      ? 'apply'
+      : decideIncomingScene(hasLocalChangesRef.current, currentFingerprint, incomingFingerprint);
+
+    if (decision === 'ignore') {
+      if (pending.manifest) {
+        lastAppliedSyncRevisionRef.current = pending.manifest.revision;
+        lastSyncedFingerprintRef.current = incomingFingerprint;
+        hasLocalChangesRef.current = false;
+        setLastSyncManifest(pending.manifest);
+        setSyncStatus('synced');
+      }
+      return;
+    }
+    if (decision === 'conflict') {
+      remoteUpdateRef.current = pending;
+      setRemoteUpdate(pending);
+      setSyncStatus('idle');
+      return;
+    }
+    await applyPendingScene(pending);
+  }, [applyPendingScene]);
+
+  const consumeSyncManifest = useCallback(async (manifest: CanvasSyncManifest) => {
+    if (
+      isOwnSyncManifest(manifest, contextIdRef.current, lastWrittenSyncRevisionRef.current)
+      || manifest.revision === lastAppliedSyncRevisionRef.current
+    ) return;
+    const loaded = await loadSceneFromSync({ manifest, revision: manifest.revision, retries: 2 });
+    if (!loaded || !mountedRef.current) return;
+    await queueOrApplyIncomingScene({
+      scene: loaded.scene,
+      manifest: loaded.manifest,
+      source: 'chrome-sync',
+    });
+  }, [queueOrApplyIncomingScene]);
+
+  const checkLatestSync = useCallback(async () => {
+    const manifest = await getCanvasSyncManifest();
+    if (!manifest) return;
+    await consumeSyncManifest(manifest);
+  }, [consumeSyncManifest]);
+
+  const acceptRemoteUpdate = useCallback(() => {
+    const pending = remoteUpdateRef.current;
+    if (pending) void queueOrApplyIncomingScene(pending, true);
+  }, [queueOrApplyIncomingScene]);
+
+  const keepLocalUpdate = useCallback(() => {
+    const current = latestSceneRef.current;
+    remoteUpdateRef.current = null;
+    setRemoteUpdate(null);
+    if (!current) return;
+    hasLocalChangesRef.current = true;
+    latestSceneRef.current = { ...current, savedAt: Date.now() };
+    lastBroadcastFingerprintRef.current = '';
+    setSyncStatus('idle');
+    void persistLatest();
+    scheduleSync();
+    api?.setToast({ message: t('keepLocalToast') });
   }, [api, persistLatest, scheduleSync]);
 
   useEffect(() => {
@@ -308,24 +489,51 @@ export function ExcalidrawCanvas({ roots }: Props) {
   }, [persistLatest, syncLatest]);
 
   useEffect(() => {
-    let active = true;
-    void getCanvasSyncDeviceId().then((deviceId) => {
-      if (active) deviceIdRef.current = deviceId;
-    });
     const unsubscribe = subscribeToCanvasSync((manifest) => {
-      if (
-        manifest.deviceId !== deviceIdRef.current
-        && manifest.updatedAt > (latestSceneRef.current?.savedAt ?? 0)
-      ) {
-        remoteUpdateRef.current = manifest;
-        setRemoteUpdate(manifest);
-      }
+      void consumeSyncManifest(manifest);
     });
     return () => {
-      active = false;
       unsubscribe();
     };
-  }, []);
+  }, [consumeSyncManifest]);
+
+  useEffect(() => {
+    if (typeof BroadcastChannel !== 'function') return;
+    const channel = new BroadcastChannel(LOCAL_SCENE_CHANNEL);
+    localBroadcastRef.current = channel;
+    channel.onmessage = (event) => {
+      const signal = normalizeLocalSceneSignal(event.data);
+      if (!signal || signal.contextId === contextIdRef.current) return;
+      if (signal.savedAt < (latestSceneRef.current?.savedAt ?? 0)) return;
+      void loadStoredScene().then((scene) => {
+        if (!scene || scene.savedAt < signal.savedAt) return;
+        return queueOrApplyIncomingScene({ scene, source: 'local-tab' });
+      });
+    };
+    return () => {
+      localBroadcastRef.current = null;
+      channel.close();
+    };
+  }, [queueOrApplyIncomingScene]);
+
+  useEffect(() => {
+    if (!api) return;
+    const handleFocus = () => void checkLatestSync();
+    const handleVisible = () => {
+      if (document.visibilityState === 'visible') void checkLatestSync();
+    };
+    const interval = window.setInterval(() => {
+      if (document.visibilityState === 'visible') void checkLatestSync();
+    }, SYNC_POLL_INTERVAL_MS);
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisible);
+    void checkLatestSync();
+    return () => {
+      window.clearInterval(interval);
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisible);
+    };
+  }, [api, checkLatestSync]);
 
   useEffect(() => {
     if (api && latestSceneRef.current && !lastSyncManifest) scheduleSync();
@@ -398,7 +606,7 @@ export function ExcalidrawCanvas({ roots }: Props) {
         captureUpdate: CaptureUpdateAction.NEVER,
       });
       api.scrollToContent(existing, { animate: true, duration: 260 });
-      api.setToast({ message: '这个书签已经在画布中。' });
+      api.setToast({ message: t('bookmarkAlreadyOnCanvas') });
       return;
     }
 
@@ -418,7 +626,7 @@ export function ExcalidrawCanvas({ roots }: Props) {
       captureUpdate: CaptureUpdateAction.IMMEDIATELY,
     });
     api.scrollToContent(element, { animate: true, duration: 260 });
-    api.setToast({ message: `已添加“${node.title || '未命名书签'}”。` });
+    api.setToast({ message: t('bookmarkAdded', node.title || t('unnamedBookmark')) });
     setSceneRevision((revision) => revision + 1);
   }, [api, bookmarkIndex]);
 
@@ -431,7 +639,7 @@ export function ExcalidrawCanvas({ roots }: Props) {
     })).filter((group) => group.entries.length > 0);
 
     if (pendingGroups.length === 0) {
-      api.setToast({ message: '所选书签已经全部在画布中。' });
+      api.setToast({ message: t('selectedBookmarksAlreadyImported') });
       return;
     }
 
@@ -468,7 +676,7 @@ export function ExcalidrawCanvas({ roots }: Props) {
       viewportZoomFactor: 0.82,
     });
     const importedCount = pendingGroups.reduce((total, group) => total + group.entries.length, 0);
-    api.setToast({ message: `已导入 ${importedCount} 个书签。` });
+    api.setToast({ message: t('importedBookmarks', String(importedCount)) });
     setSceneRevision((revision) => revision + 1);
   }, [api, bookmarkIndex, importedBookmarks]);
 
@@ -488,7 +696,7 @@ export function ExcalidrawCanvas({ roots }: Props) {
       ? api.getSceneElements().filter((element) => Boolean(getBookmarkElementData(element)))
       : api.getSceneElements();
     if (elements.length === 0) {
-      api.setToast({ message: bookmarkOnly ? '画布中还没有书签卡片。' : '画布还是空白的。' });
+      api.setToast({ message: bookmarkOnly ? t('noBookmarkCardsOnCanvas') : t('canvasEmpty') });
       return;
     }
     api.scrollToContent(elements, {
@@ -512,7 +720,7 @@ export function ExcalidrawCanvas({ roots }: Props) {
 
   const exportBackup = useCallback(async () => {
     const scene = getLiveScene();
-    if (!scene) throw new Error('画布还没有准备好，请稍后重试。');
+    if (!scene) throw new Error(t('canvasNotReady'));
     latestSceneRef.current = scene;
     latestFingerprintRef.current = sceneFingerprint(scene);
     await saveStoredScene(scene);
@@ -533,7 +741,7 @@ export function ExcalidrawCanvas({ roots }: Props) {
   }, []);
 
   return (
-    <section className="excalidraw-canvas" aria-label="Excalidraw 书签画布">
+    <section className="excalidraw-canvas" aria-label={t('excalidrawCanvasLabel')}>
       <HostedExcalidraw
         initialData={initialData}
         excalidrawAPI={setApi}
@@ -547,7 +755,7 @@ export function ExcalidrawCanvas({ roots }: Props) {
             <span
               className={`atlas-save-state is-${saveStatus}`}
               role="status"
-              aria-label={`本机画布：${saveStatusLabel(saveStatus)}`}
+              aria-label={t('saveStatusLocalCanvas', saveStatusLabel(saveStatus))}
               title={saveStatusTitle(saveStatus)}
             >
               {saveStatus === 'saving' ? <Database size={14} /> : saveStatus === 'error' ? <X size={14} /> : <Check size={14} />}
@@ -556,35 +764,55 @@ export function ExcalidrawCanvas({ roots }: Props) {
             <button
               type="button"
               className={`atlas-sync-state is-${remoteUpdate ? 'remote' : syncStatus}`}
-              onClick={remoteUpdate ? () => window.location.reload() : undefined}
+              onClick={remoteUpdate ? () => document.getElementById('atlas-sync-conflict')?.focus() : undefined}
               aria-disabled={!remoteUpdate}
               tabIndex={remoteUpdate ? 0 : -1}
-              aria-label={remoteUpdate ? '其他设备有画布更新，点击重新加载' : `云端画布：${syncStatusLabel(syncStatus, lastSyncManifest)}`}
-              title={syncStatusTitle(syncStatus, lastSyncManifest, remoteUpdate)}
+              aria-label={remoteUpdate ? t('remoteCanvasAvailable') : t('syncStatusCloudCanvas', syncStatusLabel(syncStatus, lastSyncManifest))}
+              title={syncStatusTitle(syncStatus, lastSyncManifest, Boolean(remoteUpdate))}
             >
               <SyncStatusIcon status={syncStatus} remote={Boolean(remoteUpdate)} />
               <span className="visually-hidden">
-                {remoteUpdate ? '其他设备有更新' : syncStatusLabel(syncStatus, lastSyncManifest)}
+                {remoteUpdate ? t('remoteUpdatePending') : syncStatusLabel(syncStatus, lastSyncManifest)}
               </span>
             </button>
-            <div className="atlas-zoom-tools" role="group" aria-label="画布缩放">
-              <button type="button" onClick={() => zoomBy(0.8)} aria-label="缩小画布"><ZoomOut size={15} /></button>
-              <button type="button" onClick={() => zoomBy(1.25)} aria-label="放大画布"><ZoomIn size={15} /></button>
-              <button type="button" onClick={() => fitElements(false)} aria-label="适应全部元素" title="适应全部元素（包含绘图、文字和书签）"><Maximize2 size={15} /></button>
-              <button type="button" onClick={() => fitElements(true)} aria-label="聚焦全部书签" title="仅聚焦画布中的书签卡片"><BookmarkPlus size={15} /></button>
+            <div className="atlas-zoom-tools" role="group" aria-label={t('canvasZoom')}>
+              <button type="button" onClick={() => zoomBy(0.8)} aria-label={t('zoomOutCanvas')}><ZoomOut size={15} /></button>
+              <button type="button" onClick={() => zoomBy(1.25)} aria-label={t('zoomInCanvas')}><ZoomIn size={15} /></button>
+              <button type="button" onClick={() => fitElements(false)} aria-label={t('fitAllElements')} title={t('fitAllElementsTitle')}><Maximize2 size={15} /></button>
+              <button type="button" onClick={() => fitElements(true)} aria-label={t('focusAllBookmarks')} title={t('focusAllBookmarksTitle')}><BookmarkPlus size={15} /></button>
             </div>
-            <button type="button" className="atlas-excalidraw-button is-icon" onClick={() => setPickerOpen(true)} aria-label="导入书签" title="导入 Chrome 书签">
+            <button type="button" className="atlas-excalidraw-button is-icon" onClick={() => setPickerOpen(true)} aria-label={t('importBookmarks')} title={t('importChromeBookmarks')}>
               <FolderInput size={16} />
             </button>
-            <button type="button" className="atlas-excalidraw-button is-secondary is-icon" onClick={() => setBackupOpen(true)} aria-label="完整备份" title="导出或恢复完整备份">
+            <button type="button" className="atlas-excalidraw-button is-secondary is-icon" onClick={() => setBackupOpen(true)} aria-label={t('fullBackup')} title={t('backupTitle')}>
               <DatabaseBackup size={16} />
             </button>
           </div>
         )}
-        langCode="zh-CN"
+        langCode={getExcalidrawLanguage()}
         name="Bookmark Atlas"
         autoFocus
       />
+
+      {remoteUpdate && (
+        <section
+          id="atlas-sync-conflict"
+          className="atlas-sync-conflict"
+          role="alertdialog"
+          aria-labelledby="atlas-sync-conflict-title"
+          tabIndex={-1}
+        >
+          <RefreshCw size={18} aria-hidden="true" />
+          <div>
+            <strong id="atlas-sync-conflict-title">{t('syncConflictTitle')}</strong>
+            <span>{t('syncConflictBody')}</span>
+          </div>
+          <div className="atlas-sync-conflict__actions">
+            <button type="button" className="secondary-button" onClick={keepLocalUpdate}>{t('keepLocal')}</button>
+            <button type="button" className="atlas-excalidraw-button" onClick={acceptRemoteUpdate}>{t('useIncomingUpdate')}</button>
+          </div>
+        </section>
+      )}
 
       {pickerOpen && (
         <BookmarkPicker
@@ -631,7 +859,7 @@ function BackupPanel({
     try {
       await onExport();
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : '导出失败，请重试。');
+      setError(cause instanceof Error ? cause.message : t('exportFailed'));
     } finally {
       setBusy(null);
     }
@@ -644,7 +872,7 @@ function BackupPanel({
       setPendingBackup(parseBookmarkAtlasBackup(await file.text()));
     } catch (cause) {
       setPendingBackup(null);
-      setError(cause instanceof Error ? cause.message : '无法读取备份文件。');
+      setError(cause instanceof Error ? cause.message : t('backupReadFailed'));
     }
   };
 
@@ -655,7 +883,7 @@ function BackupPanel({
     try {
       await onRestore(pendingBackup);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : '恢复未完成，请重试。');
+      setError(cause instanceof Error ? cause.message : t('restoreFailed'));
       setBusy(null);
     }
   };
@@ -667,32 +895,36 @@ function BackupPanel({
       <section className="atlas-bookmark-picker atlas-backup-panel" role="dialog" aria-modal="true" aria-labelledby="atlas-backup-title">
         <header>
           <div>
-            <h2 id="atlas-backup-title">完整备份</h2>
-            <p>一个 JSON 文件包含画布、图片与附件、素材库，以及视图、主题和搜索引擎配置。</p>
+            <h2 id="atlas-backup-title">{t('fullBackup')}</h2>
+            <p>{t('backupPanelDescription')}</p>
           </div>
-          <button type="button" className="icon-button" onClick={onClose} aria-label="关闭"><X size={18} /></button>
+          <button type="button" className="icon-button" onClick={onClose} aria-label={t('close')}><X size={18} /></button>
         </header>
 
         <div className="atlas-backup-grid">
           <article>
             <span className="atlas-backup-icon"><Download size={20} /></span>
             <div>
-              <h3>导出当前完整备份</h3>
-              <p>{scene ? `${scene.elements.filter((element) => !element.isDeleted).length} 个画布元素 · ${Object.keys(scene.files).length} 个文件 · ${scene.libraryItems.length} 个素材` : '正在读取画布…'}</p>
+              <h3>{t('exportBackupTitle')}</h3>
+              <p>{scene ? t('backupStats', [
+                String(scene.elements.filter((element) => !element.isDeleted).length),
+                String(Object.keys(scene.files).length),
+                String(scene.libraryItems.length),
+              ]) : t('readingCanvas')}</p>
             </div>
             <button type="button" className="atlas-excalidraw-button" disabled={!scene || busy !== null} onClick={() => void runExport()}>
-              <Download size={15} /> {busy === 'export' ? '正在导出…' : '下载备份'}
+              <Download size={15} /> {busy === 'export' ? t('downloadingBackup') : t('downloadBackup')}
             </button>
           </article>
 
           <article>
             <span className="atlas-backup-icon"><Upload size={20} /></span>
             <div>
-              <h3>从完整备份恢复</h3>
-              <p>选择此前导出的 JSON。恢复会覆盖本机画布、素材库和插件配置，然后重新加载页面。</p>
+              <h3>{t('restoreBackupTitle')}</h3>
+              <p>{t('restoreBackupDescription')}</p>
             </div>
             <label className="atlas-backup-file">
-              <Upload size={15} /> 选择备份文件
+              <Upload size={15} /> {t('chooseBackupFile')}
               <input type="file" accept="application/json,.json" disabled={busy !== null} onChange={(event) => void readBackup(event.target.files?.[0])} />
             </label>
           </article>
@@ -701,16 +933,20 @@ function BackupPanel({
         {pendingBackup && restoreScene && (
           <div className="atlas-backup-confirm">
             <div>
-              <strong>已验证备份</strong>
-              <span>{new Date(pendingBackup.createdAt).toLocaleString()} · {restoreScene.elements.filter((element) => !element.isDeleted).length} 个元素 · {restoreScene.libraryItems.length} 个素材</span>
+              <strong>{t('backupVerified')}</strong>
+              <span>{t('backupVerifiedStats', [
+                new Date(pendingBackup.createdAt).toLocaleString(),
+                String(restoreScene.elements.filter((element) => !element.isDeleted).length),
+                String(restoreScene.libraryItems.length),
+              ])}</span>
             </div>
             <button type="button" className="atlas-excalidraw-button" disabled={busy !== null} onClick={() => void runRestore()}>
-              {busy === 'restore' ? '正在恢复…' : '确认覆盖并恢复'}
+              {busy === 'restore' ? t('restoringBackup') : t('confirmRestore')}
             </button>
           </div>
         )}
         {error && <p className="atlas-backup-error" role="alert">{error}</p>}
-        <footer>Chrome 原生书签仍由 Chrome 管理，不会因恢复插件备份而被删除或替换。</footer>
+        <footer>{t('backupChromeBookmarksNote')}</footer>
       </section>
     </div>
   );
@@ -729,22 +965,22 @@ function BookmarkEmbed({
 }) {
   const unresolved = matchStatus !== 'matched';
   const statusLabel = matchStatus === 'matched'
-    ? 'Chrome 书签'
+    ? t('bookmarkMatchMatched')
     : matchStatus === 'ambiguous'
-      ? '存在同网址重复书签，未自动关联'
-      : '未匹配当前设备书签';
+      ? t('bookmarkMatchAmbiguous')
+      : t('bookmarkMatchMissing');
 
   return (
     <div className={`atlas-bookmark-embed ${unresolved ? 'is-missing' : ''}`}>
       <BookmarkFavicon title={title} url={url} size={42} className="atlas-bookmark-embed__favicon" />
       <div className="atlas-bookmark-embed__copy">
-        <strong>{title || '未命名书签'}</strong>
+        <strong>{title || t('unnamedBookmark')}</strong>
         <span>{hostname(url) || url}</span>
         {folderPath && <small>{folderPath}</small>}
       </div>
       <div className="atlas-bookmark-embed__footer">
         <span>{statusLabel}</span>
-        <span>使用链接按钮打开</span>
+        <span>{t('openWithLinkButton')}</span>
       </div>
     </div>
   );
@@ -790,28 +1026,28 @@ function BookmarkPicker({
       <section className="atlas-bookmark-picker atlas-bookmark-picker--import" role="dialog" aria-modal="true" aria-labelledby="atlas-picker-title">
         <header>
           <div>
-            <h2 id="atlas-picker-title">导入 Chrome 书签</h2>
-            <p>Chrome 中新增的书签会自动出现在这里。可以逐个添加、按文件夹导入，或一次导入全部。</p>
+            <h2 id="atlas-picker-title">{t('importChromeBookmarks')}</h2>
+            <p>{t('importPickerDescription')}</p>
           </div>
-          <button type="button" className="icon-button" onClick={onClose} aria-label="关闭"><X size={18} /></button>
+          <button type="button" className="icon-button" onClick={onClose} aria-label={t('close')}><X size={18} /></button>
         </header>
         <div className="atlas-import-summary">
           <div>
             <strong>{entries.length}</strong>
-            <span>Chrome 书签</span>
+            <span>{t('chromeBookmarks')}</span>
           </div>
           <div>
             <strong>{importedCount}</strong>
-            <span>已在画布</span>
+            <span>{t('alreadyOnCanvas')}</span>
           </div>
           <button type="button" className="atlas-import-all" disabled={remainingTotal === 0} onClick={() => onImportGroups(allGroups)}>
-            <FolderInput size={16} /> {remainingTotal === 0 ? '已全部导入' : `导入剩余 ${remainingTotal} 个`}
+            <FolderInput size={16} /> {remainingTotal === 0 ? t('allImported') : t('importRemaining', String(remainingTotal))}
           </button>
         </div>
         <div className="atlas-import-layout">
-          <aside className="atlas-import-groups" aria-label="书签文件夹组">
+          <aside className="atlas-import-groups" aria-label={t('bookmarkFolderGroups')}>
             <button type="button" className={!activeGroup ? 'is-active' : ''} onClick={() => setActiveGroupId('all')}>
-              <span>全部书签</span><small>{entries.length}</small>
+              <span>{t('allBookmarks')}</span><small>{entries.length}</small>
             </button>
             {groups.map((group) => (
               <button
@@ -828,18 +1064,18 @@ function BookmarkPicker({
           <div className="atlas-import-content">
             <div className="atlas-import-content__header">
               <div>
-                <strong>{activeGroup?.title ?? '全部书签'}</strong>
-                <small>{activeGroup?.path || '所有 Chrome 书签'}</small>
+                <strong>{activeGroup?.title ?? t('allBookmarks')}</strong>
+                <small>{activeGroup?.path || t('allChromeBookmarks')}</small>
               </div>
               {activeGroup && (
                 <button type="button" className="secondary-button" disabled={remainingInGroup === 0} onClick={() => onImportGroups([activeGroup])}>
-                  <FolderInput size={15} /> {remainingInGroup === 0 ? '本组已导入' : `导入本组 ${remainingInGroup} 个`}
+                  <FolderInput size={15} /> {remainingInGroup === 0 ? t('importGroupDone') : t('importGroupRemaining', String(remainingInGroup))}
                 </button>
               )}
             </div>
             <label className="atlas-bookmark-picker__search">
               <Search size={17} />
-              <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索标题、网址或文件夹" autoFocus />
+              <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t('bookmarkPickerSearchPlaceholder')} autoFocus />
             </label>
             <div className="atlas-bookmark-picker__list">
               {visible.map(({ node, folderPath }) => {
@@ -848,18 +1084,18 @@ function BookmarkPicker({
                   <button type="button" key={node.id} className={`atlas-bookmark-picker__item ${imported ? 'is-imported' : ''}`} disabled={imported} onClick={() => onAdd(node, folderPath)}>
                     <BookmarkFavicon node={node} size={30} />
                     <span>
-                      <strong>{node.title || '未命名书签'}</strong>
+                      <strong>{node.title || t('unnamedBookmark')}</strong>
                       <small>{folderPath || hostname(node.url) || node.url}</small>
                     </span>
                     {imported ? <Check size={17} /> : <BookmarkPlus size={17} />}
                   </button>
                 );
               })}
-              {visible.length === 0 && <div className="atlas-bookmark-picker__empty">没有匹配的书签。</div>}
+              {visible.length === 0 && <div className="atlas-bookmark-picker__empty">{t('noMatchingBookmarks')}</div>}
             </div>
           </div>
         </div>
-        {filtered.length > visible.length && <footer>只显示前 {visible.length} 项，请继续输入关键词缩小范围。</footer>}
+        {filtered.length > visible.length && <footer>{t('visibleLimitNotice', String(visible.length))}</footer>}
       </section>
     </div>
   );
@@ -935,38 +1171,38 @@ function SyncStatusIcon({ status, remote }: { status: SyncStatus; remote: boolea
 }
 
 function saveStatusLabel(status: SaveStatus) {
-  if (status === 'saving') return '保存中';
-  if (status === 'error') return '保存失败';
-  return '已自动保存';
+  if (status === 'saving') return t('saveStatusSaving');
+  if (status === 'error') return t('saveStatusError');
+  return t('saveStatusSaved');
 }
 
 function saveStatusTitle(status: SaveStatus) {
-  if (status === 'saving') return '正在把完整画布保存到本机。';
-  if (status === 'error') return '本机画布保存失败，请保留当前页面并重试。';
-  return '完整画布已自动保存到本机。';
+  if (status === 'saving') return t('saveTitleSaving');
+  if (status === 'error') return t('saveTitleError');
+  return t('saveTitleSaved');
 }
 
 function syncStatusLabel(status: SyncStatus, manifest: CanvasSyncManifest | null) {
-  if (status === 'syncing') return '同步中';
-  if (status === 'too-large') return '画布过大，仅本机';
-  if (status === 'error') return '同步失败';
-  if (status === 'unavailable') return '仅本机保存';
-  if (status === 'synced' && manifest?.excludedFileCount) return '轻量同步 · 附件仅本机';
-  if (status === 'synced') return '画布已同步';
-  return '等待同步';
+  if (status === 'syncing') return t('syncStatusSyncing');
+  if (status === 'too-large') return t('syncStatusTooLarge');
+  if (status === 'error') return t('syncStatusError');
+  if (status === 'unavailable') return t('syncStatusUnavailable');
+  if (status === 'synced' && manifest?.excludedFileCount) return t('syncStatusLight');
+  if (status === 'synced') return t('syncStatusSynced');
+  return t('syncStatusIdle');
 }
 
 function syncStatusTitle(
   status: SyncStatus,
   manifest: CanvasSyncManifest | null,
-  remote: CanvasSyncManifest | null,
+  remote: boolean,
 ) {
-  if (remote) return '其他设备保存了更新。点击重新加载并使用较新的云端画布。';
-  if (status === 'too-large') return '压缩后的画布超过 Chrome Sync 安全配额，完整内容仍已保存在本机。';
-  if (status === 'error') return 'Chrome Sync 写入失败；完整内容仍已保存在本机。';
-  if (status === 'unavailable') return '当前环境没有 Chrome Sync；完整内容保存在本机。';
-  if (manifest?.excludedFileCount) return `图形和设置已同步；${manifest.excludedFileCount} 个图片或附件只保存在本机。`;
-  return '图形、文字、书签引用、视口和素材库已保存到 Chrome Sync。';
+  if (remote) return t('syncTitleRemote');
+  if (status === 'too-large') return t('syncTitleTooLarge');
+  if (status === 'error') return t('syncTitleError');
+  if (status === 'unavailable') return t('syncTitleUnavailable');
+  if (manifest?.excludedFileCount) return t('syncTitleLight', String(manifest.excludedFileCount));
+  return t('syncTitleSynced');
 }
 
 function getViewportSceneCenter(api: CanvasApi) {
@@ -998,6 +1234,20 @@ function sceneFingerprint(scene: StoredExcalidrawScene) {
     elements: scene.elements.map((element) => [element.id, element.version, element.isDeleted]),
     appState: scene.appState,
     files: Object.values(scene.files).map((file) => [file.id, file.created, file.lastRetrieved]),
+    libraryItems: scene.libraryItems.map((item) => [
+      item.id,
+      item.status,
+      item.name,
+      item.created,
+      item.elements.map((element) => [element.id, element.version]),
+    ]),
+  });
+}
+
+export function sceneSyncFingerprint(scene: StoredExcalidrawScene) {
+  return JSON.stringify({
+    elements: scene.elements.map((element) => [element.id, element.version, element.isDeleted]),
+    appState: scene.appState,
     libraryItems: scene.libraryItems.map((item) => [
       item.id,
       item.status,

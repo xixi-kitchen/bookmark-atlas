@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 560">
+  <rect width="1400" height="560" fill="#6965db"/>
+  <path d="M24 20c260-13 1100-9 1350 4 12 116 11 399-2 514-271 11-1092 10-1348-2C13 416 13 138 24 20Z" fill="none" stroke="#1b1b1f" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M35 35c307-9 1006-5 1327 2M37 523c313 8 1020 8 1324-1" fill="none" stroke="#f7f5ff" stroke-width="3" stroke-linecap="round" opacity=".85"/>
+
+  <g transform="translate(86 103)">
+    <path d="M13 5c51-8 148-6 188 4 11 50 9 206-3 252-50 13-139 14-186 1C1 208 2 56 13 5Z" fill="#f7f5ff" stroke="#1b1b1f" stroke-width="7" stroke-linejoin="round"/>
+    <path d="M39 39c34-7 101-5 129 2 7 38 6 145-2 179-38 9-93 10-128 1-8-41-7-145 1-182Z" fill="#6965db" stroke="#1b1b1f" stroke-width="6" stroke-linejoin="round"/>
+    <path d="M72 79c22-5 45-4 66 0l-3 99-31-23-35 22 3-98Z" fill="#f7f5ff" stroke="#1b1b1f" stroke-width="6" stroke-linejoin="round"/>
+    <path d="M85 103c13-3 28-3 41 0M84 121c11-2 22-2 33 0" fill="none" stroke="#6965db" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="162" cy="58" r="9" fill="#ff5f57" stroke="#1b1b1f" stroke-width="3"/>
+  </g>
+  <text x="84" y="426" fill="#f7f5ff" font-family="Arial, Helvetica, sans-serif" font-size="53" font-weight="800" letter-spacing="2">BOOKMARK</text>
+  <text x="84" y="482" fill="#f7f5ff" font-family="Arial, Helvetica, sans-serif" font-size="53" font-weight="800" letter-spacing="2">ATLAS</text>
+  <path d="M86 503c90 5 207 4 298-2" stroke="#ff5f57" stroke-width="8" stroke-linecap="round"/>
+
+  <g transform="translate(454 60)">
+    <path d="M13 6c207-13 697-8 888 5 10 99 11 342 1 431-215 13-702 13-892 1C0 345 2 100 13 6Z" fill="#f7f5ff" stroke="#1b1b1f" stroke-width="7" stroke-linejoin="round"/>
+    <path d="M35 30c187-7 641-4 827 3" fill="none" stroke="#aaa7ec" stroke-width="3" stroke-linecap="round"/>
+    <path d="M59 58c158-7 495-5 655 1 6 23 5 65-1 86-172 7-494 6-653 0-6-24-6-65-1-87Z" fill="#fff" stroke="#1b1b1f" stroke-width="5"/>
+    <circle cx="95" cy="101" r="15" fill="none" stroke="#6965db" stroke-width="5"/>
+    <path d="m106 113 15 15" stroke="#6965db" stroke-width="5" stroke-linecap="round"/>
+    <path d="M148 91h375M148 111h282" stroke="#aaa7ec" stroke-width="8" stroke-linecap="round"/>
+    <path d="M760 74c24-5 60-3 80 2 6 17 5 43 0 58-24 6-59 6-80 0-5-18-5-43 0-60Z" fill="#6965db" stroke="#1b1b1f" stroke-width="4"/>
+    <path d="m782 104 14 14 27-34" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <g transform="translate(60 186)">
+      <path d="M7 4c60-8 158-6 208 2 7 43 6 132-1 168-60 8-158 8-207 0C0 132 1 43 7 4Z" fill="#fff" stroke="#1b1b1f" stroke-width="5"/>
+      <rect x="27" y="31" width="55" height="55" rx="14" fill="#6965db"/>
+      <path d="M105 38h78M105 58h61M28 112h150M29 137h112" stroke="#aaa7ec" stroke-width="7" stroke-linecap="round"/>
+    </g>
+    <g transform="translate(296 186)">
+      <path d="M7 4c60-8 158-6 208 2 7 43 6 132-1 168-60 8-158 8-207 0C0 132 1 43 7 4Z" fill="#fff" stroke="#1b1b1f" stroke-width="5"/>
+      <rect x="27" y="31" width="55" height="55" rx="14" fill="#ff5f57"/>
+      <path d="M105 38h78M105 58h61M28 112h150M29 137h112" stroke="#aaa7ec" stroke-width="7" stroke-linecap="round"/>
+    </g>
+    <g transform="translate(532 186)">
+      <path d="M7 4c60-8 158-6 208 2 7 43 6 132-1 168-60 8-158 8-207 0C0 132 1 43 7 4Z" fill="#fff" stroke="#1b1b1f" stroke-width="5"/>
+      <rect x="27" y="31" width="55" height="55" rx="14" fill="#6965db"/>
+      <path d="M105 38h78M105 58h61M28 112h150M29 137h112" stroke="#aaa7ec" stroke-width="7" stroke-linecap="round"/>
+    </g>
+    <path d="M160 389c141 52 356 53 502-2" fill="none" stroke="#6965db" stroke-width="7" stroke-linecap="round"/>
+    <path d="m647 373 22 12-18 18" fill="none" stroke="#6965db" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="146" cy="384" r="14" fill="#f7f5ff" stroke="#1b1b1f" stroke-width="5"/>
+    <path d="M711 361c22-20 59-17 75 4 17 0 30 12 30 28 0 17-14 29-34 29h-65c-21 0-35-12-35-29 0-15 12-29 29-32Z" fill="#fff" stroke="#1b1b1f" stroke-width="5"/>
+    <path d="m733 393 15 15 31-39" fill="none" stroke="#6965db" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

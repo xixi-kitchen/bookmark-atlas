@@ -1,0 +1,1023 @@
+{
+  "appName": {
+    "message": "Bookmark Atlas – Excalidraw 书签画布",
+    "description": "Extension name shown in Chrome and the Chrome Web Store."
+  },
+  "brandName": {
+    "message": "Bookmark Atlas"
+  },
+  "appShortName": {
+    "message": "Atlas",
+    "description": "Short extension name."
+  },
+  "appDescription": {
+    "message": "把 Chrome 书签、搜索和完整 Excalidraw 画布放进一个可同步的新标签页。",
+    "description": "Extension description shown in Chrome and the Chrome Web Store."
+  },
+  "appTagline": {
+    "message": "本地优先"
+  },
+  "viewGrid": {
+    "message": "列视图"
+  },
+  "viewCanvas": {
+    "message": "Excalidraw 画布"
+  },
+  "viewGroup": {
+    "message": "视图"
+  },
+  "cardSize": {
+    "message": "卡片大小"
+  },
+  "uiStyle": {
+    "message": "UI 风格"
+  },
+  "newChromeBookmark": {
+    "message": "新建 Chrome 书签"
+  },
+  "loadingBookmarksTitle": {
+    "message": "正在展开书签宇宙"
+  },
+  "loadingBookmarksBody": {
+    "message": "从当前 Chrome 配置文件读取书签树..."
+  },
+  "readFailed": {
+    "message": "读取失败"
+  },
+  "retry": {
+    "message": "重试"
+  },
+  "preparingEmbedsTitle": {
+    "message": "正在准备网页嵌入"
+  },
+  "preparingEmbedsBody": {
+    "message": "初始化安全的播放器客户端标识..."
+  },
+  "bookmarksCount": {
+    "message": "$ARG_1$ 个书签",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "deletedToast": {
+    "message": "已删除“$ARG_1$”",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "undo": {
+    "message": "撤销"
+  },
+  "sizeSmall": {
+    "message": "小卡片"
+  },
+  "sizeMedium": {
+    "message": "中卡片"
+  },
+  "sizeLarge": {
+    "message": "大卡片"
+  },
+  "sizeSmallDescription": {
+    "message": "更紧凑，显示更多内容"
+  },
+  "sizeMediumDescription": {
+    "message": "平衡密度与可读性"
+  },
+  "sizeLargeDescription": {
+    "message": "更醒目，信息更易读"
+  },
+  "selectValue": {
+    "message": "$ARG_1$：$ARG_2$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      },
+      "arg_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "selectMenu": {
+    "message": "选择$ARG_1$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionCount": {
+    "message": "$ARG_1$ 个选项",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "themeExcalidraw": {
+    "message": "Excalidraw"
+  },
+  "themeSwiss": {
+    "message": "瑞士国际主义"
+  },
+  "themeBauhaus": {
+    "message": "包豪斯几何功能主义"
+  },
+  "themeSurreal": {
+    "message": "超现实主义"
+  },
+  "themeMemphis": {
+    "message": "孟菲斯风格"
+  },
+  "themePop": {
+    "message": "波普风格"
+  },
+  "themePixel": {
+    "message": "像素风"
+  },
+  "close": {
+    "message": "关闭"
+  },
+  "cancel": {
+    "message": "取消"
+  },
+  "save": {
+    "message": "保存"
+  },
+  "saving": {
+    "message": "保存中..."
+  },
+  "delete": {
+    "message": "删除"
+  },
+  "edit": {
+    "message": "编辑"
+  },
+  "open": {
+    "message": "打开"
+  },
+  "folder": {
+    "message": "文件夹"
+  },
+  "bookmark": {
+    "message": "书签"
+  },
+  "unnamed": {
+    "message": "未命名"
+  },
+  "unnamedBookmark": {
+    "message": "未命名书签"
+  },
+  "unnamedFolder": {
+    "message": "未命名文件夹"
+  },
+  "rootFolder": {
+    "message": "根目录"
+  },
+  "allBookmarks": {
+    "message": "全部书签"
+  },
+  "topLevelBookmarks": {
+    "message": "顶层书签"
+  },
+  "itemCount": {
+    "message": "$ARG_1$ 项",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "directItemCount": {
+    "message": "$ARG_1$ 个直接项目",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "totalItemCount": {
+    "message": "$ARG_1$ 个总项目",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "directTotalItemCount": {
+    "message": "$ARG_1$ 个直接项目 · $ARG_2$ 个总项目",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      },
+      "arg_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "createInFolder": {
+    "message": "在 $ARG_1$ 中新建",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "editFolder": {
+    "message": "编辑文件夹"
+  },
+  "deleteFolder": {
+    "message": "删除文件夹"
+  },
+  "folderGroupActions": {
+    "message": "$ARG_1$ 分组操作",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "moveToFolder": {
+    "message": "移动到“$ARG_1$”",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "moveToFolderEnd": {
+    "message": "到“$ARG_1$”末尾",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "moveBeforeItem": {
+    "message": "到“$ARG_1$”之前",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "moveAfterItem": {
+    "message": "至“$ARG_1$”之后",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "movingBookmark": {
+    "message": "正在移动“$ARG_1$”$ARG_2$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      },
+      "arg_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "movedBookmark": {
+    "message": "已移动“$ARG_1$”$ARG_2$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      },
+      "arg_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "moveBookmarkFailed": {
+    "message": "无法移动“$ARG_1$”$ARG_2$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      },
+      "arg_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "gridViewLabel": {
+    "message": "列视图"
+  },
+  "emptyBookmarksTitle": {
+    "message": "还没有书签"
+  },
+  "emptyBookmarksBody": {
+    "message": "新建或同步 Chrome 书签后会显示在这里。"
+  },
+  "dragReorder": {
+    "message": "拖动调整分组或顺序"
+  },
+  "nodeLabel": {
+    "message": "$ARG_1$：$ARG_2$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      },
+      "arg_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "nodeActions": {
+    "message": "$ARG_1$ 的操作",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "openFolder": {
+    "message": "进入文件夹"
+  },
+  "createHere": {
+    "message": "在此新建"
+  },
+  "faviconAlt": {
+    "message": "$ARG_1$ 的网站图标",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "chromeDefaultSearchEngine": {
+    "message": "Chrome 默认搜索引擎"
+  },
+  "switchSearchEngine": {
+    "message": "切换搜索引擎"
+  },
+  "selectSearchEngine": {
+    "message": "选择搜索引擎"
+  },
+  "searchEngines": {
+    "message": "搜索引擎"
+  },
+  "enabledEnginesCount": {
+    "message": "$ARG_1$ 个已启用",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "searchShortcut": {
+    "message": "搜索"
+  },
+  "manageSearchEngines": {
+    "message": "管理搜索引擎"
+  },
+  "noSearchEngineSelected": {
+    "message": "未选择"
+  },
+  "searchPlaceholder": {
+    "message": "使用 $ARG_1$ 搜索网页、标签页、历史和书签",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "searchPlaceholderNoEngine": {
+    "message": "请先启用一个搜索引擎"
+  },
+  "searchContent": {
+    "message": "搜索内容"
+  },
+  "search": {
+    "message": "搜索"
+  },
+  "defaultEngineSuggestions": {
+    "message": "Chrome 默认搜索"
+  },
+  "engineSuggestions": {
+    "message": "$ARG_1$ 联想",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "searchSuggestions": {
+    "message": "搜索建议"
+  },
+  "openTabs": {
+    "message": "已打开的标签页"
+  },
+  "currentTab": {
+    "message": "当前标签页"
+  },
+  "chromeBookmarks": {
+    "message": "Chrome 书签"
+  },
+  "chromeBookmarksUnavailable": {
+    "message": "Chrome 书签权限不可用，请检查扩展权限后重新加载。"
+  },
+  "browsingHistory": {
+    "message": "浏览历史"
+  },
+  "recentVisits": {
+    "message": "最近访问"
+  },
+  "predictiveResults": {
+    "message": "预搜索"
+  },
+  "quickContinue": {
+    "message": "快速继续"
+  },
+  "loadingSuggestions": {
+    "message": "正在联想..."
+  },
+  "chooseOpenHint": {
+    "message": "↑↓ 选择 · Enter 打开"
+  },
+  "noSuggestionsYet": {
+    "message": "输入关键词开始搜索"
+  },
+  "searchDirectlyWith": {
+    "message": "直接使用 $ARG_1$ 搜索",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "remoteSuggestionTerm": {
+    "message": "远程联想词"
+  },
+  "suggestionKindSearch": {
+    "message": "搜索"
+  },
+  "suggestionKindSwitch": {
+    "message": "切换"
+  },
+  "suggestionKindBookmark": {
+    "message": "书签"
+  },
+  "suggestionKindHistory": {
+    "message": "历史"
+  },
+  "suggestionPrivacyNote": {
+    "message": "远程联想由当前搜索引擎提供；本地结果不会上传。"
+  },
+  "engineChromeDefaultDescription": {
+    "message": "始终跟随 Chrome 当前默认搜索服务"
+  },
+  "enableEngine": {
+    "message": "启用 $ARG_1$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "moveUp": {
+    "message": "上移"
+  },
+  "moveDown": {
+    "message": "下移"
+  },
+  "engineName": {
+    "message": "名称"
+  },
+  "engineUrlTemplate": {
+    "message": "搜索 URL 模板"
+  },
+  "engineShortcut": {
+    "message": "快捷标识"
+  },
+  "addSearchEngine": {
+    "message": "添加搜索引擎"
+  },
+  "engineValidationQuery": {
+    "message": "URL 模板必须且只能包含一个 {query}。"
+  },
+  "engineValidationHttps": {
+    "message": "默认只允许 HTTPS；本地开发可使用 localhost 的 HTTP 地址。"
+  },
+  "engineValidationUrl": {
+    "message": "请输入有效的 URL。"
+  },
+  "engineValidationName": {
+    "message": "请输入搜索引擎名称。"
+  },
+  "editBookmarkTitle": {
+    "message": "编辑书签"
+  },
+  "createBookmarkTitle": {
+    "message": "新建项目"
+  },
+  "itemType": {
+    "message": "项目类型"
+  },
+  "name": {
+    "message": "名称"
+  },
+  "url": {
+    "message": "网址"
+  },
+  "parentFolder": {
+    "message": "所属文件夹"
+  },
+  "saveTo": {
+    "message": "保存到"
+  },
+  "enterName": {
+    "message": "请输入名称。"
+  },
+  "bookmarkUrlHttpOnly": {
+    "message": "书签只允许 http 或 https 地址。"
+  },
+  "enterValidUrl": {
+    "message": "请输入有效的网址。"
+  },
+  "confirmDelete": {
+    "message": "确认删除"
+  },
+  "deleteConfirmBody": {
+    "message": "将删除“$ARG_1$”$ARG_2$。删除会立即同步到 Chrome 书签。",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      },
+      "arg_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "deleteConfirmDescendants": {
+    "message": "以及其中的 $ARG_1$ 个项目",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "folderNavigator": {
+    "message": "书签文件夹导航"
+  },
+  "searchFolders": {
+    "message": "搜索文件夹"
+  },
+  "filterFolders": {
+    "message": "筛选文件夹"
+  },
+  "folderTree": {
+    "message": "文件夹树"
+  },
+  "noMatchingFolders": {
+    "message": "没有匹配的文件夹"
+  },
+  "collapseFolder": {
+    "message": "折叠 $ARG_1$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "expandFolder": {
+    "message": "展开 $ARG_1$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "goBack": {
+    "message": "后退"
+  },
+  "goTop": {
+    "message": "回到顶层"
+  },
+  "currentLocation": {
+    "message": "当前位置"
+  },
+  "saveStatusLocalCanvas": {
+    "message": "本机画布：$ARG_1$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "syncStatusCloudCanvas": {
+    "message": "云端画布：$ARG_1$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "remoteCanvasAvailable": {
+    "message": "其他标签页或设备有画布更新，点击应用"
+  },
+  "remoteUpdatePending": {
+    "message": "有更新待应用"
+  },
+  "canvasZoom": {
+    "message": "画布缩放"
+  },
+  "zoomOutCanvas": {
+    "message": "缩小画布"
+  },
+  "zoomInCanvas": {
+    "message": "放大画布"
+  },
+  "fitAllElements": {
+    "message": "适应全部元素"
+  },
+  "fitAllElementsTitle": {
+    "message": "适应全部元素（包含绘图、文字和书签）"
+  },
+  "focusAllBookmarks": {
+    "message": "聚焦全部书签"
+  },
+  "focusAllBookmarksTitle": {
+    "message": "仅聚焦画布中的书签卡片"
+  },
+  "importBookmarks": {
+    "message": "导入书签"
+  },
+  "importChromeBookmarks": {
+    "message": "导入 Chrome 书签"
+  },
+  "fullBackup": {
+    "message": "完整备份"
+  },
+  "backupTitle": {
+    "message": "导出或恢复完整备份"
+  },
+  "excalidrawCanvasLabel": {
+    "message": "Excalidraw 书签画布"
+  },
+  "remoteAppliedLocalTab": {
+    "message": "已自动应用另一个标签页的画布更新。"
+  },
+  "remoteAppliedOtherDevice": {
+    "message": "已自动应用其他设备的画布更新。"
+  },
+  "keepLocalToast": {
+    "message": "已保留本机版本，将作为最新画布同步。"
+  },
+  "applyRemoteFailed": {
+    "message": "无法应用收到的画布更新，请重试。"
+  },
+  "bookmarkAlreadyOnCanvas": {
+    "message": "这个书签已经在画布中。"
+  },
+  "bookmarkAdded": {
+    "message": "已添加“$ARG_1$”。",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "selectedBookmarksAlreadyImported": {
+    "message": "所选书签已经全部在画布中。"
+  },
+  "importedBookmarks": {
+    "message": "已导入 $ARG_1$ 个书签。",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "noBookmarkCardsOnCanvas": {
+    "message": "画布中还没有书签卡片。"
+  },
+  "canvasEmpty": {
+    "message": "画布还是空白的。"
+  },
+  "canvasNotReady": {
+    "message": "画布还没有准备好，请稍后重试。"
+  },
+  "syncConflictTitle": {
+    "message": "其他标签页或设备更新了画布"
+  },
+  "syncConflictBody": {
+    "message": "当前页面也有尚未同步的修改。请选择要保留的版本，系统不会静默覆盖。"
+  },
+  "keepLocal": {
+    "message": "保留本机"
+  },
+  "useIncomingUpdate": {
+    "message": "使用收到的更新"
+  },
+  "exportFailed": {
+    "message": "导出失败，请重试。"
+  },
+  "backupReadFailed": {
+    "message": "无法读取备份文件。"
+  },
+  "restoreFailed": {
+    "message": "恢复未完成，请重试。"
+  },
+  "backupPanelDescription": {
+    "message": "一个 JSON 文件包含画布、图片与附件、素材库，以及视图、主题和搜索引擎配置。"
+  },
+  "exportBackupTitle": {
+    "message": "导出当前完整备份"
+  },
+  "backupStats": {
+    "message": "$ARG_1$ 个画布元素 · $ARG_2$ 个文件 · $ARG_3$ 个素材",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      },
+      "arg_2": {
+        "content": "$2"
+      },
+      "arg_3": {
+        "content": "$3"
+      }
+    }
+  },
+  "readingCanvas": {
+    "message": "正在读取画布..."
+  },
+  "downloadBackup": {
+    "message": "下载备份"
+  },
+  "downloadingBackup": {
+    "message": "正在导出..."
+  },
+  "restoreBackupTitle": {
+    "message": "从完整备份恢复"
+  },
+  "restoreBackupDescription": {
+    "message": "选择此前导出的 JSON。恢复会覆盖本机画布、素材库和插件配置，然后重新加载页面。"
+  },
+  "chooseBackupFile": {
+    "message": "选择备份文件"
+  },
+  "backupVerified": {
+    "message": "已验证备份"
+  },
+  "backupVerifiedStats": {
+    "message": "$ARG_1$ · $ARG_2$ 个元素 · $ARG_3$ 个素材",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      },
+      "arg_2": {
+        "content": "$2"
+      },
+      "arg_3": {
+        "content": "$3"
+      }
+    }
+  },
+  "restoringBackup": {
+    "message": "正在恢复..."
+  },
+  "confirmRestore": {
+    "message": "确认覆盖并恢复"
+  },
+  "backupChromeBookmarksNote": {
+    "message": "Chrome 原生书签仍由 Chrome 管理，不会因恢复插件备份而被删除或替换。"
+  },
+  "bookmarkMatchMatched": {
+    "message": "Chrome 书签"
+  },
+  "bookmarkMatchAmbiguous": {
+    "message": "存在同网址重复书签，未自动关联"
+  },
+  "bookmarkMatchMissing": {
+    "message": "未匹配当前设备书签"
+  },
+  "openWithLinkButton": {
+    "message": "使用链接按钮打开"
+  },
+  "importPickerDescription": {
+    "message": "Chrome 中新增的书签会自动出现在这里。可以逐个添加、按文件夹导入，或一次导入全部。"
+  },
+  "alreadyOnCanvas": {
+    "message": "已在画布"
+  },
+  "allImported": {
+    "message": "已全部导入"
+  },
+  "importRemaining": {
+    "message": "导入剩余 $ARG_1$ 个",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "bookmarkFolderGroups": {
+    "message": "书签文件夹组"
+  },
+  "allChromeBookmarks": {
+    "message": "所有 Chrome 书签"
+  },
+  "importGroupDone": {
+    "message": "本组已导入"
+  },
+  "importGroupRemaining": {
+    "message": "导入本组 $ARG_1$ 个",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "bookmarkPickerSearchPlaceholder": {
+    "message": "搜索标题、网址或文件夹"
+  },
+  "noMatchingBookmarks": {
+    "message": "没有匹配的书签。"
+  },
+  "visibleLimitNotice": {
+    "message": "只显示前 $ARG_1$ 项，请继续输入关键词缩小范围。",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "saveStatusSaving": {
+    "message": "保存中"
+  },
+  "saveStatusError": {
+    "message": "保存失败"
+  },
+  "saveStatusSaved": {
+    "message": "已自动保存"
+  },
+  "saveTitleSaving": {
+    "message": "正在把完整画布保存到本机。"
+  },
+  "saveTitleError": {
+    "message": "本机画布保存失败，请保留当前页面并重试。"
+  },
+  "saveTitleSaved": {
+    "message": "完整画布已自动保存到本机。"
+  },
+  "syncStatusSyncing": {
+    "message": "同步中"
+  },
+  "syncStatusTooLarge": {
+    "message": "画布过大，仅本机"
+  },
+  "syncStatusError": {
+    "message": "同步失败"
+  },
+  "syncStatusUnavailable": {
+    "message": "仅本机保存"
+  },
+  "syncStatusLight": {
+    "message": "轻量同步 · 附件仅本机"
+  },
+  "syncStatusSynced": {
+    "message": "画布已同步"
+  },
+  "syncStatusIdle": {
+    "message": "等待同步"
+  },
+  "syncTitleRemote": {
+    "message": "其他标签页或设备保存了更新。点击后会在不刷新页面的情况下应用较新的画布。"
+  },
+  "syncTitleTooLarge": {
+    "message": "压缩后的画布超过 Chrome Sync 安全配额，完整内容仍已保存在本机。"
+  },
+  "syncTitleError": {
+    "message": "Chrome Sync 写入失败；完整内容仍已保存在本机。"
+  },
+  "syncTitleUnavailable": {
+    "message": "当前环境没有 Chrome Sync；完整内容保存在本机。"
+  },
+  "syncTitleLight": {
+    "message": "图形和设置已同步；$ARG_1$ 个图片或附件只保存在本机。",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "syncTitleSynced": {
+    "message": "图形、文字、书签引用、视口和素材库已保存到 Chrome Sync。"
+  },
+  "webEmbedToolbar": {
+    "message": "嵌入网页操作"
+  },
+  "webEmbedYoutubeProvider": {
+    "message": "YouTube iframe"
+  },
+  "webEmbedBilibiliProvider": {
+    "message": "Bilibili 短链"
+  },
+  "webEmbedBlockedProvider": {
+    "message": "已阻止的链接"
+  },
+  "webEmbedFullVideoPage": {
+    "message": "完整视频页"
+  },
+  "webEmbedOfficialPlayer": {
+    "message": "官方播放器"
+  },
+  "webEmbedInteracting": {
+    "message": "网页交互中"
+  },
+  "webEmbedRefresh": {
+    "message": "刷新这个嵌入网页"
+  },
+  "webEmbedOpenNewTab": {
+    "message": "在新标签页打开"
+  },
+  "webEmbedSwitchBilibiliPlayer": {
+    "message": "切换到 Bilibili 官方播放器"
+  },
+  "webEmbedSwitchBilibiliPage": {
+    "message": "切换到完整 Bilibili 视频页面"
+  },
+  "webEmbedSwitchPlayerTitle": {
+    "message": "切换到官方播放器"
+  },
+  "webEmbedSwitchPageTitle": {
+    "message": "切换到完整视频页面"
+  },
+  "webEmbedExit": {
+    "message": "退出网页交互"
+  },
+  "webEmbedExitTitle": {
+    "message": "退出网页交互（也可按 Esc）"
+  },
+  "webEmbedSupportedLinks": {
+    "message": "支持的链接类型"
+  },
+  "webEmbedVideo": {
+    "message": "视频"
+  },
+  "webEmbedLive": {
+    "message": "直播"
+  },
+  "webEmbedPlaylist": {
+    "message": "播放列表"
+  },
+  "webEmbedBvVideo": {
+    "message": "BV 视频"
+  },
+  "webEmbedAvVideo": {
+    "message": "av 视频"
+  },
+  "webEmbedPlayerLink": {
+    "message": "播放器链接"
+  },
+  "webEmbedHttpsOnly": {
+    "message": "仅允许 HTTPS 与本地开发地址"
+  },
+  "webEmbedIframeTitle": {
+    "message": "嵌入网页：$ARG_1$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "webEmbedHint": {
+    "message": "点击中央进入网页交互"
+  },
+  "webEmbedBlockedTitle": {
+    "message": "这个地址不能在画布中打开"
+  },
+  "webEmbedBlockedDescription": {
+    "message": "为保护扩展和本机数据，Bookmark Atlas 只允许 HTTPS 网页以及 localhost、127.0.0.1 和 [::1] 的本地开发地址。"
+  },
+  "webEmbedBilibiliShortTitle": {
+    "message": "Bilibili 短链需要在新标签页打开"
+  },
+  "webEmbedBilibiliShortDescription": {
+    "message": "短链在跳转前无法确认具体视频编号。请使用原始 BV/av 视频地址获得暂停预览，或直接在新标签页打开这条短链。"
+  },
+  "webEmbedYoutubeHomeTitle": {
+    "message": "YouTube 首页不能直接嵌入"
+  },
+  "webEmbedYoutubeHomeDescription": {
+    "message": "YouTube 只开放具体内容的 iframe 播放器。请把这个元素的链接改成具体视频、Shorts、直播或播放列表地址。"
+  },
+  "backupParseReadError": {
+    "message": "无法读取这个文件，请选择 Bookmark Atlas 导出的 JSON 备份。"
+  },
+  "backupParseFormatError": {
+    "message": "备份文件格式不正确。"
+  },
+  "backupParseInvalidError": {
+    "message": "这不是有效的 Bookmark Atlas 完整备份。"
+  },
+  "backupParsePreferencesError": {
+    "message": "备份中缺少界面配置。"
+  }
+}

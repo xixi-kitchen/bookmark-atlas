@@ -26,14 +26,14 @@ describe('App integration', () => {
 
     expect(screen.getByRole('heading', { name: 'Bookmark Atlas' })).toBeInTheDocument();
     expect(screen.getByRole('search')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Excalidraw 画布' })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: '行视图' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('combobox', { name: '卡片大小' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('combobox', { name: 'UI 风格' })).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '卡片大小：中卡片' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'UI 风格：瑞士国际主义' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Excalidraw canvas' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'List view' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('combobox', { name: 'Card size' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('combobox', { name: 'UI style' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Card size: Medium cards' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'UI style: Swiss International' })).toBeInTheDocument();
     await waitFor(() => expect(screen.getByText('Chrome Extensions Docs')).toBeInTheDocument());
-    expect(screen.getByRole('button', { name: '新建 Chrome 书签' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'New Chrome bookmark' })).toBeInTheDocument();
   });
 
   it('navigates folders and filters the managed view without leaving the page', async () => {
@@ -42,9 +42,9 @@ describe('App integration', () => {
     const bookmarksBar = await screen.findByRole('treeitem', { name: /Bookmarks Bar/ });
     fireEvent.click(bookmarksBar);
 
-    const breadcrumb = screen.getByRole('navigation', { name: '当前位置' });
+    const breadcrumb = screen.getByRole('navigation', { name: 'Current location' });
     expect(within(breadcrumb).getByRole('button', { name: 'Bookmarks Bar' })).toHaveAttribute('aria-current', 'page');
-    expect(screen.getByRole('button', { name: '书签：OpenAI' })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: '书签：Figma' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Bookmark: OpenAI' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Bookmark: Figma' })).not.toBeInTheDocument();
   });
 });

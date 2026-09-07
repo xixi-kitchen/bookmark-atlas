@@ -23,10 +23,10 @@ describe('GridView', () => {
   it('groups loose bookmarks and folder children into column sections', () => {
     render(<GridView bookmarks={tree} cardSize="md" selectedId="figma" />);
 
-    expect(screen.getByRole('region', { name: '顶层书签' })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Top-level bookmarks' })).toBeInTheDocument();
     expect(screen.getByRole('region', { name: 'Design' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '书签：Figma' })).toHaveClass('is-selected');
-    expect(within(screen.getByRole('region', { name: 'Design' })).getByText(/2 个直接项目/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Bookmark: Figma' })).toHaveClass('is-selected');
+    expect(within(screen.getByRole('region', { name: 'Design' })).getByText(/2 direct items/)).toBeInTheDocument();
   });
 
   it('renders an empty state', () => {
@@ -48,7 +48,7 @@ describe('GridView', () => {
     render(<GridView bookmarks={nested} />);
 
     expect(screen.getByRole('region', { name: 'Nested folder' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '书签：Deep link' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Bookmark: Deep link' })).toBeInTheDocument();
   });
 
   it('opens a group and exposes create, edit, and delete actions', () => {
@@ -59,10 +59,10 @@ describe('GridView', () => {
     render(<GridView bookmarks={tree} onOpenFolder={onOpenFolder} onCreateInFolder={onCreateInFolder} onEdit={onEdit} onDelete={onDelete} />);
 
     const designGroup = screen.getByRole('region', { name: 'Design' });
-    fireEvent.click(within(designGroup).getByRole('button', { name: /Design.*2 个直接项目/ }));
-    fireEvent.click(screen.getByRole('button', { name: '在 Design 中新建' }));
-    fireEvent.click(screen.getByRole('button', { name: '编辑 Design' }));
-    fireEvent.click(screen.getByRole('button', { name: '删除 Design' }));
+    fireEvent.click(within(designGroup).getByRole('button', { name: /Design.*2 direct items/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Create in Design' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Edit Design' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Delete Design' }));
 
     expect(onOpenFolder).toHaveBeenCalledWith(tree[0]);
     expect(onCreateInFolder).toHaveBeenCalledWith(tree[0]);
@@ -80,11 +80,11 @@ describe('GridView', () => {
     const onCreateInFolder = vi.fn();
     render(<GridView bookmarks={[systemFolder]} onCreateInFolder={onCreateInFolder} onEdit={vi.fn()} onDelete={vi.fn()} />);
 
-    fireEvent.click(screen.getByRole('button', { name: '在 Design 中新建' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Create in Design' }));
 
     expect(onCreateInFolder).toHaveBeenCalledWith(systemFolder);
-    expect(screen.queryByRole('button', { name: '编辑 Design' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: '删除 Design' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Edit Design' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Delete Design' })).not.toBeInTheDocument();
   });
 
   it('moves a dragged bookmark into a different group using the whole group as a drop target', async () => {

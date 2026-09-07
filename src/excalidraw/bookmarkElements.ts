@@ -5,6 +5,7 @@ import type {
   ExcalidrawFrameElement,
 } from '@excalidraw/excalidraw/element/types';
 import type { BookmarkNode } from '../bookmarks/types';
+import { t } from '../i18n';
 
 export type BookmarkElementData = {
   kind: 'bookmark';
@@ -190,7 +191,7 @@ export function buildBookmarkImportGroups(
   const loose = nodes.filter((node) => Boolean(node.url));
 
   if (loose.length > 0 && parents.length === 0) {
-    const title = parents.at(-1) ?? '顶层书签';
+    const title = parents.at(-1) ?? t('topLevelBookmarks');
     groups.push({
       id: `loose:${parents.join('/') || 'root'}`,
       title,
@@ -206,7 +207,7 @@ export function buildBookmarkImportGroups(
     if (entries.length > 0) {
       groups.push({
         id: folder.id,
-        title: folder.title || '未命名文件夹',
+        title: folder.title || t('unnamedFolder'),
         path: nextParents.join(' / '),
         depth,
         entries,
@@ -224,7 +225,7 @@ export function buildTopLevelBookmarkImportGroups(roots: BookmarkNode[]): Bookma
   if (loose.length > 0) {
     groups.push({
       id: 'top-level',
-      title: '顶层书签',
+      title: t('topLevelBookmarks'),
       path: '',
       depth: 0,
       entries: loose.map((node) => ({ node, folderPath: '' })),
@@ -237,7 +238,7 @@ export function buildTopLevelBookmarkImportGroups(roots: BookmarkNode[]): Bookma
     if (entries.length > 0) {
       groups.push({
         id: folder.id,
-        title: folder.title || '未命名文件夹',
+        title: folder.title || t('unnamedFolder'),
         path: parents.join(' / '),
         depth: 0,
         entries,
@@ -324,7 +325,7 @@ function createBookmarkFrame(
   return {
     ...rectangle,
     type: 'frame',
-    name: title || '书签',
+    name: title || t('bookmark'),
   } as ExcalidrawFrameElement;
 }
 
@@ -335,12 +336,12 @@ function buildBookmarkGroups(roots: BookmarkNode[]) {
   return [
     ...(looseBookmarks.length > 0 ? [{
       id: 'top-level',
-      title: '顶层书签',
+      title: t('topLevelBookmarks'),
       bookmarks: looseBookmarks.map((node) => ({ node, folderPath: '' })),
     }] : []),
     ...folders.map((folder) => ({
       id: folder.id,
-      title: folder.title || '未命名文件夹',
+      title: folder.title || t('unnamedFolder'),
       bookmarks: flattenUrlBookmarks(folder.children ?? [], folder.title ? [folder.title] : []),
     })),
   ];

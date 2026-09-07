@@ -7,6 +7,7 @@ import {
   isFolder,
   type BookmarkViewProps,
 } from './viewTypes';
+import { t } from '../../i18n';
 
 type GridSection = {
   folder?: BookmarkNode;
@@ -25,8 +26,8 @@ export function GridView({
   cardSize = 'md',
   selectedId,
   rootParentId = 'root',
-  emptyTitle = '还没有书签',
-  emptyDescription = '新建或同步 Chrome 书签后会显示在这里。',
+  emptyTitle = t('emptyBookmarksTitle'),
+  emptyDescription = t('emptyBookmarksBody'),
   onSelect,
   onOpenFolder,
   onCreateInFolder,
@@ -56,20 +57,20 @@ export function GridView({
   );
   const moveTo = async (sourceId: string, parentId: string, index: number, description: string) => {
     if (!onMove) return;
-    const sourceTitle = nodeLookup.get(sourceId)?.title || '书签';
-    setMoveAnnouncement(`正在移动“${sourceTitle}”${description}`);
+    const sourceTitle = nodeLookup.get(sourceId)?.title || t('bookmark');
+    setMoveAnnouncement(t('movingBookmark', [sourceTitle, description]));
     try {
       await onMove(sourceId, parentId, index);
-      setMoveAnnouncement(`已移动“${sourceTitle}”${description}`);
+      setMoveAnnouncement(t('movedBookmark', [sourceTitle, description]));
     } catch {
-      setMoveAnnouncement(`无法移动“${sourceTitle}”${description}`);
+      setMoveAnnouncement(t('moveBookmarkFailed', [sourceTitle, description]));
     }
     clearDragState();
   };
 
   if (bookmarks.length === 0) {
     return (
-      <section className="bookmark-grid bookmark-grid--empty" aria-label="列视图">
+      <section className="bookmark-grid bookmark-grid--empty" aria-label={t('gridViewLabel')}>
         <div className="bookmark-grid__empty">
           <strong>{emptyTitle}</strong>
           <span>{emptyDescription}</span>
@@ -80,11 +81,11 @@ export function GridView({
 
   const sections = buildGridSections(bookmarks);
   return (
-    <section className={`bookmark-grid bookmark-grid--${cardSize}`} aria-label="列视图">
+    <section className={`bookmark-grid bookmark-grid--${cardSize}`} aria-label={t('gridViewLabel')}>
       {sections.map((section) => {
         const sectionKey = section.folder?.id ?? rootParentId;
         const parentId = section.folder?.id ?? rootParentId;
-        const title = section.folder?.title ?? '顶层书签';
+        const title = section.folder?.title ?? t('topLevelBookmarks');
         const canAcceptDrop = Boolean(onMove && draggedId && canMoveNode(draggedId, parentId));
         const isDropTarget = canAcceptDrop && dropTarget?.parentId === parentId && dropTarget.edge === 'end';
 
@@ -127,7 +128,7 @@ export function GridView({
               event.preventDefault();
               event.stopPropagation();
               const index = normalizeMoveIndex(nodeLookup.get(sourceId), parentId, section.items.length);
-              await moveTo(sourceId, parentId, index, `到“${title}”末尾`);
+              await moveTo(sourceId, parentId, index, t('moveToFolderEnd', title));
             }}
           >
             <header className={`bookmark-grid__section-header ${section.folder ? 'is-folder' : ''}`}>
@@ -135,31 +136,31 @@ export function GridView({
                 <button type="button" className="bookmark-grid__section-open" onClick={() => onOpenFolder?.(section.folder!)}>
                   <FolderOpen size={17} />
                   <span>
-                    <strong>{title || '未命名文件夹'}</strong>
-                    <small>{section.items.length} 个直接项目 · {countDescendants(section.folder)} 个总项目</small>
+                    <strong>{title || t('unnamedFolder')}</strong>
+                    <small>{t('directTotalItemCount', [String(section.items.length), String(countDescendants(section.folder))])}</small>
                   </span>
                   <ChevronRight size={17} />
                 </button>
               ) : (
                 <div className="bookmark-grid__section-label">
-                  <strong>{title}</strong><span>{section.items.length} 项</span>
+                  <strong>{title}</strong><span>{t('itemCount', String(section.items.length))}</span>
                 </div>
               )}
               {section.folder && (
-                <div className="bookmark-grid__section-actions" aria-label={`${title} 分组操作`}>
+                <div className="bookmark-grid__section-actions" aria-label={t('folderGroupActions', title)}>
                   {section.folder.readonlyReason !== 'root' && section.folder.readonlyReason !== 'managed' && onCreateInFolder && (
-                    <button type="button" onClick={() => onCreateInFolder(section.folder!)} aria-label={`在 ${title} 中新建`} title="在此新建"><Plus size={15} /></button>
+                    <button type="button" onClick={() => onCreateInFolder(section.folder!)} aria-label={t('createInFolder', title)} title={t('createHere')}><Plus size={15} /></button>
                   )}
                   {!section.folder.readonly && onEdit && (
-                    <button type="button" onClick={() => onEdit(section.folder!)} aria-label={`编辑 ${title}`} title="编辑文件夹"><Pencil size={14} /></button>
+                    <button type="button" onClick={() => onEdit(section.folder!)} aria-label={`${t('edit')} ${title}`} title={t('editFolder')}><Pencil size={14} /></button>
                   )}
                   {!section.folder.readonly && onDelete && (
-                    <button type="button" className="is-danger" onClick={() => onDelete(section.folder!)} aria-label={`删除 ${title}`} title="删除文件夹"><Trash2 size={14} /></button>
+                    <button type="button" className="is-danger" onClick={() => onDelete(section.folder!)} aria-label={`${t('delete')} ${title}`} title={t('deleteFolder')}><Trash2 size={14} /></button>
                   )}
                 </div>
               )}
             </header>
-            <div className="bookmark-grid__drop-hint" aria-hidden="true">移动到“{title}”</div>
+            <div className="bookmark-grid__drop-hint" aria-hidden="true">{t('moveToFolder', title)}</div>
             <div className="bookmark-grid__cards" role="list">
               {section.items.map((node, itemIndex) => {
                 const itemDrop = dropTarget?.parentId === parentId && dropTarget.itemId === node.id
@@ -206,7 +207,9 @@ export function GridView({
                     const edge = getDropEdge(event);
                     const rawIndex = itemIndex + (edge === 'after' ? 1 : 0);
                     const index = normalizeMoveIndex(nodeLookup.get(sourceId), parentId, rawIndex);
-                    await moveTo(sourceId, parentId, index, `${edge === 'before' ? '到' : '至'}“${node.title || '未命名'}”${edge === 'before' ? '之前' : '之后'}`);
+                    await moveTo(sourceId, parentId, index, edge === 'before'
+                      ? t('moveBeforeItem', node.title || t('unnamed'))
+                      : t('moveAfterItem', node.title || t('unnamed')));
                   }}
                 >
                   <BookmarkCard

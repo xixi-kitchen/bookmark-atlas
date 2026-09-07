@@ -749,6 +749,37 @@ select:focus-visible,
 .atlas-sync-state.is-remote:hover { background: #e4e2ff; }
 .atlas-sync-state .is-pulsing { animation: atlas-sync-pulse 1.2s ease-in-out infinite; }
 
+.atlas-sync-conflict {
+  position: fixed;
+  top: 72px;
+  right: 18px;
+  z-index: 70;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  width: min(440px, calc(100vw - 36px));
+  gap: 10px 12px;
+  padding: 14px;
+  border: 1px solid #aaa7ec;
+  border-radius: 12px;
+  color: #26243b;
+  background: #f7f6ff;
+  box-shadow: 0 16px 44px rgb(40 36 90 / .2);
+}
+
+.atlas-sync-conflict > svg { margin-top: 2px; color: #4d49bd; }
+.atlas-sync-conflict > div:not(.atlas-sync-conflict__actions) { min-width: 0; }
+.atlas-sync-conflict strong,
+.atlas-sync-conflict span { display: block; }
+.atlas-sync-conflict strong { font-size: 13px; }
+.atlas-sync-conflict span { margin-top: 5px; color: #615e73; font-size: 11px; line-height: 1.45; }
+.atlas-sync-conflict__actions {
+  display: flex;
+  grid-column: 2;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.atlas-sync-conflict__actions button { min-height: 34px; }
+
 .atlas-save-state.is-saving { color: #7a5b12; }
 .atlas-save-state.is-error { color: #b42318; }
 

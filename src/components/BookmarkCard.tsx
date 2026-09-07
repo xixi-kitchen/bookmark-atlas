@@ -10,6 +10,7 @@ import {
   type BookmarkActionHandlers,
   type CardSize,
 } from './views/viewTypes';
+import { t } from '../i18n';
 
 export type BookmarkCardProps = BookmarkActionHandlers & {
   node: BookmarkNode;
@@ -166,7 +167,7 @@ export function BookmarkCard({
       }}
     >
       {!readonly && (
-        <span className="bookmark-card__drag-handle" draggable aria-label="拖动调整分组或顺序" title="拖动调整分组或顺序">
+        <span className="bookmark-card__drag-handle" draggable aria-label={t('dragReorder')} title={t('dragReorder')}>
           <GripVertical size={14} />
         </span>
       )}
@@ -176,7 +177,7 @@ export function BookmarkCard({
         data-depth={depth}
         data-card-size={cardSize}
         aria-pressed={selected}
-        aria-label={`${folder ? '文件夹' : '书签'}：${node.title || '未命名'}`}
+        aria-label={t('nodeLabel', [folder ? t('folder') : t('bookmark'), node.title || t('unnamed')])}
         onClick={selectNode}
         onContextMenu={(event) => {
           if (!hasActions) return;
@@ -199,9 +200,9 @@ export function BookmarkCard({
         </span>
 
         <span className="bookmark-card__body">
-          <strong className="bookmark-card__title">{node.title || '未命名'}</strong>
+          <strong className="bookmark-card__title">{node.title || t('unnamed')}</strong>
           <span className="bookmark-card__meta">
-            {folder ? `${childCount} 项` : hostname(node.url)}
+            {folder ? t('itemCount', String(childCount)) : hostname(node.url)}
           </span>
         </span>
       </button>
@@ -216,7 +217,7 @@ export function BookmarkCard({
           <button
             className="bookmark-card__menu-trigger"
             type="button"
-            aria-label={`${node.title || '未命名'} 的操作`}
+            aria-label={t('nodeActions', node.title || t('unnamed'))}
             aria-haspopup="menu"
             aria-expanded={actionsOpen}
             draggable={false}
@@ -230,11 +231,11 @@ export function BookmarkCard({
           </button>
           {actionsOpen && (
             <div className="bookmark-card__menu" role="menu">
-              {node.url && <button type="button" role="menuitem" onClick={openUrl}>打开</button>}
-              {folder && onOpenFolder && <button type="button" role="menuitem" onClick={openFolder}>进入文件夹</button>}
-              {canAcceptChildren && onCreateInFolder && <button type="button" role="menuitem" onClick={createInFolder}>在此新建</button>}
-              {!readonly && <button type="button" role="menuitem" onClick={requestEdit}>编辑</button>}
-              {!readonly && <button type="button" role="menuitem" className="is-danger" onClick={requestDelete}>删除</button>}
+              {node.url && <button type="button" role="menuitem" onClick={openUrl}>{t('open')}</button>}
+              {folder && onOpenFolder && <button type="button" role="menuitem" onClick={openFolder}>{t('openFolder')}</button>}
+              {canAcceptChildren && onCreateInFolder && <button type="button" role="menuitem" onClick={createInFolder}>{t('createHere')}</button>}
+              {!readonly && <button type="button" role="menuitem" onClick={requestEdit}>{t('edit')}</button>}
+              {!readonly && <button type="button" role="menuitem" className="is-danger" onClick={requestDelete}>{t('delete')}</button>}
             </div>
           )}
         </div>

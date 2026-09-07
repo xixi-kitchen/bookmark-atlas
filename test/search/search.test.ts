@@ -22,7 +22,10 @@ const customEngine: SearchEngine = {
 };
 
 describe('search engines', () => {
-  afterEach(() => vi.unstubAllGlobals());
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    window.history.replaceState({}, '', '/');
+  });
 
   it('defines the required default engines', () => {
     expect(DEFAULT_SEARCH_ENGINES.map((engine) => engine.id)).toEqual([
@@ -90,6 +93,21 @@ describe('search engines', () => {
       'https://example.com/suggest?q=chrome',
       expect.objectContaining({ signal: undefined }),
     );
+  });
+
+  it('uses deterministic remote suggestions only for non-extension store screenshots', async () => {
+    window.history.replaceState({}, '', '/?store-screenshot&lang=en');
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+
+    const suggestions = await fetchRemoteSuggestions(DEFAULT_SEARCH_ENGINES[3]!, 'Excalidraw');
+
+    expect(suggestions).toEqual([
+      'Excalidraw workflow',
+      'Excalidraw examples',
+      'Excalidraw checklist',
+    ]);
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it('adds, updates, toggles, removes, and reorders engines immutably', () => {

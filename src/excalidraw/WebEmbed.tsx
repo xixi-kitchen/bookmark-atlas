@@ -1,6 +1,7 @@
 import { ExternalLink, Link2, MousePointer2, Play, RefreshCw, ShieldAlert, Youtube } from 'lucide-react';
 import { useEffect, useState, type MouseEvent, type PointerEvent, type WheelEvent } from 'react';
 import { isSafeEmbeddableUrl } from './bookmarkElements';
+import { t } from '../i18n';
 
 const WEB_EMBED_FEATURES = [
   'accelerometer',
@@ -103,17 +104,17 @@ export function WebEmbed({ elementId, url, active, onExitInteraction }: Props) {
       onWheel={(event: WheelEvent<HTMLDivElement>) => event.stopPropagation()}
     >
       {active && (
-        <div className="atlas-web-embed__toolbar" role="toolbar" aria-label="嵌入网页操作">
+        <div className="atlas-web-embed__toolbar" role="toolbar" aria-label={t('webEmbedToolbar')}>
           <span className="atlas-web-embed__status">
-            {bilibiliVideo ? showingBilibiliPage ? '完整视频页' : '官方播放器' : '网页交互中'}
+            {bilibiliVideo ? showingBilibiliPage ? t('webEmbedFullVideoPage') : t('webEmbedOfficialPlayer') : t('webEmbedInteracting')}
           </span>
           {!embedIssue && (
-            <button type="button" onPointerDown={stopPointer} onClick={refresh} aria-label="刷新这个嵌入网页" title="刷新这个嵌入网页">
+            <button type="button" onPointerDown={stopPointer} onClick={refresh} aria-label={t('webEmbedRefresh')} title={t('webEmbedRefresh')}>
               <RefreshCw size={14} className={loading ? 'is-spinning' : ''} />
             </button>
           )}
           {safeUrl && (
-            <button type="button" onPointerDown={stopPointer} onClick={openExternally} aria-label="在新标签页打开" title="在新标签页打开">
+            <button type="button" onPointerDown={stopPointer} onClick={openExternally} aria-label={t('webEmbedOpenNewTab')} title={t('webEmbedOpenNewTab')}>
               <ExternalLink size={14} />
             </button>
           )}
@@ -122,13 +123,13 @@ export function WebEmbed({ elementId, url, active, onExitInteraction }: Props) {
               type="button"
               onPointerDown={stopPointer}
               onClick={toggleBilibiliView}
-              aria-label={showingBilibiliPage ? '切换到 Bilibili 官方播放器' : '切换到完整 Bilibili 视频页面'}
-              title={showingBilibiliPage ? '切换到官方播放器' : '切换到完整视频页面'}
+              aria-label={showingBilibiliPage ? t('webEmbedSwitchBilibiliPlayer') : t('webEmbedSwitchBilibiliPage')}
+              title={showingBilibiliPage ? t('webEmbedSwitchPlayerTitle') : t('webEmbedSwitchPageTitle')}
             >
               {showingBilibiliPage ? <Play size={14} /> : <Link2 size={14} />}
             </button>
           )}
-          <button type="button" onPointerDown={stopPointer} onClick={exitInteraction} aria-label="退出网页交互" title="退出网页交互（也可按 Esc）">
+          <button type="button" onPointerDown={stopPointer} onClick={exitInteraction} aria-label={t('webEmbedExit')} title={t('webEmbedExitTitle')}>
             <MousePointer2 size={14} />
           </button>
         </div>
@@ -139,31 +140,31 @@ export function WebEmbed({ elementId, url, active, onExitInteraction }: Props) {
           <div className={`atlas-web-embed__provider-note is-${embedIssue.provider}-issue`} data-provider={embedIssue.provider} role="note" aria-label={embedIssue.title}>
             <div className="atlas-web-embed__provider-icon"><IssueIcon size={34} strokeWidth={2.2} /></div>
             <div className="atlas-web-embed__provider-copy">
-              <span>{embedIssue.provider === 'youtube' ? 'YouTube iframe' : embedIssue.provider === 'bilibili' ? 'Bilibili short link' : 'Blocked link'}</span>
+              <span>{embedIssue.provider === 'youtube' ? t('webEmbedYoutubeProvider') : embedIssue.provider === 'bilibili' ? t('webEmbedBilibiliProvider') : t('webEmbedBlockedProvider')}</span>
               <strong>{embedIssue.title}</strong>
               <p>{embedIssue.description}</p>
             </div>
-            <div className="atlas-web-embed__provider-formats" aria-label="支持的链接类型">
+            <div className="atlas-web-embed__provider-formats" aria-label={t('webEmbedSupportedLinks')}>
               {embedIssue.provider === 'youtube' ? (
                 <>
-                  <span><Link2 size={12} /> 视频</span>
+                  <span><Link2 size={12} /> {t('webEmbedVideo')}</span>
                   <span><Link2 size={12} /> Shorts</span>
-                  <span><Link2 size={12} /> 直播</span>
-                  <span><Link2 size={12} /> 播放列表</span>
+                  <span><Link2 size={12} /> {t('webEmbedLive')}</span>
+                  <span><Link2 size={12} /> {t('webEmbedPlaylist')}</span>
                 </>
               ) : embedIssue.provider === 'bilibili' ? (
                 <>
-                  <span><Link2 size={12} /> BV 视频</span>
-                  <span><Link2 size={12} /> av 视频</span>
-                  <span><Link2 size={12} /> 播放器链接</span>
+                  <span><Link2 size={12} /> {t('webEmbedBvVideo')}</span>
+                  <span><Link2 size={12} /> {t('webEmbedAvVideo')}</span>
+                  <span><Link2 size={12} /> {t('webEmbedPlayerLink')}</span>
                 </>
               ) : (
-                <span><ShieldAlert size={12} /> 仅允许 HTTPS 与本地开发地址</span>
+                <span><ShieldAlert size={12} /> {t('webEmbedHttpsOnly')}</span>
               )}
             </div>
             {safeUrl && (
               <button type="button" onPointerDown={stopPointer} onClick={openExternally}>
-                <ExternalLink size={14} /> 在新标签页打开
+                <ExternalLink size={14} /> {t('webEmbedOpenNewTab')}
               </button>
             )}
           </div>
@@ -173,7 +174,7 @@ export function WebEmbed({ elementId, url, active, onExitInteraction }: Props) {
               key={`${elementId}:${src}:${refreshRevision}`}
               className="atlas-web-embed__frame"
               src={src}
-              title={`嵌入网页：${hostname(url) || url}`}
+              title={t('webEmbedIframeTitle', hostname(url) || url)}
               scrolling="auto"
               referrerPolicy="strict-origin-when-cross-origin"
               allow={frameAllow}
@@ -186,7 +187,7 @@ export function WebEmbed({ elementId, url, active, onExitInteraction }: Props) {
 
         {!active && (
           <div className="atlas-web-embed__interaction-hint" aria-hidden="true">
-            点击中央进入网页交互
+            {t('webEmbedHint')}
           </div>
         )}
       </div>
@@ -248,8 +249,8 @@ export function getWebEmbedIssue(link: string): WebEmbedIssue | null {
   if (!isSafeEmbeddableUrl(link)) {
     return {
       provider: 'unsafe',
-      title: '这个地址不能在画布中打开',
-      description: '为保护扩展和本机数据，Bookmark Atlas 只允许 HTTPS 网页以及 localhost、127.0.0.1 和 [::1] 的本地开发地址。',
+      title: t('webEmbedBlockedTitle'),
+      description: t('webEmbedBlockedDescription'),
     };
   }
 
@@ -261,8 +262,8 @@ export function getWebEmbedIssue(link: string): WebEmbedIssue | null {
     if (host === 'b23.tv') {
       return {
         provider: 'bilibili',
-        title: 'Bilibili 短链需要在新标签页打开',
-        description: '短链在跳转前无法确认具体视频编号。请使用原始 BV/av 视频地址获得暂停预览，或直接在新标签页打开这条短链。',
+        title: t('webEmbedBilibiliShortTitle'),
+        description: t('webEmbedBilibiliShortDescription'),
       };
     }
 
@@ -271,8 +272,8 @@ export function getWebEmbedIssue(link: string): WebEmbedIssue | null {
 
     return {
       provider: 'youtube',
-      title: 'YouTube 首页不能直接嵌入',
-      description: 'YouTube 只开放具体内容的 iframe 播放器。请把这个元素的链接改成具体视频、Shorts、直播或播放列表地址。',
+      title: t('webEmbedYoutubeHomeTitle'),
+      description: t('webEmbedYoutubeHomeDescription'),
     };
   } catch {
     return null;

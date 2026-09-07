@@ -5,6 +5,7 @@ const originalChrome = globalThis.chrome;
 
 afterEach(() => {
   Object.defineProperty(globalThis, 'chrome', { value: originalChrome, configurable: true });
+  window.history.replaceState({}, '', '/');
 });
 
 describe('unified browser search', () => {
@@ -46,6 +47,19 @@ describe('unified browser search', () => {
     expect(activated).toBe(true);
     expect(updateTab).toHaveBeenCalledWith(7, { active: true });
     expect(updateWindow).toHaveBeenCalledWith(2, { focused: true });
+  });
+
+  it('uses deterministic demo results only for non-extension store screenshots', async () => {
+    Object.defineProperty(globalThis, 'chrome', { value: undefined, configurable: true });
+    window.history.replaceState({}, '', '/?store-screenshot&lang=en');
+
+    const result = await searchLocalBrowserContent('excalidraw');
+
+    expect(result.tabs.map((item) => item.title)).toEqual(['Product roadmap – Notion']);
+    expect(result.bookmarks.map((item) => item.title)).toEqual(['Excalidraw libraries']);
+    expect(result.history.map((item) => item.title)).toEqual([
+      'Chrome extension localization guide',
+    ]);
   });
 });
 

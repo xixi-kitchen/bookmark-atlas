@@ -1,14 +1,74 @@
 <!doctype html>
-<html lang="zh-CN">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>隐私政策 · Bookmark Atlas</title><link rel="stylesheet" href="site.css"></head>
-<body><main class="site-shell">
-  <header class="site-nav"><a class="site-brand" href="index.html"><img src="store-assets/icon-128.png" alt="">Bookmark Atlas</a><nav><a href="privacy.html">隐私政策</a><a href="support.html">支持</a></nav></header>
-  <article class="document"><span class="eyebrow">Privacy / 2026-08-28</span><h1>隐私政策</h1><p>Bookmark Atlas 是本地优先的 Chrome 扩展。我们不出售、不分析、不上传用户的书签、标签页或浏览历史，也不包含广告或追踪器。</p>
-    <h2>本地处理的数据</h2><ul><li>Chrome 书签：用于显示和执行用户主动发起的管理操作。</li><li>标签页与浏览历史：用于搜索框中的本地预搜索结果，不上传给开发者或搜索引擎。</li><li>Excalidraw 完整画布、图片和附件：保存在当前设备的 IndexedDB。</li></ul>
-    <h2>跨设备同步</h2><p>图形、文字、书签引用、视口和素材库会在配额允许时压缩并写入 <strong>chrome.storage.sync</strong>。图片和二进制附件不会进入 Chrome Sync，只保存在添加它们的设备上。主题、视图和搜索设置也使用 Chrome Sync。</p>
-    <h2>发送给第三方的数据</h2><p>使用“Chrome 默认”或自定义搜索引擎时，扩展不会额外请求联想服务。用户主动选择百度、必应或 Google 后，输入词会发送给对应的固定联想接口。画布中存在网页嵌入时，目标网站会在禁止跳转插件顶层和弹窗逃逸的 sandbox iframe 中接收网络请求。Bilibili 具体视频使用关闭自动播放的官方播放器，可直接在画布内播放或由用户切换到完整视频页面。</p>
-    <h2>YouTube 播放器</h2><p>仅对 Bookmark Atlas 自己创建的 YouTube 官方播放器请求，扩展设置固定客户端 Referer 以满足 YouTube Error 153 的识别要求。规则不读取请求内容，也不作用于其他网页的播放器。</p>
-    <h2>删除数据</h2><p>卸载扩展会删除本机扩展数据。Chrome 账号中的同步数据由 Chrome 管理。卸载不会删除用户的 Chrome 书签。用户也可以从扩展内导出或恢复完整画布备份。</p>
-    <h2>Limited Use</h2><p>The use of information received from Google APIs will adhere to the Chrome Web Store User Data Policy, including the Limited Use requirements.</p>
-  </article><footer class="site-footer">最后更新：2026-08-28</footer>
-</main></body></html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Privacy Policy · Bookmark Atlas</title>
+  <link rel="stylesheet" href="site.css">
+</head>
+<body>
+  <main class="site-shell">
+    <header class="site-nav">
+      <a class="site-brand" href="index.html"><img src="store-assets/icon-128.png" alt="">Bookmark Atlas</a>
+      <nav aria-label="Primary">
+        <a href="#zh-cn">中文</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="support.html">Support</a>
+      </nav>
+    </header>
+
+    <article class="document">
+      <span class="eyebrow">Privacy / 2026-09-04</span>
+      <h1>Privacy Policy</h1>
+      <p>Bookmark Atlas is a local-first Chrome extension. It does not sell, analyze, or upload your bookmarks, open tabs, browsing history, or canvas content to a developer server. It does not include ads, trackers, or remote code execution.</p>
+
+      <h2>Data handled by the extension</h2>
+      <ul>
+        <li>Chrome bookmarks are read and modified locally through the Chrome Bookmarks API for user-requested bookmark features.</li>
+        <li>Website icons are read from Chrome's local Favicon API cache.</li>
+        <li>Open tabs and browsing history are read locally to produce pre-search results.</li>
+        <li>The full Excalidraw canvas and user-added binary attachments are stored in local IndexedDB, with <code>chrome.storage.local</code> as a fallback.</li>
+        <li>Lightweight canvas state may be compressed and written to <code>chrome.storage.sync</code> when Chrome Sync is available and quota allows.</li>
+        <li>Images and binary attachments are not uploaded to Chrome Sync.</li>
+      </ul>
+
+      <h2>Sync behavior</h2>
+      <p>Chrome Sync is controlled by the user's Chrome account settings. Bookmark Atlas writes eligible lightweight data when local changes occur and listens for Chrome storage change events in other open extension pages. This usually behaves as near-real-time sync, but Chrome does not guarantee an exact delivery latency across devices or browser tabs.</p>
+      <p>Synced bookmark cards are reconciled by normalized URL, title, and folder path. Chrome bookmark IDs are local to a browser profile and are not treated as cross-device identifiers.</p>
+
+      <h2>Remote requests</h2>
+      <p>When the user selects Baidu, Bing, or Google as the active built-in search engine, input text is sent to that provider's fixed suggestion endpoint. Chrome Default and custom engines do not call an extra remote suggestion endpoint. Embedded websites load in sandboxed iframes and may receive normal browser requests, cookies, and account state according to browser rules. Bookmark Atlas does not proxy, inspect, or record those requests.</p>
+      <p>For official YouTube <code>/embed/</code> player requests created by Bookmark Atlas, a declarative rule sets a fixed client referrer. The rule does not read request content and does not apply to YouTube players created by other websites.</p>
+
+      <h2>Data deletion</h2>
+      <p>Uninstalling the extension removes local extension storage from the device. Chrome account sync data is managed by Chrome. Uninstalling Bookmark Atlas does not delete the user's Chrome bookmarks.</p>
+
+      <h2>Limited Use</h2>
+      <p>The use of information received from Google APIs will adhere to the Chrome Web Store User Data Policy, including the Limited Use requirements.</p>
+    </article>
+
+    <article id="zh-cn" class="document secondary-document" lang="zh-CN">
+      <span class="eyebrow">简体中文</span>
+      <h1>隐私政策</h1>
+      <p>Bookmark Atlas 是本地优先的 Chrome 扩展。扩展不会把你的书签、标签页、浏览历史或画布内容上传到开发者服务器，也不包含广告、追踪器或远程执行代码。</p>
+      <h2>处理的数据</h2>
+      <ul>
+        <li>使用 Chrome Bookmarks API 在本地读取和修改用户主动管理的书签。</li>
+        <li>使用 Chrome Favicon API 从浏览器本地图标缓存显示网站图标。</li>
+        <li>在本地读取已打开标签页和浏览历史，用于搜索框预搜索结果。</li>
+        <li>完整 Excalidraw 画布和用户添加的附件保存在当前设备的 IndexedDB。</li>
+        <li>图形、文字、书签引用、视口和素材库会在配额允许时写入 Chrome Sync。</li>
+        <li>图片和二进制附件不会进入 Chrome Sync，只保存在添加它们的设备上。</li>
+      </ul>
+      <h2>同步说明</h2>
+      <p>Chrome Sync 由用户自己的 Chrome 账号设置控制。Bookmark Atlas 会在本地内容变化时写入可同步的轻量数据，并监听其他扩展页面的 Chrome storage 变化事件。它通常表现为近实时同步，但 Chrome 不保证跨设备或多标签页的固定到达时间。书签卡片会按规范化 URL、标题和文件夹路径重新关联当前设备的书签，不把 Chrome 本地书签 ID 当作跨设备主键。</p>
+      <h2>远程请求</h2>
+      <p>用户主动选择百度、必应或 Google 后，输入词会发送给对应的固定联想接口。使用「Chrome 默认」或自定义搜索引擎时，扩展不会额外调用远程联想接口。画布中的网页嵌入会按浏览器规则连接目标网站；Bookmark Atlas 不代理、检查或记录这些请求。</p>
+      <h2>删除数据</h2>
+      <p>卸载扩展会删除当前设备上的扩展本地数据，但不会删除用户的 Chrome 书签。Chrome 账号同步数据由 Chrome 自身管理。</p>
+    </article>
+
+    <footer class="site-footer">Last updated: 2026-09-04</footer>
+  </main>
+</body>
+</html>

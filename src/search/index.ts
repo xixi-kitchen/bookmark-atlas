@@ -1,3 +1,5 @@
+import { isStoreScreenshotMode } from '../storeScreenshot';
+
 export type SearchEngine = {
   id: string;
   name: string;
@@ -13,15 +15,15 @@ export type SearchEngine = {
 export const DEFAULT_SEARCH_ENGINES: readonly SearchEngine[] = [
   {
     id: 'chrome-default',
-    name: 'Chrome 默认',
+    name: 'Chrome Default',
     kind: 'chrome-default',
     queryUrlTemplate: '',
-    shortcut: '默认',
+    shortcut: 'default',
     enabled: true,
   },
   {
     id: 'baidu',
-    name: '百度',
+    name: 'Baidu',
     queryUrlTemplate: 'https://www.baidu.com/s?wd={query}',
     suggestionUrlTemplate: 'https://suggestion.baidu.com/su?wd={query}&action=opensearch',
     suggestionEncoding: 'gbk',
@@ -30,7 +32,7 @@ export const DEFAULT_SEARCH_ENGINES: readonly SearchEngine[] = [
   },
   {
     id: 'bing',
-    name: '必应',
+    name: 'Bing',
     queryUrlTemplate: 'https://www.bing.com/search?q={query}',
     suggestionUrlTemplate: 'https://api.bing.com/osjson.aspx?query={query}',
     shortcut: 'bi',
@@ -102,6 +104,10 @@ export async function fetchRemoteSuggestions(
   signal?: AbortSignal,
 ): Promise<string[]> {
   if (!query.trim() || !engine.suggestionUrlTemplate?.trim()) return [];
+  if (isStoreScreenshotMode()) {
+    const value = query.trim();
+    return [`${value} workflow`, `${value} examples`, `${value} checklist`];
+  }
   const endpoint = engine.suggestionUrlTemplate.replace('{query}', encodeURIComponent(query.trim()));
 
   try {

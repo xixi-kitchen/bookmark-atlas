@@ -1,5 +1,6 @@
 import type { PersistedPreferences } from '../store/preferencesStore';
 import { getPreferencesSnapshot, usePreferencesStore } from '../store/preferencesStore';
+import { t } from '../i18n';
 import {
   normalizeStoredScene,
   saveStoredScene,
@@ -35,18 +36,18 @@ export function parseBookmarkAtlasBackup(value: string): BookmarkAtlasBackup {
   try {
     parsed = JSON.parse(value);
   } catch {
-    throw new Error('无法读取这个文件，请选择 Bookmark Atlas 导出的 JSON 备份。');
+    throw new Error(t('backupParseReadError'));
   }
 
-  if (!parsed || typeof parsed !== 'object') throw new Error('备份文件格式不正确。');
+  if (!parsed || typeof parsed !== 'object') throw new Error(t('backupParseFormatError'));
   const candidate = parsed as Partial<BookmarkAtlasBackup>;
   const scene = normalizeStoredScene(candidate.contents?.excalidrawScene);
   if (candidate.type !== 'bookmark-atlas-backup' || candidate.version !== 1 || !scene) {
-    throw new Error('这不是有效的 Bookmark Atlas 完整备份。');
+    throw new Error(t('backupParseInvalidError'));
   }
 
   const preferences = candidate.contents?.preferences;
-  if (!preferences || typeof preferences !== 'object') throw new Error('备份中缺少界面配置。');
+  if (!preferences || typeof preferences !== 'object') throw new Error(t('backupParsePreferencesError'));
 
   return {
     ...candidate,

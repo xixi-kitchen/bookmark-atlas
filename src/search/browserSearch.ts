@@ -1,3 +1,6 @@
+import { t } from '../i18n';
+import { isStoreScreenshotMode } from '../storeScreenshot';
+
 export type BrowserSearchKind = 'tab' | 'history' | 'bookmark';
 
 export type BrowserSearchResult = {
@@ -19,6 +22,7 @@ export type BrowserSearchGroups = {
 const EMPTY_GROUPS: BrowserSearchGroups = { tabs: [], bookmarks: [], history: [] };
 
 export async function searchLocalBrowserContent(query: string): Promise<BrowserSearchGroups> {
+  if (isStoreScreenshotMode()) return screenshotSearchResults();
   const chromeApi = globalThis.chrome;
   if (!chromeApi) return EMPTY_GROUPS;
 
@@ -37,6 +41,32 @@ export async function searchLocalBrowserContent(query: string): Promise<BrowserS
     tabs: tabs.slice(0, 5),
     bookmarks: uniqueBookmarks.slice(0, 5),
     history: uniqueHistory.slice(0, 6),
+  };
+}
+
+function screenshotSearchResults(): BrowserSearchGroups {
+  return {
+    tabs: [{
+      id: 'tab:screenshot-roadmap',
+      kind: 'tab',
+      title: 'Product roadmap – Notion',
+      url: 'https://www.notion.so/product-roadmap',
+      subtitle: 'notion.so',
+    }],
+    bookmarks: [{
+      id: 'bookmark:screenshot-excalidraw',
+      kind: 'bookmark',
+      title: 'Excalidraw libraries',
+      url: 'https://libraries.excalidraw.com/',
+      subtitle: 'libraries.excalidraw.com',
+    }],
+    history: [{
+      id: 'history:screenshot-localization',
+      kind: 'history',
+      title: 'Chrome extension localization guide',
+      url: 'https://developer.chrome.com/docs/extensions/reference/api/i18n',
+      subtitle: 'developer.chrome.com',
+    }],
   };
 }
 
@@ -65,7 +95,7 @@ async function searchTabs(query: string): Promise<BrowserSearchResult[]> {
         kind: 'tab' as const,
         title: tab.title?.trim() || hostname(tab.url),
         url: tab.url!,
-        subtitle: tab.active ? '当前标签页' : hostname(tab.url),
+        subtitle: tab.active ? t('currentTab') : hostname(tab.url),
         tabId: tab.id,
         windowId: tab.windowId,
       }));
