@@ -11,7 +11,7 @@
     "description": "Short extension name."
   },
   "appDescription": {
-    "message": "An Excalidraw-powered new tab with persistent web embeds and Chrome bookmark cards.",
+    "message": "An Excalidraw-powered new tab with persistent web embeds and native browser bookmark cards.",
     "description": "Extension description shown in Chrome and the Chrome Web Store."
   },
   "appTagline": {
@@ -33,13 +33,13 @@
     "message": "UI style"
   },
   "newChromeBookmark": {
-    "message": "New Chrome bookmark"
+    "message": "New browser bookmark"
   },
   "loadingBookmarksTitle": {
     "message": "Opening your bookmark map"
   },
   "loadingBookmarksBody": {
-    "message": "Reading the bookmark tree from the current Chrome profile..."
+    "message": "Reading the bookmark tree from the current browser profile..."
   },
   "readFailed": {
     "message": "Read failed"
@@ -312,7 +312,7 @@
     "message": "No bookmarks yet"
   },
   "emptyBookmarksBody": {
-    "message": "New or synced Chrome bookmarks will appear here."
+    "message": "New or synced browser bookmarks will appear here."
   },
   "dragReorder": {
     "message": "Drag to reorganize"
@@ -351,7 +351,7 @@
     }
   },
   "chromeDefaultSearchEngine": {
-    "message": "Chrome default search engine"
+    "message": "Browser default search engine"
   },
   "switchSearchEngine": {
     "message": "Switch search engine"
@@ -397,7 +397,7 @@
     "message": "Search"
   },
   "defaultEngineSuggestions": {
-    "message": "Chrome default search"
+    "message": "Browser default search"
   },
   "engineSuggestions": {
     "message": "$ARG_1$ suggestions",
@@ -417,10 +417,10 @@
     "message": "Current tab"
   },
   "chromeBookmarks": {
-    "message": "Chrome bookmarks"
+    "message": "Browser bookmarks"
   },
   "chromeBookmarksUnavailable": {
-    "message": "Chrome bookmark permission is unavailable. Check the extension permissions and reload."
+    "message": "Browser bookmark permission is unavailable. Check the extension permissions and reload."
   },
   "browsingHistory": {
     "message": "Browsing history"
@@ -470,7 +470,7 @@
     "message": "Remote suggestions come from the selected search engine; local results stay on this device."
   },
   "engineChromeDefaultDescription": {
-    "message": "Always follows Chrome's current default search service"
+    "message": "Always follows the browser's current default search service when supported"
   },
   "enableEngine": {
     "message": "Enable $ARG_1$",
@@ -544,7 +544,7 @@
     "message": "Confirm delete"
   },
   "deleteConfirmBody": {
-    "message": "Delete \"$ARG_1$\"$ARG_2$. This change syncs immediately to Chrome bookmarks.",
+    "message": "Delete \"$ARG_1$\"$ARG_2$. This change is written immediately to browser bookmarks.",
     "placeholders": {
       "arg_1": {
         "content": "$1"
@@ -649,7 +649,7 @@
     "message": "Import bookmarks"
   },
   "importChromeBookmarks": {
-    "message": "Import Chrome bookmarks"
+    "message": "Import browser bookmarks"
   },
   "fullBackup": {
     "message": "Full backup"
@@ -786,10 +786,10 @@
     "message": "Overwrite and restore"
   },
   "backupChromeBookmarksNote": {
-    "message": "Chrome native bookmarks remain managed by Chrome. Restoring an extension backup will not delete or replace them."
+    "message": "Native browser bookmarks remain managed by the browser. Restoring an extension backup will not delete or replace them."
   },
   "bookmarkMatchMatched": {
-    "message": "Chrome bookmark"
+    "message": "Browser bookmark"
   },
   "bookmarkMatchAmbiguous": {
     "message": "Duplicate URL on this device; not linked automatically"
@@ -801,7 +801,7 @@
     "message": "Open with the link button"
   },
   "importPickerDescription": {
-    "message": "Bookmarks added in Chrome appear here automatically. Add them one by one, by folder, or all at once."
+    "message": "Bookmarks added in this browser appear here automatically. Add them one by one, by folder, or all at once."
   },
   "alreadyOnCanvas": {
     "message": "On canvas"
@@ -821,7 +821,7 @@
     "message": "Bookmark folder groups"
   },
   "allChromeBookmarks": {
-    "message": "All Chrome bookmarks"
+    "message": "All browser bookmarks"
   },
   "importGroupDone": {
     "message": "Group imported"
@@ -891,13 +891,13 @@
     "message": "Another tab or device saved an update. Click to apply the newer canvas without reloading."
   },
   "syncTitleTooLarge": {
-    "message": "The compressed canvas exceeds the Chrome Sync safety limit. The full content is still saved on this device."
+    "message": "The compressed canvas exceeds the browser sync safety limit. The full content is still saved on this device."
   },
   "syncTitleError": {
-    "message": "Chrome Sync write failed; full content is still saved on this device."
+    "message": "Browser sync write failed; full content is still saved on this device."
   },
   "syncTitleUnavailable": {
-    "message": "Chrome Sync is not available in this environment; full content is saved on this device."
+    "message": "Browser account sync is not available in this environment; full content is saved on this device."
   },
   "syncTitleLight": {
     "message": "Shapes and settings are synced; $ARG_1$ images or attachments are stored only on this device.",
@@ -908,7 +908,7 @@
     }
   },
   "syncTitleSynced": {
-    "message": "Shapes, text, bookmark references, viewport, and library are saved to Chrome Sync."
+    "message": "Shapes, text, bookmark references, viewport, and library are saved to this browser's sync storage."
   },
   "webEmbedToolbar": {
     "message": "Embedded web page actions"
@@ -1019,5 +1019,127 @@
   },
   "backupParsePreferencesError": {
     "message": "The backup is missing interface settings."
+  },
+  "helpMenu": {
+    "message": "Help"
+  },
+  "helpOpenGuide": {
+    "message": "Quick guide"
+  },
+  "helpOpenGuideDescription": {
+    "message": "Replay the first-run guide"
+  },
+  "helpWhatsNew": {
+    "message": "What is new"
+  },
+  "helpWhatsNewDescription": {
+    "message": "Version $ARG_1$ notes",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "guideOnboardingEyebrow": {
+    "message": "Start here"
+  },
+  "guideOnboardingTitle": {
+    "message": "Make the new tab useful"
+  },
+  "guideOnboardingSubtitle": {
+    "message": "Three short steps, about 60 seconds, all inside the real workspace."
+  },
+  "guideSearchTitle": {
+    "message": "Search where you already work"
+  },
+  "guideSearchBody": {
+    "message": "Type once to search the web, open tabs, history, and browser bookmarks."
+  },
+  "guideCanvasTitle": {
+    "message": "Switch to the canvas"
+  },
+  "guideCanvasBody": {
+    "message": "Use the view buttons to move from folders to the Excalidraw workspace."
+  },
+  "guideSyncTitle": {
+    "message": "Keep control of sync"
+  },
+  "guideSyncBody": {
+    "message": "Canvas changes save automatically. Full backup is available from the canvas toolbar."
+  },
+  "guideActionFocusSearch": {
+    "message": "Try search"
+  },
+  "guideActionOpenCanvas": {
+    "message": "Open canvas"
+  },
+  "guideNextStep": {
+    "message": "Next"
+  },
+  "guidePreviousStep": {
+    "message": "Back"
+  },
+  "guideSkipForNow": {
+    "message": "Skip for now"
+  },
+  "guideProgress": {
+    "message": "Step $ARG_1$ of $ARG_2$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      },
+      "arg_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "guideGoToStep": {
+    "message": "Go to step $ARG_1$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "guideWhatsNewEyebrow": {
+    "message": "Update"
+  },
+  "guideWhatsNewTitle": {
+    "message": "Bookmark Atlas v$ARG_1$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "guideWhatsNewSubtitle": {
+    "message": "Highlights from the latest installed version."
+  },
+  "guideWhatsNewSyncTitle": {
+    "message": "Quieter live sync"
+  },
+  "guideWhatsNewSyncBody": {
+    "message": "Same-device tab updates apply without a page reload when there is no local conflict."
+  },
+  "guideWhatsNewSearchTitle": {
+    "message": "A guided first minute"
+  },
+  "guideWhatsNewSearchBody": {
+    "message": "New installs get an optional three-step tour that works inside the real new-tab workspace."
+  },
+  "guideWhatsNewStoreTitle": {
+    "message": "Release notes and support"
+  },
+  "guideWhatsNewStoreBody": {
+    "message": "The fixed Help menu can replay the guide, show version highlights, or open the full GitHub release history."
+  },
+  "guideGithubReleases": {
+    "message": "GitHub Releases"
+  },
+  "guideGotIt": {
+    "message": "Got it"
+  },
+  "guideStartUsing": {
+    "message": "Start using Atlas"
   }
 }

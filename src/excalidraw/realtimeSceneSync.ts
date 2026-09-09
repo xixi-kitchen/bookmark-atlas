@@ -12,6 +12,7 @@ export type LocalSceneSignal = {
 };
 
 export type IncomingSceneDecision = 'ignore' | 'apply' | 'conflict';
+export type IncomingSceneSource = 'local-tab' | 'chrome-sync';
 
 export function assessSyncCompletion(sentFingerprint: string, currentFingerprint: string) {
   const syncedCurrentScene = Boolean(sentFingerprint && sentFingerprint === currentFingerprint);
@@ -40,6 +41,30 @@ export function decideIncomingScene(
 ): IncomingSceneDecision {
   if (currentFingerprint && currentFingerprint === incomingFingerprint) return 'ignore';
   return hasLocalChanges ? 'conflict' : 'apply';
+}
+
+export function hasConflictingLocalChanges(
+  source: IncomingSceneSource,
+  hasUnpersistedLocalChanges: boolean,
+  hasUnsyncedCloudChanges: boolean,
+) {
+  return source === 'local-tab'
+    ? hasUnpersistedLocalChanges
+    : hasUnsyncedCloudChanges;
+}
+
+export function assessAppliedIncomingSceneSync(
+  source: IncomingSceneSource,
+  incomingFingerprint: string,
+  lastSyncedFingerprint: string,
+  reconciliationChanged: boolean,
+) {
+  const awaitingCloudSync = source === 'local-tab'
+    && incomingFingerprint !== lastSyncedFingerprint;
+  return {
+    hasUnsyncedCloudChanges: reconciliationChanged || awaitingCloudSync,
+    shouldScheduleSync: reconciliationChanged || awaitingCloudSync,
+  };
 }
 
 export function getLiveSyncedAppState(appState: Partial<AppState>): Partial<AppState> {

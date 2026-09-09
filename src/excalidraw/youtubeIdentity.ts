@@ -3,6 +3,7 @@ import { YOUTUBE_CLIENT_IDENTITY } from './WebEmbed';
 const YOUTUBE_IDENTITY_RULE_ID = 912_401;
 
 export async function ensureYoutubeEmbedIdentityRule() {
+  if (import.meta.env.SAFARI) return;
   const api = globalThis.chrome?.declarativeNetRequest;
   const extensionId = globalThis.chrome?.runtime?.id;
   if (!api?.updateDynamicRules || !extensionId) return;

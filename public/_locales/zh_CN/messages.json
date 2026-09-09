@@ -11,7 +11,7 @@
     "description": "Short extension name."
   },
   "appDescription": {
-    "message": "把 Chrome 书签、搜索和完整 Excalidraw 画布放进一个可同步的新标签页。",
+    "message": "把浏览器原生书签、搜索和完整 Excalidraw 画布放进一个可同步的新标签页。",
     "description": "Extension description shown in Chrome and the Chrome Web Store."
   },
   "appTagline": {
@@ -33,13 +33,13 @@
     "message": "UI 风格"
   },
   "newChromeBookmark": {
-    "message": "新建 Chrome 书签"
+    "message": "新建浏览器书签"
   },
   "loadingBookmarksTitle": {
     "message": "正在展开书签宇宙"
   },
   "loadingBookmarksBody": {
-    "message": "从当前 Chrome 配置文件读取书签树..."
+    "message": "从当前浏览器配置文件读取书签树..."
   },
   "readFailed": {
     "message": "读取失败"
@@ -312,7 +312,7 @@
     "message": "还没有书签"
   },
   "emptyBookmarksBody": {
-    "message": "新建或同步 Chrome 书签后会显示在这里。"
+    "message": "新建或同步浏览器书签后会显示在这里。"
   },
   "dragReorder": {
     "message": "拖动调整分组或顺序"
@@ -351,7 +351,7 @@
     }
   },
   "chromeDefaultSearchEngine": {
-    "message": "Chrome 默认搜索引擎"
+    "message": "浏览器默认搜索引擎"
   },
   "switchSearchEngine": {
     "message": "切换搜索引擎"
@@ -397,7 +397,7 @@
     "message": "搜索"
   },
   "defaultEngineSuggestions": {
-    "message": "Chrome 默认搜索"
+    "message": "浏览器默认搜索"
   },
   "engineSuggestions": {
     "message": "$ARG_1$ 联想",
@@ -417,10 +417,10 @@
     "message": "当前标签页"
   },
   "chromeBookmarks": {
-    "message": "Chrome 书签"
+    "message": "浏览器书签"
   },
   "chromeBookmarksUnavailable": {
-    "message": "Chrome 书签权限不可用，请检查扩展权限后重新加载。"
+    "message": "浏览器书签权限不可用，请检查扩展权限后重新加载。"
   },
   "browsingHistory": {
     "message": "浏览历史"
@@ -470,7 +470,7 @@
     "message": "远程联想由当前搜索引擎提供；本地结果不会上传。"
   },
   "engineChromeDefaultDescription": {
-    "message": "始终跟随 Chrome 当前默认搜索服务"
+    "message": "在浏览器支持时跟随当前默认搜索服务"
   },
   "enableEngine": {
     "message": "启用 $ARG_1$",
@@ -544,7 +544,7 @@
     "message": "确认删除"
   },
   "deleteConfirmBody": {
-    "message": "将删除“$ARG_1$”$ARG_2$。删除会立即同步到 Chrome 书签。",
+    "message": "将删除“$ARG_1$”$ARG_2$。删除会立即写入浏览器书签。",
     "placeholders": {
       "arg_1": {
         "content": "$1"
@@ -649,7 +649,7 @@
     "message": "导入书签"
   },
   "importChromeBookmarks": {
-    "message": "导入 Chrome 书签"
+    "message": "导入浏览器书签"
   },
   "fullBackup": {
     "message": "完整备份"
@@ -786,10 +786,10 @@
     "message": "确认覆盖并恢复"
   },
   "backupChromeBookmarksNote": {
-    "message": "Chrome 原生书签仍由 Chrome 管理，不会因恢复插件备份而被删除或替换。"
+    "message": "浏览器原生书签仍由浏览器管理，不会因恢复插件备份而被删除或替换。"
   },
   "bookmarkMatchMatched": {
-    "message": "Chrome 书签"
+    "message": "浏览器书签"
   },
   "bookmarkMatchAmbiguous": {
     "message": "存在同网址重复书签，未自动关联"
@@ -801,7 +801,7 @@
     "message": "使用链接按钮打开"
   },
   "importPickerDescription": {
-    "message": "Chrome 中新增的书签会自动出现在这里。可以逐个添加、按文件夹导入，或一次导入全部。"
+    "message": "当前浏览器中新建的书签会自动出现在这里。可以逐个添加、按文件夹导入，或一次导入全部。"
   },
   "alreadyOnCanvas": {
     "message": "已在画布"
@@ -821,7 +821,7 @@
     "message": "书签文件夹组"
   },
   "allChromeBookmarks": {
-    "message": "所有 Chrome 书签"
+    "message": "所有浏览器书签"
   },
   "importGroupDone": {
     "message": "本组已导入"
@@ -891,13 +891,13 @@
     "message": "其他标签页或设备保存了更新。点击后会在不刷新页面的情况下应用较新的画布。"
   },
   "syncTitleTooLarge": {
-    "message": "压缩后的画布超过 Chrome Sync 安全配额，完整内容仍已保存在本机。"
+    "message": "压缩后的画布超过浏览器同步安全配额，完整内容仍已保存在本机。"
   },
   "syncTitleError": {
-    "message": "Chrome Sync 写入失败；完整内容仍已保存在本机。"
+    "message": "浏览器同步写入失败；完整内容仍已保存在本机。"
   },
   "syncTitleUnavailable": {
-    "message": "当前环境没有 Chrome Sync；完整内容保存在本机。"
+    "message": "当前环境没有浏览器账号同步；完整内容保存在本机。"
   },
   "syncTitleLight": {
     "message": "图形和设置已同步；$ARG_1$ 个图片或附件只保存在本机。",
@@ -908,7 +908,7 @@
     }
   },
   "syncTitleSynced": {
-    "message": "图形、文字、书签引用、视口和素材库已保存到 Chrome Sync。"
+    "message": "图形、文字、书签引用、视口和素材库已保存到当前浏览器的同步存储。"
   },
   "webEmbedToolbar": {
     "message": "嵌入网页操作"
@@ -1019,5 +1019,127 @@
   },
   "backupParsePreferencesError": {
     "message": "备份中缺少界面配置。"
+  },
+  "helpMenu": {
+    "message": "帮助"
+  },
+  "helpOpenGuide": {
+    "message": "快速引导"
+  },
+  "helpOpenGuideDescription": {
+    "message": "重新查看首次使用引导"
+  },
+  "helpWhatsNew": {
+    "message": "更新内容"
+  },
+  "helpWhatsNewDescription": {
+    "message": "v$ARG_1$ 版本说明",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "guideOnboardingEyebrow": {
+    "message": "从这里开始"
+  },
+  "guideOnboardingTitle": {
+    "message": "让新标签页先有用起来"
+  },
+  "guideOnboardingSubtitle": {
+    "message": "三个简短步骤，预计 60 秒，都在真实工作区内完成。"
+  },
+  "guideSearchTitle": {
+    "message": "在当前位置直接搜索"
+  },
+  "guideSearchBody": {
+    "message": "输入一次即可搜索网页、已打开标签页、历史记录和浏览器书签。"
+  },
+  "guideCanvasTitle": {
+    "message": "切换到画布"
+  },
+  "guideCanvasBody": {
+    "message": "使用视图按钮，从文件夹视图进入 Excalidraw 工作区。"
+  },
+  "guideSyncTitle": {
+    "message": "理解同步边界"
+  },
+  "guideSyncBody": {
+    "message": "画布会自动保存。完整备份入口在画布工具栏中。"
+  },
+  "guideActionFocusSearch": {
+    "message": "试试搜索"
+  },
+  "guideActionOpenCanvas": {
+    "message": "打开画布"
+  },
+  "guideNextStep": {
+    "message": "下一步"
+  },
+  "guidePreviousStep": {
+    "message": "上一步"
+  },
+  "guideSkipForNow": {
+    "message": "暂时跳过"
+  },
+  "guideProgress": {
+    "message": "第 $ARG_1$ 步，共 $ARG_2$ 步",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      },
+      "arg_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "guideGoToStep": {
+    "message": "跳到第 $ARG_1$ 步",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "guideWhatsNewEyebrow": {
+    "message": "版本更新"
+  },
+  "guideWhatsNewTitle": {
+    "message": "Bookmark Atlas v$ARG_1$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "guideWhatsNewSubtitle": {
+    "message": "当前安装版本的重点变化。"
+  },
+  "guideWhatsNewSyncTitle": {
+    "message": "更安静的实时同步"
+  },
+  "guideWhatsNewSyncBody": {
+    "message": "同一设备的多个标签页没有本地冲突时，会直接应用更新，不再要求刷新页面。"
+  },
+  "guideWhatsNewSearchTitle": {
+    "message": "一分钟上手引导"
+  },
+  "guideWhatsNewSearchBody": {
+    "message": "首次安装会显示可跳过的三步引导，并直接操作真实的新标签页工作区。"
+  },
+  "guideWhatsNewStoreTitle": {
+    "message": "更新说明与支持入口"
+  },
+  "guideWhatsNewStoreBody": {
+    "message": "固定宽度的帮助菜单可以重播引导、查看版本重点或打开完整 GitHub 更新历史。"
+  },
+  "guideGithubReleases": {
+    "message": "GitHub Releases"
+  },
+  "guideGotIt": {
+    "message": "知道了"
+  },
+  "guideStartUsing": {
+    "message": "开始使用 Atlas"
   }
 }

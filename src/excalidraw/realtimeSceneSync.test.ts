@@ -3,8 +3,10 @@ import type { AppState } from '@excalidraw/excalidraw/types';
 import type { CanvasSyncManifest } from './sceneSync';
 import {
   assessSyncCompletion,
+  assessAppliedIncomingSceneSync,
   decideIncomingScene,
   getLiveSyncedAppState,
+  hasConflictingLocalChanges,
   isOwnSyncManifest,
   normalizeLocalSceneSignal,
 } from './realtimeSceneSync';
@@ -44,6 +46,35 @@ describe('realtime scene sync decisions', () => {
     expect(decideIncomingScene(false, 'local', 'remote')).toBe('apply');
     expect(decideIncomingScene(true, 'local', 'remote')).toBe('conflict');
     expect(decideIncomingScene(true, 'same', 'same')).toBe('ignore');
+  });
+
+  it('does not treat a locally saved scene awaiting cloud sync as a same-device conflict', () => {
+    expect(hasConflictingLocalChanges('local-tab', false, true)).toBe(false);
+    expect(hasConflictingLocalChanges('local-tab', true, true)).toBe(true);
+    expect(hasConflictingLocalChanges('chrome-sync', false, true)).toBe(true);
+    expect(hasConflictingLocalChanges('chrome-sync', false, false)).toBe(false);
+  });
+
+  it('keeps an applied same-device scene dirty until that fingerprint reaches cloud sync', () => {
+    const applied = assessAppliedIncomingSceneSync('local-tab', 'local-new', 'cloud-old', false);
+    expect(applied).toEqual({
+      hasUnsyncedCloudChanges: true,
+      shouldScheduleSync: true,
+    });
+    expect(hasConflictingLocalChanges(
+      'chrome-sync',
+      false,
+      applied.hasUnsyncedCloudChanges,
+    )).toBe(true);
+
+    expect(assessAppliedIncomingSceneSync('local-tab', 'same', 'same', false)).toEqual({
+      hasUnsyncedCloudChanges: false,
+      shouldScheduleSync: false,
+    });
+    expect(assessAppliedIncomingSceneSync('chrome-sync', 'remote', 'old', true)).toEqual({
+      hasUnsyncedCloudChanges: true,
+      shouldScheduleSync: true,
+    });
   });
 
   it('does not move the active viewport or sidebar during a live remote apply', () => {

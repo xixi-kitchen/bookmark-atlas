@@ -1,17 +1,26 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Columns3, Grid3X3, Plus, Sparkles } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { BookOpen, Columns3, Grid3X3, HelpCircle, Plus, Sparkles } from 'lucide-react';
 import type { BookmarkCreateInput, BookmarkNode } from './bookmarks/types';
 import { BookmarkEditor } from './components/BookmarkEditor';
 import { AppLogo } from './components/AppLogo';
 import { DeleteConfirm } from './components/DeleteConfirm';
 import { EngineManager } from './components/EngineManager';
 import { FolderNavigator, ViewBreadcrumb } from './components/navigation';
+import { ProductGuide } from './components/ProductGuide';
 import { SearchBar } from './components/SearchBar';
 import { ToolbarSelectMenu } from './components/ToolbarSelectMenu';
 import { GridView } from './components/views/GridView';
 import { ExcalidrawCanvas } from './excalidraw/ExcalidrawCanvas';
 import { ensureYoutubeEmbedIdentityRule } from './excalidraw/youtubeIdentity';
 import { t, type MessageKey } from './i18n';
+import {
+  completeOnboarding,
+  dismissWhatsNew,
+  getGuideStartup,
+  skipOnboarding,
+  subscribeToGuideState,
+  type GuideStartup,
+} from './onboarding/onboardingState';
 import { useBookmarkStore } from './store/bookmarkStore';
 import { listenForPreferenceSyncChanges, usePreferencesStore } from './store/preferencesStore';
 import { applyTheme, THEMES, type ThemeId } from './themes';
@@ -35,18 +44,57 @@ export function App() {
   const [undoVisible, setUndoVisible] = useState(false);
   const [activeFolderId, setActiveFolderId] = useState<string>();
   const [embedIdentityReady, setEmbedIdentityReady] = useState(false);
+  const [guide, setGuide] = useState<GuideStartup | null>(null);
+  const [helpMenuOpen, setHelpMenuOpen] = useState(false);
+  const helpMenuRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     void bookmarkState.initialize();
     void preferences.hydrate();
     const stopPreferenceSync = listenForPreferenceSyncChanges();
     void ensureYoutubeEmbedIdentityRule().finally(() => setEmbedIdentityReady(true));
-    return () => stopPreferenceSync();
+    let cancelled = false;
+    const refreshGuide = () => {
+      void getGuideStartup(APP_VERSION).then((startup) => {
+        if (!cancelled && startup) setGuide((current) => current ?? startup);
+      });
+    };
+    refreshGuide();
+    const stopGuideSync = subscribeToGuideState(refreshGuide);
+    const retryTimer = window.setTimeout(refreshGuide, 500);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(retryTimer);
+      stopGuideSync();
+      stopPreferenceSync();
+    };
   }, []);
 
   useEffect(() => {
     applyTheme(preferences.themeId);
   }, [preferences.themeId]);
+
+  useEffect(() => {
+    if (!guide && !helpMenuOpen) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        if (guide) void closeGuide();
+        setHelpMenuOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [guide, helpMenuOpen]);
+
+  useEffect(() => {
+    if (!helpMenuOpen) return;
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!helpMenuRef.current?.contains(event.target as Node)) setHelpMenuOpen(false);
+    };
+    window.addEventListener('pointerdown', handlePointerDown);
+    return () => window.removeEventListener('pointerdown', handlePointerDown);
+  }, [helpMenuOpen]);
 
   useEffect(() => {
     let refreshTimer: ReturnType<typeof setTimeout> | undefined;
@@ -137,6 +185,26 @@ export function App() {
     setEditorNode(null);
     setCreateParentId(undefined);
   };
+  const closeGuide = async () => {
+    const current = guide;
+    setGuide(null);
+    if (!current) return;
+    if (current.surface === 'onboarding') {
+      await skipOnboarding();
+    } else {
+      await dismissWhatsNew(APP_VERSION);
+    }
+  };
+  const completeGuide = async () => {
+    const current = guide;
+    setGuide(null);
+    if (!current) return;
+    if (current.surface === 'onboarding') {
+      await completeOnboarding();
+    } else {
+      await dismissWhatsNew(APP_VERSION);
+    }
+  };
 
   return (
     <main className={`app-shell card-size-${preferences.cardSize}`} data-view={preferences.viewMode}>
@@ -147,6 +215,7 @@ export function App() {
         </div>
 
         <SearchBar
+          inputRef={searchInputRef}
           engines={preferences.engines}
           activeEngineId={preferences.activeEngineId}
           onEngineChange={preferences.setActiveEngineId}
@@ -179,6 +248,51 @@ export function App() {
             variant="theme"
             onChange={(value) => preferences.setThemeId(value as ThemeId)}
           />
+          <div className="help-menu" ref={helpMenuRef}>
+            <button
+              className="icon-button help-menu__trigger"
+              type="button"
+              aria-label={t('helpMenu')}
+              aria-expanded={helpMenuOpen}
+              aria-haspopup="menu"
+              title={t('helpMenu')}
+              onClick={() => setHelpMenuOpen((open) => !open)}
+            >
+              <HelpCircle size={16} />
+            </button>
+            {helpMenuOpen && (
+              <div className="help-menu__panel" role="menu" aria-label={t('helpMenu')}>
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => {
+                    setHelpMenuOpen(false);
+                    setGuide({ surface: 'onboarding', source: 'manual' });
+                  }}
+                >
+                  <BookOpen size={15} />
+                  <span>
+                    <strong>{t('helpOpenGuide')}</strong>
+                    <small>{t('helpOpenGuideDescription')}</small>
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => {
+                    setHelpMenuOpen(false);
+                    setGuide({ surface: 'whats-new', source: 'manual' });
+                  }}
+                >
+                  <Sparkles size={15} />
+                  <span>
+                    <strong>{t('helpWhatsNew')}</strong>
+                    <small>{t('helpWhatsNewDescription', APP_VERSION)}</small>
+                  </span>
+                </button>
+              </div>
+            )}
+          </div>
           <button className="primary-button" onClick={() => openCreate(activeFolder && activeFolder.readonlyReason !== 'root' && activeFolder.readonlyReason !== 'managed' ? activeFolder.id : defaultWritableFolder?.id)} title={t('newChromeBookmark')}><Plus size={16} /> {t('newChromeBookmark')}</button>
         </div>
       </header>
@@ -240,6 +354,16 @@ export function App() {
       )}
       {deleteNode && <DeleteConfirm node={deleteNode} onConfirm={confirmDelete} onClose={() => setDeleteNode(null)} />}
       {enginesOpen && <EngineManager engines={preferences.engines} onChange={preferences.setEngines} onClose={() => setEnginesOpen(false)} />}
+      {guide && (
+        <ProductGuide
+          surface={guide.surface}
+          version={APP_VERSION}
+          onFocusSearch={() => searchInputRef.current?.focus()}
+          onOpenCanvas={() => preferences.setViewMode('canvas')}
+          onClose={() => void closeGuide()}
+          onDone={() => void completeGuide()}
+        />
+      )}
       {undoVisible && bookmarkState.lastDeleteSnapshot && (
         <div className="toast" role="status">{t('deletedToast', bookmarkState.lastDeleteSnapshot.node.title)}<button onClick={() => void bookmarkState.undoDelete().then(() => setUndoVisible(false))}>{t('undo')}</button></div>
       )}

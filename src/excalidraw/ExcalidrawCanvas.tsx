@@ -78,10 +78,12 @@ import {
   type CanvasSyncManifest,
 } from './sceneSync';
 import {
+  assessAppliedIncomingSceneSync,
   assessSyncCompletion,
   createCanvasContextId,
   decideIncomingScene,
   getLiveSyncedAppState,
+  hasConflictingLocalChanges,
   isOwnSyncManifest,
   LOCAL_SCENE_CHANNEL,
   normalizeLocalSceneSignal,
@@ -184,6 +186,7 @@ export function ExcalidrawCanvas({ roots }: Props) {
   const lastBroadcastFingerprintRef = useRef('');
   const contextIdRef = useRef(createCanvasContextId());
   const hasLocalChangesRef = useRef(false);
+  const hasUnpersistedLocalChangesRef = useRef(false);
   const applyingIncomingRef = useRef(false);
   const syncInFlightRef = useRef<Promise<void> | null>(null);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -213,6 +216,7 @@ export function ExcalidrawCanvas({ roots }: Props) {
       setSyncStatus('synced');
     }
     hasLocalChangesRef.current = Boolean(stored && !syncManifest);
+    hasUnpersistedLocalChangesRef.current = false;
     readyToPersistRef.current = true;
     return data;
   }));
@@ -220,10 +224,18 @@ export function ExcalidrawCanvas({ roots }: Props) {
   const persistLatest = useCallback(async () => {
     const scene = latestSceneRef.current;
     if (!scene) return;
+    const persistedFingerprint = sceneFingerprint(scene);
 
     setSaveStatus('saving');
     try {
       await saveStoredScene(scene);
+      const currentFingerprint = latestSceneRef.current
+        ? sceneFingerprint(latestSceneRef.current)
+        : '';
+      hasUnpersistedLocalChangesRef.current = assessSyncCompletion(
+        persistedFingerprint,
+        currentFingerprint,
+      ).hasNewerLocalChanges;
       const fingerprint = sceneSyncFingerprint(scene);
       if (fingerprint !== lastBroadcastFingerprintRef.current) {
         lastBroadcastFingerprintRef.current = fingerprint;
@@ -302,6 +314,7 @@ export function ExcalidrawCanvas({ roots }: Props) {
     latestFingerprintRef.current = fingerprint;
     latestSceneRef.current = scene;
     hasLocalChangesRef.current = true;
+    hasUnpersistedLocalChangesRef.current = true;
     setSaveStatus('saving');
 
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
@@ -326,6 +339,7 @@ export function ExcalidrawCanvas({ roots }: Props) {
     latestFingerprintRef.current = fingerprint;
     latestSceneRef.current = scene;
     hasLocalChangesRef.current = true;
+    hasUnpersistedLocalChangesRef.current = true;
     setSaveStatus('saving');
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(() => void persistLatest(), SAVE_DELAY_MS);
@@ -344,6 +358,12 @@ export function ExcalidrawCanvas({ roots }: Props) {
     const reconciled = reconcileStoredScene(withFiles, bookmarkEntries);
     const incoming = reconciled.scene;
     const incomingFingerprint = sceneSyncFingerprint(incoming);
+    const appliedSync = assessAppliedIncomingSceneSync(
+      pending.source,
+      incomingFingerprint,
+      lastSyncedFingerprintRef.current,
+      reconciled.changed,
+    );
 
     applyingIncomingRef.current = true;
     try {
@@ -365,7 +385,8 @@ export function ExcalidrawCanvas({ roots }: Props) {
       latestSceneRef.current = incoming;
       latestFingerprintRef.current = sceneFingerprint(incoming);
       libraryItemsRef.current = incoming.libraryItems;
-      hasLocalChangesRef.current = reconciled.changed;
+      hasLocalChangesRef.current = appliedSync.hasUnsyncedCloudChanges;
+      hasUnpersistedLocalChangesRef.current = false;
       remoteUpdateRef.current = null;
       setRemoteUpdate(null);
       setSaveStatus('saved');
@@ -385,7 +406,7 @@ export function ExcalidrawCanvas({ roots }: Props) {
           : t('remoteAppliedOtherDevice'),
       });
       setSceneRevision((revision) => revision + 1);
-      if (reconciled.changed) scheduleSync();
+      if (appliedSync.shouldScheduleSync) scheduleSync();
     } catch {
       remoteUpdateRef.current = pending;
       setRemoteUpdate(pending);
@@ -402,9 +423,20 @@ export function ExcalidrawCanvas({ roots }: Props) {
     const incomingFingerprint = pending.manifest?.fingerprint || sceneSyncFingerprint(pending.scene);
     const decision = force
       ? 'apply'
-      : decideIncomingScene(hasLocalChangesRef.current, currentFingerprint, incomingFingerprint);
+      : decideIncomingScene(
+          hasConflictingLocalChanges(
+            pending.source,
+            hasUnpersistedLocalChangesRef.current,
+            hasLocalChangesRef.current,
+          ),
+          currentFingerprint,
+          incomingFingerprint,
+        );
 
     if (decision === 'ignore') {
+      if (pending.source === 'local-tab') {
+        hasUnpersistedLocalChangesRef.current = false;
+      }
       if (pending.manifest) {
         lastAppliedSyncRevisionRef.current = pending.manifest.revision;
         lastSyncedFingerprintRef.current = incomingFingerprint;
@@ -454,6 +486,7 @@ export function ExcalidrawCanvas({ roots }: Props) {
     setRemoteUpdate(null);
     if (!current) return;
     hasLocalChangesRef.current = true;
+    hasUnpersistedLocalChangesRef.current = true;
     latestSceneRef.current = { ...current, savedAt: Date.now() };
     lastBroadcastFingerprintRef.current = '';
     setSyncStatus('idle');

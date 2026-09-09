@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent, type MouseEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent, type MouseEvent, type Ref } from 'react';
 import { Check, ChevronDown, Search, Settings2 } from 'lucide-react';
 import { activateBrowserSearchResult, searchLocalBrowserContent, type BrowserSearchGroups, type BrowserSearchResult } from '../search/browserSearch';
 import { fetchRemoteSuggestions, runSearch, type SearchEngine } from '../search';
@@ -11,6 +11,7 @@ type Props = {
   activeEngineId: string;
   onEngineChange: (id: string) => void;
   onManage: () => void;
+  inputRef?: Ref<HTMLInputElement>;
 };
 
 type SearchAction = { id: string; kind: 'search' | 'remote'; title: string };
@@ -19,7 +20,7 @@ type SuggestionGroup = { id: string; label: string; items: SuggestionItem[] };
 
 const EMPTY_LOCAL_RESULTS: BrowserSearchGroups = { tabs: [], bookmarks: [], history: [] };
 
-export function SearchBar({ engines, activeEngineId, onEngineChange, onManage }: Props) {
+export function SearchBar({ engines, activeEngineId, onEngineChange, onManage, inputRef }: Props) {
   const [query, setQuery] = useState('');
   const [engineMenuOpen, setEngineMenuOpen] = useState(false);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
@@ -195,6 +196,7 @@ export function SearchBar({ engines, activeEngineId, onEngineChange, onManage }:
       </div>
 
       <input
+        ref={inputRef}
         value={query}
         role="combobox"
         aria-controls="unified-search-suggestions"

@@ -1,0 +1,73 @@
+name: Bug report
+description: Report a reproducible issue in Bookmark Atlas
+title: "[Bug] "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve Bookmark Atlas. Please include enough detail to reproduce the problem.
+
+        感谢帮助我们改进 Bookmark Atlas，请尽量提供足够信息以便复现问题。
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce / 复现步骤
+      placeholder: |
+        1. Open a new tab / 打开新标签页
+        2. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior / 预期表现
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior / 实际表现
+    validations:
+      required: true
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Browser / 浏览器
+      options:
+        - Google Chrome
+        - Microsoft Edge
+        - Safari feasibility build
+        - Other Chromium browser
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: browser_version
+    attributes:
+      label: Browser version / 浏览器版本
+      placeholder: Chrome 129.0.6668
+    validations:
+      required: true
+  - type: input
+    id: extension_version
+    attributes:
+      label: Extension version / 扩展版本
+      placeholder: v0.9.3
+    validations:
+      required: true
+  - type: dropdown
+    id: sync
+    attributes:
+      label: Browser account sync enabled? / 是否开启浏览器账号同步？
+      options:
+        - "Yes / 是"
+        - "No / 否"
+        - "Not sure / 不确定"
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots / 日志或截图
+      description: Do not include passwords, tokens, or private bookmark content. / 请勿提交密码、令牌或私密书签内容。
+
