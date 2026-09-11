@@ -19,8 +19,10 @@ developer server. It does not include ads, trackers, or remote code execution.
 - The full Excalidraw canvas and user-added binary attachments are stored in
   the extension's local IndexedDB, with `chrome.storage.local` as a fallback.
 - Lightweight canvas state, including shapes, text, bookmark references,
-  viewport, and library items, may be compressed and written to
+  document settings, and library items, may be compressed and written to
   `chrome.storage.sync` when Chrome Sync is available and quota allows.
+- Viewport position, zoom, open sidebar, and drawing-tool preferences remain
+  local and are not written as part of the synced canvas.
 - Images and binary attachments are not uploaded to Chrome Sync. They remain on
   the device where they were added unless the user exports a full backup.
 - Theme, view, card size, and search engine preferences are stored in
@@ -95,7 +97,8 @@ Bookmark Atlas 是本地优先的 Chrome 扩展。扩展不会把你的书签、
 - 使用 Chrome Favicon API 从浏览器本地图标缓存显示网站图标。
 - 在本地读取已打开标签页和浏览历史，用于搜索框预搜索结果；这些结果不会上传。
 - 完整 Excalidraw 画布和用户添加的附件保存在当前设备的 IndexedDB。
-- 图形、文字、书签引用、视口和素材库会在配额允许时写入 Chrome Sync。
+- 图形、文字、书签引用、画布文档设置和素材库会在配额允许时写入 Chrome Sync。
+- 视口位置、缩放、侧边栏和绘图工具偏好只保存在本机，不作为画布内容同步。
 - 图片和二进制附件不会进入 Chrome Sync，只保存在添加它们的设备上。
 
 同步说明：

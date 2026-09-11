@@ -1,5 +1,9 @@
 import type { StoredExcalidrawScene } from './sceneStorage';
-import { normalizeStoredScene } from './sceneStorage';
+import {
+  mergeSyncedAppState,
+  normalizeStoredScene,
+  pickSyncedAppState,
+} from './sceneStorage';
 
 export const SYNC_MANIFEST_KEY = 'bookmark-atlas:canvas-sync:v1:manifest';
 const SYNC_CHUNK_PREFIX = 'bookmark-atlas:canvas-sync:v1:chunk:';
@@ -17,6 +21,8 @@ export type CanvasSyncManifest = {
   deviceId: string;
   contextId?: string;
   fingerprint?: string;
+  fingerprintVersion?: 2;
+  parentFingerprint?: string;
   codec: SyncCodec;
   chunkCount: number;
   encodedLength: number;
@@ -35,6 +41,7 @@ type SyncableScene = Pick<StoredExcalidrawScene, 'version' | 'elements' | 'appSt
 export type CanvasSyncSaveOptions = {
   contextId?: string;
   fingerprint?: string;
+  parentFingerprint?: string;
 };
 
 export type CanvasSyncLoadOptions = {
@@ -52,13 +59,7 @@ export async function saveSceneToSync(
   if (!storage) return { status: 'unavailable' };
 
   try {
-    const payload: SyncableScene = {
-      version: 2,
-      elements: scene.elements,
-      appState: scene.appState,
-      libraryItems: scene.libraryItems,
-      savedAt: scene.savedAt,
-    };
+    const payload = createSyncableScene(scene);
     const payloadText = JSON.stringify(payload);
     const encoded = await encodePayload(payloadText);
     if (encoded.data.length > MAX_ENCODED_LENGTH) {
@@ -77,7 +78,9 @@ export async function saveSceneToSync(
       updatedAt: scene.savedAt,
       deviceId: await getCanvasSyncDeviceId(),
       ...(options.contextId ? { contextId: options.contextId } : {}),
-      fingerprint: options.fingerprint ?? hashText(payloadText),
+      fingerprint: options.fingerprint ?? createSceneSyncFingerprint(scene),
+      fingerprintVersion: 2,
+      ...(options.parentFingerprint ? { parentFingerprint: options.parentFingerprint } : {}),
       codec: encoded.codec,
       chunkCount: chunks.length,
       encodedLength: encoded.data.length,
@@ -117,7 +120,14 @@ export async function loadSceneFromSync(
     if (!encoded) return null;
     const parsed = JSON.parse(await decodePayload(encoded, manifest.codec)) as Partial<SyncableScene>;
     const scene = normalizeStoredScene({ ...parsed, version: 2, files: {} });
-    return scene ? { scene, manifest } : null;
+    if (!scene) return null;
+    const syncedScene = { ...scene, appState: pickSyncedAppState(scene.appState) };
+    if (
+      manifest.fingerprintVersion === 2
+      && manifest.fingerprint
+      && createSceneSyncFingerprint(syncedScene) !== manifest.fingerprint
+    ) return null;
+    return { scene: syncedScene, manifest };
   } catch {
     return null;
   }
@@ -164,7 +174,47 @@ export function mergeSyncedSceneWithLocalFiles(
   synced: StoredExcalidrawScene,
   local: StoredExcalidrawScene | null,
 ): StoredExcalidrawScene {
-  return { ...synced, files: local?.files ?? {} };
+  return {
+    ...synced,
+    appState: mergeSyncedAppState(synced.appState, local?.appState),
+    files: local?.files ?? {},
+  };
+}
+
+export function createSceneSyncFingerprint(scene: StoredExcalidrawScene) {
+  return hashText(JSON.stringify({
+    elements: scene.elements.map((element) => [
+      element.id,
+      element.version,
+      element.versionNonce,
+      element.updated,
+      element.isDeleted,
+    ]),
+    appState: pickSyncedAppState(scene.appState),
+    libraryItems: scene.libraryItems.map((item) => [
+      item.id,
+      item.status,
+      item.name,
+      item.created,
+      item.elements.map((element) => [
+        element.id,
+        element.version,
+        element.versionNonce,
+        element.updated,
+        element.isDeleted,
+      ]),
+    ]),
+  }));
+}
+
+function createSyncableScene(scene: StoredExcalidrawScene): SyncableScene {
+  return {
+    version: 2,
+    elements: scene.elements,
+    appState: pickSyncedAppState(scene.appState),
+    libraryItems: scene.libraryItems,
+    savedAt: scene.savedAt,
+  };
 }
 
 async function readCompleteEncodedPayload(
@@ -247,6 +297,8 @@ function normalizeManifest(value: unknown): CanvasSyncManifest | null {
     || typeof manifest.deviceId !== 'string'
     || (manifest.contextId !== undefined && typeof manifest.contextId !== 'string')
     || (manifest.fingerprint !== undefined && typeof manifest.fingerprint !== 'string')
+    || (manifest.fingerprintVersion !== undefined && manifest.fingerprintVersion !== 2)
+    || (manifest.parentFingerprint !== undefined && typeof manifest.parentFingerprint !== 'string')
     || (manifest.codec !== 'gzip-base64' && manifest.codec !== 'plain-base64')
     || typeof manifest.chunkCount !== 'number'
     || typeof manifest.encodedLength !== 'number'

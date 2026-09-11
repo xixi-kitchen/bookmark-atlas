@@ -86,18 +86,18 @@ describe('App integration', () => {
   });
 
   it('shows update notes for existing installs instead of forcing onboarding', async () => {
-    await recordInstallationEvent({ reason: 'update', previousVersion: '0.9.2', version: '0.9.3' });
+    await recordInstallationEvent({ reason: 'update', previousVersion: '0.9.3', version: '0.9.4' });
 
     render(<App />);
 
-    expect(await screen.findByRole('dialog', { name: 'Bookmark Atlas v0.9.3' })).toBeInTheDocument();
+    expect(await screen.findByRole('dialog', { name: 'Bookmark Atlas v0.9.4' })).toBeInTheDocument();
     expect(screen.queryByRole('dialog', { name: 'Make the new tab useful' })).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
     fireEvent.click(screen.getByRole('button', { name: 'Got it' }));
 
-    await waitFor(async () => expect((await readOnboardingState()).seenWhatsNewVersion).toBe('0.9.3'));
+    await waitFor(async () => expect((await readOnboardingState()).seenWhatsNewVersion).toBe('0.9.4'));
   });
 
   it('replays the guide from the fixed help menu without a pending install marker', async () => {

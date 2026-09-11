@@ -23,9 +23,10 @@ bookmarks, search, persistent web embeds, and a full Excalidraw canvas.
 - Saves the full canvas and binary attachments to local IndexedDB, with
   `chrome.storage.local` as a fallback.
 - Writes lightweight canvas state to Chrome Sync when quota allows: shapes,
-  text, bookmark references, viewport, and library items are compressed and
-  chunked. Images and binary attachments remain local to the device where they
-  were added.
+  text, bookmark references, document settings, and library items are
+  compressed and chunked. Viewport, zoom, sidebar, drawing-tool preferences,
+  images, and binary attachments remain local to the device where they were
+  added.
 - Chrome Sync updates are event-driven and near real time when Chrome sync is
   available, but Chrome does not guarantee an exact delivery latency across
   devices or open tabs.
@@ -118,7 +119,7 @@ Bookmark Atlas 是一个本地优先的 Chrome 新标签页扩展，把 Chrome �
 - 读取并管理当前 Chrome 配置文件的原生书签树。
 - 在列表视图和 Excalidraw 画布中查看、导入、移动、排序和打开书签。
 - 保留完整 Excalidraw 绘图体验，包括文字、图片、框架、链接、导入导出和撤销重做。
-- 完整画布和附件保存在当前设备；图形、文字、书签引用、视口和素材库在配额允许时写入 Chrome Sync。
+- 完整画布和附件保存在当前设备；图形、文字、书签引用、画布文档设置和素材库在配额允许时写入 Chrome Sync。视口、缩放、侧边栏和绘图工具偏好只保存在本机。
 - Chrome Sync 是事件驱动的近实时同步，但 Chrome 不承诺跨设备或多标签页的固定到达时间；图片和二进制附件只保存在添加它们的设备上。
 - 搜索框可以同时显示远程联想、已打开标签页、浏览历史和 Chrome 书签。
 - 普通 HTTPS 网页可以嵌入画布；iframe 会被限制，不能覆盖跳转插件页面。YouTube 和 Bilibili 视频使用官方播放器，Bilibili 视频默认关闭自动播放。

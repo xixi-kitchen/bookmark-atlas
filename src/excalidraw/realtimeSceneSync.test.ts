@@ -6,7 +6,6 @@ import {
   assessAppliedIncomingSceneSync,
   decideIncomingScene,
   getLiveSyncedAppState,
-  hasConflictingLocalChanges,
   isOwnSyncManifest,
   normalizeLocalSceneSignal,
 } from './realtimeSceneSync';
@@ -42,17 +41,64 @@ describe('realtime scene sync decisions', () => {
     expect(isOwnSyncManifest(manifest({ revision: 'written-here' }), 'tab-a', 'written-here')).toBe(true);
   });
 
-  it('applies clean changes, ignores identical scenes, and queues conflicts while dirty', () => {
-    expect(decideIncomingScene(false, 'local', 'remote')).toBe('apply');
-    expect(decideIncomingScene(true, 'local', 'remote')).toBe('conflict');
-    expect(decideIncomingScene(true, 'same', 'same')).toBe('ignore');
+  it('uses the last acknowledged cloud version to distinguish sync from a real conflict', () => {
+    const input = {
+      sameDevice: false,
+      baseFingerprint: 'base',
+      currentFingerprint: 'base',
+      incomingFingerprint: 'remote',
+      currentUpdatedAt: 100,
+      incomingUpdatedAt: 200,
+    };
+
+    expect(decideIncomingScene(input)).toBe('apply');
+    expect(decideIncomingScene({
+      ...input,
+      currentFingerprint: 'local',
+      incomingFingerprint: 'base',
+    })).toBe('keep-local');
+    expect(decideIncomingScene({
+      ...input,
+      currentFingerprint: 'same',
+      incomingFingerprint: 'same',
+    })).toBe('ack');
+    expect(decideIncomingScene({
+      ...input,
+      currentFingerprint: 'local',
+      incomingFingerprint: 'remote',
+    })).toBe('conflict');
+    expect(decideIncomingScene({
+      ...input,
+      baseFingerprint: 'older-base',
+      currentFingerprint: 'local',
+      incomingFingerprint: 'remote-child',
+      incomingParentFingerprint: 'local',
+    })).toBe('apply');
+    expect(decideIncomingScene({
+      ...input,
+      baseFingerprint: 'device-a-edit',
+      currentFingerprint: 'device-a-edit',
+      incomingFingerprint: 'device-b-edit',
+      incomingParentFingerprint: 'base',
+    })).toBe('conflict');
   });
 
-  it('does not treat a locally saved scene awaiting cloud sync as a same-device conflict', () => {
-    expect(hasConflictingLocalChanges('local-tab', false, true)).toBe(false);
-    expect(hasConflictingLocalChanges('local-tab', true, true)).toBe(true);
-    expect(hasConflictingLocalChanges('chrome-sync', false, true)).toBe(true);
-    expect(hasConflictingLocalChanges('chrome-sync', false, false)).toBe(false);
+  it('converges same-device tabs silently using the newest saved scene', () => {
+    const input = {
+      sameDevice: true,
+      baseFingerprint: 'base',
+      currentFingerprint: 'local',
+      incomingFingerprint: 'other-tab',
+      currentUpdatedAt: 100,
+      incomingUpdatedAt: 200,
+    };
+
+    expect(decideIncomingScene(input)).toBe('apply');
+    expect(decideIncomingScene({
+      ...input,
+      currentUpdatedAt: 300,
+      incomingUpdatedAt: 200,
+    })).toBe('keep-local');
   });
 
   it('keeps an applied same-device scene dirty until that fingerprint reaches cloud sync', () => {
@@ -61,11 +107,6 @@ describe('realtime scene sync decisions', () => {
       hasUnsyncedCloudChanges: true,
       shouldScheduleSync: true,
     });
-    expect(hasConflictingLocalChanges(
-      'chrome-sync',
-      false,
-      applied.hasUnsyncedCloudChanges,
-    )).toBe(true);
 
     expect(assessAppliedIncomingSceneSync('local-tab', 'same', 'same', false)).toEqual({
       hasUnsyncedCloudChanges: false,

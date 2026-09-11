@@ -30,7 +30,8 @@
         <li>Website icons are read from Chrome's local Favicon API cache.</li>
         <li>Open tabs and browsing history are read locally to produce pre-search results.</li>
         <li>The full Excalidraw canvas and user-added binary attachments are stored in local IndexedDB, with <code>chrome.storage.local</code> as a fallback.</li>
-        <li>Lightweight canvas state may be compressed and written to <code>chrome.storage.sync</code> when Chrome Sync is available and quota allows.</li>
+        <li>Lightweight shapes, text, bookmark references, document settings, and library items may be compressed and written to <code>chrome.storage.sync</code> when Chrome Sync is available and quota allows.</li>
+        <li>Viewport, zoom, sidebar, and drawing-tool preferences remain local.</li>
         <li>Images and binary attachments are not uploaded to Chrome Sync.</li>
       </ul>
 
@@ -59,7 +60,8 @@
         <li>使用 Chrome Favicon API 从浏览器本地图标缓存显示网站图标。</li>
         <li>在本地读取已打开标签页和浏览历史，用于搜索框预搜索结果。</li>
         <li>完整 Excalidraw 画布和用户添加的附件保存在当前设备的 IndexedDB。</li>
-        <li>图形、文字、书签引用、视口和素材库会在配额允许时写入 Chrome Sync。</li>
+        <li>图形、文字、书签引用、画布文档设置和素材库会在配额允许时写入 Chrome Sync。</li>
+        <li>视口、缩放、侧边栏和绘图工具偏好只保存在本机。</li>
         <li>图片和二进制附件不会进入 Chrome Sync，只保存在添加它们的设备上。</li>
       </ul>
       <h2>同步说明</h2>

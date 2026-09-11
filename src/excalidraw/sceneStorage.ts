@@ -8,6 +8,7 @@ export type StoredExcalidrawScene = {
   files: BinaryFiles;
   libraryItems: LibraryItems;
   savedAt: number;
+  syncBaseFingerprint?: string;
 };
 
 type LegacyStoredExcalidrawScene = Omit<StoredExcalidrawScene, 'version' | 'libraryItems'> & {
@@ -18,7 +19,9 @@ const DATABASE_NAME = 'bookmark-atlas';
 const DATABASE_VERSION = 1;
 const STORE_NAME = 'excalidraw-scenes';
 const SCENE_KEY = 'main';
+const RECOVERY_SCENE_KEY = 'latest-auto-recovery';
 const FALLBACK_KEY = 'bookmark-atlas:excalidraw-scene:v1';
+const RECOVERY_FALLBACK_KEY = 'bookmark-atlas:excalidraw-scene:recovery:v1';
 
 const PERSISTED_APP_STATE_KEYS = [
   'zenModeEnabled',
@@ -53,6 +56,13 @@ const PERSISTED_APP_STATE_KEYS = [
   'gridStep',
 ] as const satisfies readonly (keyof AppState)[];
 
+const SYNCED_APP_STATE_KEYS = [
+  'name',
+  'viewBackgroundColor',
+  'gridSize',
+  'gridStep',
+] as const satisfies readonly (keyof AppState)[];
+
 let writeQueue: Promise<void> = Promise.resolve();
 
 export function createStoredScene(
@@ -72,34 +82,75 @@ export function createStoredScene(
 }
 
 export function pickPersistedAppState(appState: AppState): Partial<AppState> {
-  const persisted: Partial<AppState> = {};
-  const writable = persisted as Record<string, unknown>;
+  return pickAppState(appState, PERSISTED_APP_STATE_KEYS);
+}
 
-  for (const key of PERSISTED_APP_STATE_KEYS) {
+export function pickSyncedAppState(appState: Partial<AppState>): Partial<AppState> {
+  return pickAppState(appState, SYNCED_APP_STATE_KEYS);
+}
+
+export function mergeSyncedAppState(
+  synced: Partial<AppState>,
+  local: Partial<AppState> = {},
+): Partial<AppState> {
+  return {
+    ...local,
+    ...pickSyncedAppState(synced),
+  };
+}
+
+function pickAppState(
+  appState: Partial<AppState>,
+  keys: readonly (keyof AppState)[],
+): Partial<AppState> {
+  const picked: Partial<AppState> = {};
+  const writable = picked as Record<string, unknown>;
+
+  for (const key of keys) {
     const value = appState[key];
     if (value !== undefined) writable[key] = value;
   }
 
-  return persisted;
+  return picked;
 }
 
 export async function loadStoredScene(): Promise<StoredExcalidrawScene | null> {
+  return loadSceneRecord(SCENE_KEY, FALLBACK_KEY);
+}
+
+export async function loadSceneRecoverySnapshot(): Promise<StoredExcalidrawScene | null> {
+  return loadSceneRecord(RECOVERY_SCENE_KEY, RECOVERY_FALLBACK_KEY);
+}
+
+async function loadSceneRecord(recordKey: string, fallbackKey: string): Promise<StoredExcalidrawScene | null> {
   try {
     const database = await openDatabase();
     const scene = await new Promise<StoredExcalidrawScene | undefined>((resolve, reject) => {
       const transaction = database.transaction(STORE_NAME, 'readonly');
-      const request = transaction.objectStore(STORE_NAME).get(SCENE_KEY);
+      const request = transaction.objectStore(STORE_NAME).get(recordKey);
       request.onsuccess = () => resolve(request.result as StoredExcalidrawScene | undefined);
       request.onerror = () => reject(request.error);
     });
     database.close();
     return normalizeStoredScene(scene);
   } catch {
-    return loadFallbackScene();
+    return loadFallbackScene(fallbackKey);
   }
 }
 
 export function saveStoredScene(scene: StoredExcalidrawScene): Promise<void> {
+  return saveSceneRecord(SCENE_KEY, FALLBACK_KEY, scene);
+}
+
+export function saveSceneRecoverySnapshot(scene: StoredExcalidrawScene): Promise<void> {
+  return saveSceneRecord(RECOVERY_SCENE_KEY, RECOVERY_FALLBACK_KEY, scene);
+}
+
+function saveSceneRecord(
+  recordKey: string,
+  fallbackKey: string,
+  scene: StoredExcalidrawScene,
+): Promise<void> {
   writeQueue = writeQueue
     .catch(() => undefined)
     .then(async () => {
@@ -107,14 +158,14 @@ export function saveStoredScene(scene: StoredExcalidrawScene): Promise<void> {
         const database = await openDatabase();
         await new Promise<void>((resolve, reject) => {
           const transaction = database.transaction(STORE_NAME, 'readwrite');
-          transaction.objectStore(STORE_NAME).put(scene, SCENE_KEY);
+          transaction.objectStore(STORE_NAME).put(scene, recordKey);
           transaction.oncomplete = () => resolve();
           transaction.onerror = () => reject(transaction.error);
           transaction.onabort = () => reject(transaction.error);
         });
         database.close();
       } catch {
-        await saveFallbackScene(scene);
+        await saveFallbackScene(fallbackKey, scene);
       }
     });
 
@@ -137,27 +188,27 @@ function openDatabase(): Promise<IDBDatabase> {
   });
 }
 
-async function loadFallbackScene(): Promise<StoredExcalidrawScene | null> {
+async function loadFallbackScene(key: string): Promise<StoredExcalidrawScene | null> {
   try {
     if (globalThis.chrome?.storage?.local) {
-      const result = await chrome.storage.local.get(FALLBACK_KEY);
-      return normalizeStoredScene(result[FALLBACK_KEY]);
+      const result = await chrome.storage.local.get(key);
+      return normalizeStoredScene(result[key]);
     }
 
-    const raw = globalThis.localStorage?.getItem(FALLBACK_KEY);
+    const raw = globalThis.localStorage?.getItem(key);
     return normalizeStoredScene(raw ? JSON.parse(raw) : undefined);
   } catch {
     return null;
   }
 }
 
-async function saveFallbackScene(scene: StoredExcalidrawScene): Promise<void> {
+async function saveFallbackScene(key: string, scene: StoredExcalidrawScene): Promise<void> {
   if (globalThis.chrome?.storage?.local) {
-    await chrome.storage.local.set({ [FALLBACK_KEY]: scene });
+    await chrome.storage.local.set({ [key]: scene });
     return;
   }
 
-  globalThis.localStorage?.setItem(FALLBACK_KEY, JSON.stringify(scene));
+  globalThis.localStorage?.setItem(key, JSON.stringify(scene));
 }
 
 export function normalizeStoredScene(value: unknown): StoredExcalidrawScene | null {
@@ -170,7 +221,7 @@ export function normalizeStoredScene(value: unknown): StoredExcalidrawScene | nu
     || !scene.files
   ) return null;
 
-  return {
+  const normalized: StoredExcalidrawScene = {
     version: 2,
     elements: scene.elements,
     appState: scene.appState,
@@ -178,4 +229,8 @@ export function normalizeStoredScene(value: unknown): StoredExcalidrawScene | nu
     libraryItems: scene.version === 2 && Array.isArray(scene.libraryItems) ? scene.libraryItems : [],
     savedAt: typeof scene.savedAt === 'number' ? scene.savedAt : Date.now(),
   };
+  if (typeof scene.syncBaseFingerprint === 'string') {
+    normalized.syncBaseFingerprint = scene.syncBaseFingerprint;
+  }
+  return normalized;
 }

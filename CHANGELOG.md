@@ -1,5 +1,23 @@
 # Changelog
 
+## v0.9.4 - 2026-09-11
+
+### English
+
+- Reworked canvas conflict detection around the last acknowledged cloud version, so normal upload acknowledgements and stale cloud echoes no longer produce a conflict prompt.
+- Same-device tabs now converge silently to the newest saved canvas; a local recovery snapshot is kept before an automatic replacement.
+- Kept zoom, viewport position, sidebar state, and drawing-tool preferences local so ordinary navigation no longer creates cloud revisions.
+- Added a backward-compatible sync fingerprint version and parent fingerprint so real cross-device branches remain protected.
+- Stopped device-local bookmark reconciliation from rewriting shared canvas content and causing repeated sync churn.
+
+### 中文
+
+- 按最后确认的云端版本重构画布冲突判断，正常上传确认和旧云端回声不再触发冲突弹窗。
+- 同一设备的多个标签页会静默收敛到最新保存的画布；自动替换前会保留一份本机恢复快照。
+- 缩放、视口位置、侧边栏和绘图工具偏好只保存在本机，普通浏览操作不再制造云端版本。
+- 增加向后兼容的同步指纹版本与父版本指纹，真正的跨设备分叉仍保留冲突保护。
+- 本机书签解析不再重写共享画布，避免不同设备之间反复产生同步更新。
+
 ## v0.9.3 - 2026-09-10
 
 ### English

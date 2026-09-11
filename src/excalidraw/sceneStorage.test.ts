@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import type { AppState } from '@excalidraw/excalidraw/types';
-import { createStoredScene, normalizeStoredScene, pickPersistedAppState } from './sceneStorage';
+import {
+  createStoredScene,
+  loadSceneRecoverySnapshot,
+  mergeSyncedAppState,
+  normalizeStoredScene,
+  pickPersistedAppState,
+  pickSyncedAppState,
+  saveSceneRecoverySnapshot,
+} from './sceneStorage';
 
 describe('Excalidraw scene storage', () => {
   it('keeps viewport and drawing preferences while dropping transient UI state', () => {
@@ -36,6 +44,49 @@ describe('Excalidraw scene storage', () => {
     expect(normalizeStoredScene({ ...scene, version: 1, libraryItems: undefined })).toMatchObject({
       version: 2,
       libraryItems: [],
+    });
+  });
+
+  it('keeps viewport state local while syncing document-level canvas settings', () => {
+    const local = {
+      scrollX: 125,
+      scrollY: -44,
+      zoom: { value: 0.75 },
+      openSidebar: { name: 'library' },
+      currentItemStrokeColor: '#111111',
+      viewBackgroundColor: '#ffffff',
+      name: 'Local name',
+    } as unknown as AppState;
+    const remote = {
+      scrollX: 900,
+      zoom: { value: 0.2 },
+      viewBackgroundColor: '#f7f7f3',
+      name: 'Remote name',
+    } as unknown as AppState;
+
+    expect(pickSyncedAppState(local)).toEqual({
+      name: 'Local name',
+      viewBackgroundColor: '#ffffff',
+    });
+    expect(mergeSyncedAppState(remote, local)).toMatchObject({
+      scrollX: 125,
+      scrollY: -44,
+      zoom: { value: 0.75 },
+      openSidebar: { name: 'library' },
+      currentItemStrokeColor: '#111111',
+      viewBackgroundColor: '#f7f7f3',
+      name: 'Remote name',
+    });
+  });
+
+  it('keeps one local recovery snapshot before an automatic replacement', async () => {
+    const scene = createStoredScene([], { viewBackgroundColor: '#fff' } as AppState, {});
+
+    await saveSceneRecoverySnapshot(scene);
+
+    expect(await loadSceneRecoverySnapshot()).toMatchObject({
+      savedAt: scene.savedAt,
+      appState: { viewBackgroundColor: '#fff' },
     });
   });
 });

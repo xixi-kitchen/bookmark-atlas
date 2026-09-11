@@ -11,8 +11,18 @@ export type LocalSceneSignal = {
   fingerprint: string;
 };
 
-export type IncomingSceneDecision = 'ignore' | 'apply' | 'conflict';
+export type IncomingSceneDecision = 'ack' | 'apply' | 'keep-local' | 'conflict';
 export type IncomingSceneSource = 'local-tab' | 'chrome-sync';
+
+export type IncomingSceneDecisionInput = {
+  sameDevice: boolean;
+  baseFingerprint: string;
+  currentFingerprint: string;
+  incomingFingerprint: string;
+  incomingParentFingerprint?: string;
+  currentUpdatedAt: number;
+  incomingUpdatedAt: number;
+};
 
 export function assessSyncCompletion(sentFingerprint: string, currentFingerprint: string) {
   const syncedCurrentScene = Boolean(sentFingerprint && sentFingerprint === currentFingerprint);
@@ -34,23 +44,27 @@ export function isOwnSyncManifest(
   return manifest.contextId === contextId || manifest.revision === lastWrittenRevision;
 }
 
-export function decideIncomingScene(
-  hasLocalChanges: boolean,
-  currentFingerprint: string,
-  incomingFingerprint: string,
-): IncomingSceneDecision {
-  if (currentFingerprint && currentFingerprint === incomingFingerprint) return 'ignore';
-  return hasLocalChanges ? 'conflict' : 'apply';
-}
+export function decideIncomingScene({
+  sameDevice,
+  baseFingerprint,
+  currentFingerprint,
+  incomingFingerprint,
+  incomingParentFingerprint,
+  currentUpdatedAt,
+  incomingUpdatedAt,
+}: IncomingSceneDecisionInput): IncomingSceneDecision {
+  if (currentFingerprint && currentFingerprint === incomingFingerprint) return 'ack';
 
-export function hasConflictingLocalChanges(
-  source: IncomingSceneSource,
-  hasUnpersistedLocalChanges: boolean,
-  hasUnsyncedCloudChanges: boolean,
-) {
-  return source === 'local-tab'
-    ? hasUnpersistedLocalChanges
-    : hasUnsyncedCloudChanges;
+  if (sameDevice) {
+    return incomingUpdatedAt >= currentUpdatedAt ? 'apply' : 'keep-local';
+  }
+
+  if (baseFingerprint && incomingFingerprint === baseFingerprint) return 'keep-local';
+  if (incomingParentFingerprint) {
+    return incomingParentFingerprint === currentFingerprint ? 'apply' : 'conflict';
+  }
+  if (baseFingerprint && currentFingerprint === baseFingerprint) return 'apply';
+  return 'conflict';
 }
 
 export function assessAppliedIncomingSceneSync(

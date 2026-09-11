@@ -908,7 +908,7 @@
     }
   },
   "syncTitleSynced": {
-    "message": "Shapes, text, bookmark references, viewport, and library are saved to this browser's sync storage."
+    "message": "Shapes, text, bookmark references, document settings, and library are synced. Viewport and tool preferences stay on this device."
   },
   "webEmbedToolbar": {
     "message": "Embedded web page actions"
@@ -1116,22 +1116,22 @@
     "message": "Highlights from the latest installed version."
   },
   "guideWhatsNewSyncTitle": {
-    "message": "Quieter live sync"
+    "message": "Silent sync that converges"
   },
   "guideWhatsNewSyncBody": {
-    "message": "Same-device tab updates apply without a page reload when there is no local conflict."
+    "message": "Normal tab and device updates now apply automatically. Only a real cross-device edit branch asks you to choose."
   },
   "guideWhatsNewSearchTitle": {
-    "message": "A guided first minute"
+    "message": "Viewport stays local"
   },
   "guideWhatsNewSearchBody": {
-    "message": "New installs get an optional three-step tour that works inside the real new-tab workspace."
+    "message": "Zooming, panning, opening a sidebar, or changing a drawing tool no longer creates a cloud canvas revision."
   },
   "guideWhatsNewStoreTitle": {
-    "message": "Release notes and support"
+    "message": "Safer automatic replacement"
   },
   "guideWhatsNewStoreBody": {
-    "message": "The fixed Help menu can replay the guide, show version highlights, or open the full GitHub release history."
+    "message": "Before automatic replacement, Bookmark Atlas keeps the previous local canvas as a recovery snapshot."
   },
   "guideGithubReleases": {
     "message": "GitHub Releases"

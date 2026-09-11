@@ -57,7 +57,8 @@ Sync note:
 
 Bookmark Atlas stores the full canvas and binary attachments on the current
 device. Lightweight canvas data such as shapes, text, bookmark references,
-viewport, and library items may sync through Chrome Sync when quota allows.
+document settings, and library items may sync through Chrome Sync when quota
+allows. Viewport, zoom, sidebar, and drawing-tool preferences remain local.
 Open extension tabs receive same-device updates through BroadcastChannel and
 cross-device updates through Chrome storage change events. Visible tabs also
 check for newer cloud state on focus, on visibility return, and every 30
@@ -112,10 +113,10 @@ Chrome 书签、搜索、网页嵌入和 Excalidraw 画布。
 同步说明：
 
 Bookmark Atlas 会把完整画布和二进制附件保存在当前设备。图形、文字、书签
-引用、视口和素材库等轻量数据会在 Chrome Sync 配额允许时同步。Chrome Sync
-是事件驱动的，通常接近实时，但 Chrome 不保证跨设备或多标签页的固定到达
-时间。图片和二进制附件不会通过 Chrome Sync 同步；需要完整复制时，可以导出
-JSON 备份。
+引用、画布文档设置和素材库等轻量数据会在 Chrome Sync 配额允许时同步。视口、
+缩放、侧边栏和绘图工具偏好只保存在本机。Chrome Sync 是事件驱动的，通常接近
+实时，但 Chrome 不保证跨设备或多标签页的固定到达时间。图片和二进制附件不会
+通过 Chrome Sync 同步；需要完整复制时，可以导出 JSON 备份。
 
 隐私说明：
 

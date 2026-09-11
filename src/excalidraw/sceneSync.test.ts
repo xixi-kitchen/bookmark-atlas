@@ -5,8 +5,10 @@ import type { AppState, BinaryFiles } from '@excalidraw/excalidraw/types';
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
 import { createStoredScene } from './sceneStorage';
 import {
+  createSceneSyncFingerprint,
   getCanvasSyncManifest,
   loadSceneFromSync,
+  mergeSyncedSceneWithLocalFiles,
   saveSceneToSync,
   SYNC_MANIFEST_KEY,
 } from './sceneSync';
@@ -28,13 +30,18 @@ describe('Excalidraw Chrome Sync storage', () => {
       { file1: { id: 'file1', dataURL: 'data:image/png;base64,abc', mimeType: 'image/png', created: 1 } } as unknown as BinaryFiles,
     );
 
-    const result = await saveSceneToSync(scene, { contextId: 'tab-a' });
+    const result = await saveSceneToSync(scene, {
+      contextId: 'tab-a',
+      parentFingerprint: 'previous-cloud',
+    });
     const loaded = await loadSceneFromSync();
 
     if (result.status === 'error') throw new Error(result.message);
     expect(result.status).toBe('synced');
     if (result.status === 'synced') {
       expect(result.manifest.contextId).toBe('tab-a');
+      expect(result.manifest.parentFingerprint).toBe('previous-cloud');
+      expect(result.manifest.fingerprintVersion).toBe(2);
       expect(typeof result.manifest.fingerprint).toBe('string');
       expect(result.manifest.excludedFileCount).toBe(1);
     }
@@ -42,6 +49,64 @@ describe('Excalidraw Chrome Sync storage', () => {
     expect(loaded?.scene.elements).toHaveLength(1);
     expect(loaded?.manifest.contextId).toBe('tab-a');
     expect(loaded?.scene.files).toEqual({});
+  });
+
+  it('excludes viewport state from sync and preserves the receiving tab viewport', async () => {
+    vi.stubGlobal('Blob', NodeBlob);
+    installStorageMock();
+    const remote = createStoredScene(
+      [],
+      {
+        scrollX: 900,
+        scrollY: 800,
+        zoom: { value: 0.2 },
+        openSidebar: { name: 'library' },
+        viewBackgroundColor: '#f7f7f3',
+      } as unknown as AppState,
+      {},
+    );
+    const local = createStoredScene(
+      [],
+      {
+        scrollX: 10,
+        scrollY: 20,
+        zoom: { value: 1 },
+        viewBackgroundColor: '#ffffff',
+      } as unknown as AppState,
+      {},
+    );
+
+    const result = await saveSceneToSync(remote);
+    if (result.status !== 'synced') throw new Error(`Expected sync, got ${result.status}`);
+    const loaded = await loadSceneFromSync();
+    expect(loaded?.scene.appState).toEqual({ viewBackgroundColor: '#f7f7f3' });
+    expect(mergeSyncedSceneWithLocalFiles(loaded!.scene, local).appState).toMatchObject({
+      scrollX: 10,
+      scrollY: 20,
+      zoom: { value: 1 },
+      viewBackgroundColor: '#f7f7f3',
+    });
+  });
+
+  it('fingerprints actual divergent element revisions while ignoring viewport-only changes', () => {
+    const first = createStoredScene(
+      [{ id: 'shape', version: 2, versionNonce: 101, updated: 10, isDeleted: false, type: 'rectangle', x: 10 } as ExcalidrawElement],
+      { scrollX: 10, viewBackgroundColor: '#fff' } as AppState,
+      {},
+    );
+    const sameContentDifferentViewport = createStoredScene(
+      first.elements,
+      { scrollX: 900, viewBackgroundColor: '#fff' } as AppState,
+      {},
+    );
+    const divergent = createStoredScene(
+      [{ ...first.elements[0], versionNonce: 202, x: 50 } as ExcalidrawElement],
+      { scrollX: 10, viewBackgroundColor: '#fff' } as AppState,
+      {},
+    );
+
+    expect(createSceneSyncFingerprint(first)).toBe(createSceneSyncFingerprint(sameContentDifferentViewport));
+    expect(createSceneSyncFingerprint(first)).not.toBe(createSceneSyncFingerprint(divergent));
   });
 
   it('keeps the last cloud version when a compressed scene exceeds the safe quota', async () => {
@@ -97,6 +162,33 @@ describe('Excalidraw Chrome Sync storage', () => {
     });
 
     expect(loaded?.scene.elements[0]?.id).toBe('retry-scene');
+  });
+
+  it('rejects stale manifest metadata paired with chunks from a newer scene', async () => {
+    vi.stubGlobal('Blob', NodeBlob);
+    installStorageMock();
+    const first = createStoredScene(
+      [{ id: 'scene-a', version: 1, versionNonce: 101, updated: 1, isDeleted: false, type: 'rectangle' } as ExcalidrawElement],
+      { viewBackgroundColor: '#fff' } as AppState,
+      {},
+    );
+    const second = createStoredScene(
+      [{ id: 'scene-b', version: 1, versionNonce: 202, updated: 2, isDeleted: false, type: 'rectangle' } as ExcalidrawElement],
+      { viewBackgroundColor: '#fff' } as AppState,
+      {},
+    );
+    const firstResult = await saveSceneToSync(first);
+    const secondResult = await saveSceneToSync(second);
+    if (firstResult.status !== 'synced' || secondResult.status !== 'synced') {
+      throw new Error('Expected both scenes to sync.');
+    }
+
+    const stale = await loadSceneFromSync({
+      manifest: firstResult.manifest,
+      revision: firstResult.manifest.revision,
+    });
+
+    expect(stale).toBeNull();
   });
 
   it('accepts legacy v1 manifests that do not include newer optional metadata', async () => {

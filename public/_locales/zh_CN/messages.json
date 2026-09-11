@@ -908,7 +908,7 @@
     }
   },
   "syncTitleSynced": {
-    "message": "图形、文字、书签引用、视口和素材库已保存到当前浏览器的同步存储。"
+    "message": "图形、文字、书签引用、画布设置和素材库已同步；视口与工具偏好只保存在本机。"
   },
   "webEmbedToolbar": {
     "message": "嵌入网页操作"
@@ -1116,22 +1116,22 @@
     "message": "当前安装版本的重点变化。"
   },
   "guideWhatsNewSyncTitle": {
-    "message": "更安静的实时同步"
+    "message": "静默收敛的实时同步"
   },
   "guideWhatsNewSyncBody": {
-    "message": "同一设备的多个标签页没有本地冲突时，会直接应用更新，不再要求刷新页面。"
+    "message": "正常的标签页和设备更新会自动应用，只有真正的跨设备编辑分叉才需要选择。"
   },
   "guideWhatsNewSearchTitle": {
-    "message": "一分钟上手引导"
+    "message": "视图状态留在本机"
   },
   "guideWhatsNewSearchBody": {
-    "message": "首次安装会显示可跳过的三步引导，并直接操作真实的新标签页工作区。"
+    "message": "缩放、移动视口、打开侧边栏或切换绘图工具不再产生云端画布版本。"
   },
   "guideWhatsNewStoreTitle": {
-    "message": "更新说明与支持入口"
+    "message": "更安全的自动替换"
   },
   "guideWhatsNewStoreBody": {
-    "message": "固定宽度的帮助菜单可以重播引导、查看版本重点或打开完整 GitHub 更新历史。"
+    "message": "自动替换画布前，Bookmark Atlas 会把此前的本机画布保存为恢复快照。"
   },
   "guideGithubReleases": {
     "message": "GitHub Releases"
