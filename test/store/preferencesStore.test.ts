@@ -11,7 +11,7 @@ describe('preferences store', () => {
     usePreferencesStore.setState({
       viewMode: 'canvas',
       cardSize: 'md',
-      themeId: 'swiss',
+      themeId: 'excalidraw',
       activeEngineId: 'baidu',
       engines: DEFAULT_SEARCH_ENGINES.map((engine) => ({ ...engine })),
       hydrated: false,
@@ -24,6 +24,44 @@ describe('preferences store', () => {
 
     expect(usePreferencesStore.getState()).toMatchObject({ viewMode: 'grid', themeId: 'pixel', cardSize: 'md', hydrated: true });
     expect(usePreferencesStore.getState().engines).toHaveLength(4);
+  });
+
+  it('defaults future canvas bookmarks to compact and persists an explicit choice', async () => {
+    await usePreferencesStore.getState().hydrate();
+    expect(usePreferencesStore.getState().defaultBookmarkPresentation).toBe('compact');
+    usePreferencesStore.getState().setDefaultBookmarkPresentation('icon');
+    await vi.runAllTimersAsync();
+    expect(JSON.parse(localStorage.getItem(KEY)!)).toMatchObject({ defaultBookmarkPresentation: 'icon' });
+  });
+
+  it('starts new installs on the Excalidraw theme and canvas', async () => {
+    expect(usePreferencesStore.getInitialState().themeId).toBe('excalidraw');
+    await usePreferencesStore.getState().hydrate();
+    expect(usePreferencesStore.getState()).toMatchObject({ themeId: 'excalidraw', viewMode: 'canvas', hydrated: true });
+  });
+
+  it('uses Excalidraw when the saved theme is missing or invalid', async () => {
+    for (const preferences of [{ cardSize: 'sm' }, { themeId: 'removed-theme' }, { themeId: 'toString' }]) {
+      localStorage.setItem(KEY, JSON.stringify(preferences));
+      await usePreferencesStore.getState().hydrate();
+      expect(usePreferencesStore.getState().themeId).toBe('excalidraw');
+    }
+  });
+
+  it('preserves an explicitly saved Swiss theme', async () => {
+    localStorage.setItem(KEY, JSON.stringify({ themeId: 'swiss' }));
+    await usePreferencesStore.getState().hydrate();
+    expect(usePreferencesStore.getState().themeId).toBe('swiss');
+  });
+
+  it('keeps the default theme if reading preferences fails', async () => {
+    const read = vi.spyOn(localStorage, 'getItem').mockImplementationOnce(() => { throw new Error('unavailable'); });
+    try {
+      await usePreferencesStore.getState().hydrate();
+      expect(usePreferencesStore.getState()).toMatchObject({ themeId: 'excalidraw', hydrated: true });
+    } finally {
+      read.mockRestore();
+    }
   });
 
   it('falls back to the first enabled engine and persists the change', async () => {

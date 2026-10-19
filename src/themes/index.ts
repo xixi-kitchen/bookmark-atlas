@@ -7,6 +7,8 @@ export type ThemeId =
   | 'pop'
   | 'pixel';
 
+export const DEFAULT_THEME_ID: ThemeId = 'excalidraw';
+
 export type ThemeColors = {
   background: string;
   surface: string;

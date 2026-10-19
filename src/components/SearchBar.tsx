@@ -4,7 +4,7 @@ import { activateBrowserSearchResult, searchLocalBrowserContent, type BrowserSea
 import { fetchRemoteSuggestions, runSearch, type SearchEngine } from '../search';
 import { SearchEngineIcon } from './SearchEngineIcon';
 import { BookmarkFavicon } from './BookmarkFavicon';
-import { t } from '../i18n';
+import { getUiLanguage, t } from '../i18n';
 
 type Props = {
   engines: SearchEngine[];
@@ -21,6 +21,7 @@ type SuggestionGroup = { id: string; label: string; items: SuggestionItem[] };
 const EMPTY_LOCAL_RESULTS: BrowserSearchGroups = { tabs: [], bookmarks: [], history: [] };
 
 export function SearchBar({ engines, activeEngineId, onEngineChange, onManage, inputRef }: Props) {
+  const uiLanguage = getUiLanguage();
   const [query, setQuery] = useState('');
   const [engineMenuOpen, setEngineMenuOpen] = useState(false);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
@@ -49,7 +50,7 @@ export function SearchBar({ engines, activeEngineId, onEngineChange, onManage, i
       { id: 'bookmarks', label: t('chromeBookmarks'), items: localResults.bookmarks },
       { id: 'history', label: trimmedQuery ? t('browsingHistory') : t('recentVisits'), items: localResults.history },
     ].filter((group) => group.items.length > 0);
-  }, [active, localResults, query, remoteSuggestions]);
+  }, [active, localResults, query, remoteSuggestions, uiLanguage]);
 
   const flattenedItems = useMemo(() => groups.flatMap((group) => group.items), [groups]);
 

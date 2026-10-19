@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { BookOpen, Columns3, Grid3X3, HelpCircle, Plus, Sparkles } from 'lucide-react';
+import { Columns3, Grid3X3, Plus, Sparkles } from 'lucide-react';
 import type { BookmarkCreateInput, BookmarkNode } from './bookmarks/types';
 import { BookmarkEditor } from './components/BookmarkEditor';
 import { AppLogo } from './components/AppLogo';
@@ -8,7 +8,9 @@ import { EngineManager } from './components/EngineManager';
 import { FolderNavigator, ViewBreadcrumb } from './components/navigation';
 import { ProductGuide } from './components/ProductGuide';
 import { SearchBar } from './components/SearchBar';
-import { ToolbarSelectMenu } from './components/ToolbarSelectMenu';
+import { SettingsMenu } from './components/SettingsMenu';
+import { useLanguagePreference } from './i18n/useLanguagePreference';
+import { AISettings } from './ai/AISettings';
 import { GridView } from './components/views/GridView';
 import { ExcalidrawCanvas } from './excalidraw/ExcalidrawCanvas';
 import { ensureYoutubeEmbedIdentityRule } from './excalidraw/youtubeIdentity';
@@ -23,8 +25,8 @@ import {
 } from './onboarding/onboardingState';
 import { useBookmarkStore } from './store/bookmarkStore';
 import { listenForPreferenceSyncChanges, usePreferencesStore } from './store/preferencesStore';
-import { applyTheme, THEMES, type ThemeId } from './themes';
-import type { CardSize, ViewMode } from './types/ui';
+import { applyTheme } from './themes';
+import type { ViewMode } from './types/ui';
 import packageMetadata from '../package.json';
 
 const VIEW_OPTIONS: { id: ViewMode; label: MessageKey; icon: typeof Grid3X3 }[] = [
@@ -35,23 +37,25 @@ const VIEW_OPTIONS: { id: ViewMode; label: MessageKey; icon: typeof Grid3X3 }[] 
 const APP_VERSION = globalThis.chrome?.runtime?.getManifest?.().version ?? packageMetadata.version;
 
 export function App() {
+  useLanguagePreference();
   const bookmarkState = useBookmarkStore();
   const preferences = usePreferencesStore();
   const [editorNode, setEditorNode] = useState<BookmarkNode | 'create' | null>(null);
   const [deleteNode, setDeleteNode] = useState<BookmarkNode | null>(null);
   const [enginesOpen, setEnginesOpen] = useState(false);
+  const [aiSettingsOpen, setAISettingsOpen] = useState(false);
   const [createParentId, setCreateParentId] = useState<string>();
   const [undoVisible, setUndoVisible] = useState(false);
   const [activeFolderId, setActiveFolderId] = useState<string>();
   const [embedIdentityReady, setEmbedIdentityReady] = useState(false);
   const [guide, setGuide] = useState<GuideStartup | null>(null);
-  const [helpMenuOpen, setHelpMenuOpen] = useState(false);
-  const helpMenuRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     void bookmarkState.initialize();
-    void preferences.hydrate();
+    void preferences.hydrate().then(() => {
+      if (new URLSearchParams(window.location.search).has('capture')) usePreferencesStore.getState().setViewMode('canvas');
+    });
     const stopPreferenceSync = listenForPreferenceSyncChanges();
     void ensureYoutubeEmbedIdentityRule().finally(() => setEmbedIdentityReady(true));
     let cancelled = false;
@@ -76,25 +80,15 @@ export function App() {
   }, [preferences.themeId]);
 
   useEffect(() => {
-    if (!guide && !helpMenuOpen) return;
+    if (!guide) return;
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         if (guide) void closeGuide();
-        setHelpMenuOpen(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [guide, helpMenuOpen]);
-
-  useEffect(() => {
-    if (!helpMenuOpen) return;
-    const handlePointerDown = (event: PointerEvent) => {
-      if (!helpMenuRef.current?.contains(event.target as Node)) setHelpMenuOpen(false);
-    };
-    window.addEventListener('pointerdown', handlePointerDown);
-    return () => window.removeEventListener('pointerdown', handlePointerDown);
-  }, [helpMenuOpen]);
+  }, [guide]);
 
   useEffect(() => {
     let refreshTimer: ReturnType<typeof setTimeout> | undefined;
@@ -132,11 +126,6 @@ export function App() {
     ?? folders.find((folder) => !folder.readonly)
     ?? folders[0];
   const managedParentId = activeFolder?.id ?? defaultWritableFolder?.id ?? bookmarkState.roots[0]?.id;
-  const sizeOptions = useMemo(() => ([
-    { value: 'sm', label: t('sizeSmall'), description: t('sizeSmallDescription') },
-    { value: 'md', label: t('sizeMedium'), description: t('sizeMediumDescription') },
-    { value: 'lg', label: t('sizeLarge'), description: t('sizeLargeDescription') },
-  ]), []);
 
   useEffect(() => {
     if (activeFolderId && (!activeFolder || activeFolder.url)) setActiveFolderId(undefined);
@@ -230,70 +219,11 @@ export function App() {
               </button>
             ))}
           </div>
-          <ToolbarSelectMenu
-            label={t('cardSize')}
-            value={preferences.cardSize}
-            options={sizeOptions}
-            variant="size"
-            onChange={(value) => preferences.setCardSize(value as CardSize)}
-          />
-          <ToolbarSelectMenu
-            label={t('uiStyle')}
-            value={preferences.themeId}
-            options={Object.values(THEMES).map((theme) => ({
-              value: theme.id,
-              label: t(theme.nameKey),
-              color: theme.tokens.color.accent,
-            }))}
-            variant="theme"
-            onChange={(value) => preferences.setThemeId(value as ThemeId)}
-          />
-          <div className="help-menu" ref={helpMenuRef}>
-            <button
-              className="icon-button help-menu__trigger"
-              type="button"
-              aria-label={t('helpMenu')}
-              aria-expanded={helpMenuOpen}
-              aria-haspopup="menu"
-              title={t('helpMenu')}
-              onClick={() => setHelpMenuOpen((open) => !open)}
-            >
-              <HelpCircle size={16} />
-            </button>
-            {helpMenuOpen && (
-              <div className="help-menu__panel" role="menu" aria-label={t('helpMenu')}>
-                <button
-                  type="button"
-                  role="menuitem"
-                  onClick={() => {
-                    setHelpMenuOpen(false);
-                    setGuide({ surface: 'onboarding', source: 'manual' });
-                  }}
-                >
-                  <BookOpen size={15} />
-                  <span>
-                    <strong>{t('helpOpenGuide')}</strong>
-                    <small>{t('helpOpenGuideDescription')}</small>
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  role="menuitem"
-                  onClick={() => {
-                    setHelpMenuOpen(false);
-                    setGuide({ surface: 'whats-new', source: 'manual' });
-                  }}
-                >
-                  <Sparkles size={15} />
-                  <span>
-                    <strong>{t('helpWhatsNew')}</strong>
-                    <small>{t('helpWhatsNewDescription', APP_VERSION)}</small>
-                  </span>
-                </button>
-              </div>
-            )}
-          </div>
-          <button className="primary-button" onClick={() => openCreate(activeFolder && activeFolder.readonlyReason !== 'root' && activeFolder.readonlyReason !== 'managed' ? activeFolder.id : defaultWritableFolder?.id)} title={t('newChromeBookmark')}><Plus size={16} /> {t('newChromeBookmark')}</button>
+          <button className="primary-button" onClick={() => openCreate(activeFolder && activeFolder.readonlyReason !== 'root' && activeFolder.readonlyReason !== 'managed' ? activeFolder.id : defaultWritableFolder?.id)} aria-label={t('newChromeBookmark')} title={t('newChromeBookmark')}><Plus size={16} /> {t('newChromeBookmark')}</button>
+          <SettingsMenu version={APP_VERSION} onManageEngines={() => setEnginesOpen(true)}
+            onAISettings={() => setAISettingsOpen(true)}
+            onOpenGuide={() => setGuide({ surface: 'onboarding', source: 'manual' })}
+            onWhatsNew={() => setGuide({ surface: 'whats-new', source: 'manual' })} />
         </div>
       </header>
 
@@ -304,7 +234,7 @@ export function App() {
           <div className="workspace__status"><div className="empty-state__panel"><h2>{t('readFailed')}</h2><p>{bookmarkState.error}</p><button className="primary-button" onClick={() => void bookmarkState.refresh()}>{t('retry')}</button></div></div>
         ) : preferences.viewMode === 'canvas' ? (
           embedIdentityReady ? (
-            <ExcalidrawCanvas roots={visibleRoots} />
+            <ExcalidrawCanvas roots={visibleRoots} onOpenAISettings={() => setAISettingsOpen(true)} />
           ) : (
             <div className="workspace__status"><div className="empty-state__panel"><Sparkles size={24} /><h2>{t('preparingEmbedsTitle')}</h2><p>{t('preparingEmbedsBody')}</p></div></div>
           )
@@ -354,6 +284,7 @@ export function App() {
       )}
       {deleteNode && <DeleteConfirm node={deleteNode} onConfirm={confirmDelete} onClose={() => setDeleteNode(null)} />}
       {enginesOpen && <EngineManager engines={preferences.engines} onChange={preferences.setEngines} onClose={() => setEnginesOpen(false)} />}
+      {aiSettingsOpen && <AISettings onClose={() => setAISettingsOpen(false)} />}
       {guide && (
         <ProductGuide
           surface={guide.surface}

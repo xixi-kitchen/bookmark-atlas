@@ -8,6 +8,8 @@ const permissions = [...(manifest.permissions ?? [])].sort();
 
 if (manifest.manifest_version !== 3) throw new Error('Expected Manifest V3.');
 if (manifest.chrome_url_overrides?.newtab !== 'newtab.html') throw new Error('Missing new tab override.');
+if (manifest.action?.default_popup !== 'popup.html') throw new Error('Missing current-page capture popup.');
+await readFile(new URL('popup.html', outputRoot), 'utf8');
 if (manifest.default_locale !== 'en') throw new Error('Expected default_locale en.');
 if (manifest.name !== '__MSG_appName__') throw new Error('Manifest name must use chrome.i18n.');
 if (manifest.short_name !== '__MSG_appShortName__') throw new Error('Manifest short_name must use chrome.i18n.');
@@ -31,7 +33,9 @@ const expectedSuggestionHosts = [
 if (JSON.stringify([...(manifest.host_permissions ?? [])].sort()) !== JSON.stringify(expectedSuggestionHosts)) {
   throw new Error(`Unexpected host permissions: ${(manifest.host_permissions ?? []).join(', ')}`);
 }
-if (manifest.optional_host_permissions?.length) throw new Error('Store build must not request broad optional host permissions.');
+if (JSON.stringify(manifest.optional_host_permissions ?? []) !== JSON.stringify(['https://*/*'])) {
+  throw new Error('AI optional hosts must be HTTPS only; individual origins are granted on user action.');
+}
 if (!manifest.icons?.['128']) throw new Error('Missing 128px store icon.');
 if (browser === 'safari') {
   if (manifest.minimum_chrome_version) throw new Error('Safari manifest must not contain minimum_chrome_version.');

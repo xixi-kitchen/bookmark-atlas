@@ -1023,6 +1023,295 @@
   "helpMenu": {
     "message": "Help"
   },
+  "settings": {
+    "message": "Settings"
+  },
+  "uiLanguage": {
+    "message": "Language / 语言"
+  },
+  "languageAuto": {
+    "message": "Follow browser"
+  },
+  "languageSaveFailed": {
+    "message": "Could not save the language. Please try again."
+  },
+  "bookmarkDisplay": {
+    "message": "Bookmark display"
+  },
+  "bookmarkDisplayIcon": {
+    "message": "Icon"
+  },
+  "bookmarkDisplayCompact": {
+    "message": "Compact"
+  },
+  "bookmarkDisplayDetailed": {
+    "message": "Detailed"
+  },
+  "newBookmarkDisplay": {
+    "message": "New canvas bookmarks"
+  },
+  "newBookmarkDisplayHint": {
+    "message": "Applies to future imports. Existing cards keep their layout."
+  },
+  "bookmarkSelectionTools": {
+    "message": "Selected bookmark actions"
+  },
+  "selectedBookmarksCount": {
+    "message": "$ARG_1$ selected",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "bookmarkDescription": {
+    "message": "Description"
+  },
+  "descriptionSelectOne": {
+    "message": "Select one bookmark to edit its description"
+  },
+  "previewBookmarkLayout": {
+    "message": "Arrange"
+  },
+  "layoutAlreadyAligned": {
+    "message": "No safe layout change: already compact, or the frame contains protected or unselected content."
+  },
+  "canvasChangePreview": {
+    "message": "Preview canvas changes"
+  },
+  "canvasChangePreviewHint": {
+    "message": "Preview only. Apply to keep these changes; undo is available."
+  },
+  "applyChanges": {
+    "message": "Apply"
+  },
+  "canvasChangedRetryPreview": {
+    "message": "The canvas changed. Generate a fresh preview before applying."
+  },
+  "openBookmarkIcon": {
+    "message": "Open $ARG_1$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "aiOrganize": {
+    "message": "AI organize"
+  },
+  "aiSettings": {
+    "message": "AI settings"
+  },
+  "aiLocalSettingsHint": {
+    "message": "Saved only in this browser profile on this device. Never synced, shared, or included in backups."
+  },
+  "aiLocalKeyWarning": {
+    "message": "The API key is encrypted on this device, not synced or backed up. This is not an OS keychain: someone controlling this browser profile or extension runtime may still use it."
+  },
+  "aiSaveLocal": {
+    "message": "Save on this device"
+  },
+  "aiClearLocal": {
+    "message": "Clear local AI settings"
+  },
+  "aiSettingsSaved": {
+    "message": "AI settings saved on this device."
+  },
+  "aiSettingsCleared": {
+    "message": "Local AI settings cleared."
+  },
+  "aiFetchModels": {
+    "message": "Fetch models"
+  },
+  "aiModelsHint": {
+    "message": "Model listing requires your provider to support GET /models. You can always enter a model manually; listing success does not prove generation works."
+  },
+  "aiModelsLoaded": {
+    "message": "$ARG_1$ models loaded.",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "aiTestConnection": {
+    "message": "Test selected model"
+  },
+  "aiTestHint": {
+    "message": "Sends only a fixed test prompt, not bookmarks. Your provider may charge for the test."
+  },
+  "aiTestPassed": {
+    "message": "The selected model responded successfully."
+  },
+  "aiWorking": {
+    "message": "Working…"
+  },
+  "aiNoSavedConfig": {
+    "message": "Save an API endpoint, model and key in AI settings first."
+  },
+  "aiUsingConfig": {
+    "message": "Using $ARG_1$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "aiKeyChangedEndpoint": {
+    "message": "Endpoint changed. Enter a key for this endpoint again."
+  },
+  "aiUnsavedSettings": {
+    "message": "Changes are not saved yet."
+  },
+  "captureCurrentPage": {
+    "message": "Save current page"
+  },
+  "captureDescription": {
+    "message": "Save this page as a browser bookmark and add it to your Excalidraw canvas."
+  },
+  "captureDestination": {
+    "message": "Browser bookmark folder"
+  },
+  "captureDestinationValue": {
+    "message": "Other bookmarks / Bookmark Atlas"
+  },
+  "captureAddToCanvas": {
+    "message": "Add to canvas"
+  },
+  "captureAdding": {
+    "message": "Saving…"
+  },
+  "captureOpenAfterSave": {
+    "message": "Open canvas after adding"
+  },
+  "captureSavedWithoutOpening": {
+    "message": "Saved without opening the canvas. Open your canvas later to organize it."
+  },
+  "captureOpenPreferenceFailed": {
+    "message": "Could not save this preference. Please try again."
+  },
+  "captureOpenPreferenceLoadFailed": {
+    "message": "Could not load this option. The canvas will stay closed unless you select it."
+  },
+  "captureOpening": {
+    "message": "Opening canvas…"
+  },
+  "captureQueueFull": {
+    "message": "Pending captures are full. Open your canvas to finish existing captures, then retry."
+  },
+  "captureQueueInvalid": {
+    "message": "Pending local captures need recovery. Original data was retained; contact support. Browser bookmarks are unaffected."
+  },
+  "captureSuccess": {
+    "message": "Bookmark saved. Opening the canvas to finish adding the card."
+  },
+  "captureUnsupportedPage": {
+    "message": "Only ordinary HTTP and HTTPS pages can be saved. Browser-internal and extension pages are not supported."
+  },
+  "captureFailed": {
+    "message": "Could not finish saving. Retry; an existing bookmark will be reused."
+  },
+  "captureUnavailable": {
+    "message": "Extension APIs are unavailable. Reload the extension and try again."
+  },
+  "capturePageLoading": {
+    "message": "Reading the current page…"
+  },
+  "captureCanvasAdded": {
+    "message": "Added the saved page to the canvas."
+  },
+  "captureCanvasPending": {
+    "message": "The bookmark is saved, but its canvas card is still pending. Keep this canvas open or reopen it to retry."
+  },
+  "captureBookmarkRemoved": {
+    "message": "The saved browser bookmark no longer exists. Its pending card was cancelled."
+  },
+  "aiScopeHint": {
+    "message": "Organize $ARG_1$ selected bookmarks. Your browser bookmarks will not be changed.",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "aiBaseUrl": {
+    "message": "Chat Completions-compatible Base URL"
+  },
+  "aiModel": {
+    "message": "Model name"
+  },
+  "aiKeyHint": {
+    "message": "The saved key is kept only in local extension storage, never in sync or backups."
+  },
+  "aiInstruction": {
+    "message": "How should these bookmarks be organized?"
+  },
+  "aiInstructionExample": {
+    "message": "Group by design, development, and learning. Use compact cards."
+  },
+  "aiDataPreview": {
+    "message": "Review selected titles, domains, and notes"
+  },
+  "aiConsent": {
+    "message": "Send these selected titles, domains, notes and my instruction to the service above. Provider fees and privacy rules apply."
+  },
+  "aiSuggestionHint": {
+    "message": "No full URLs, browsing history, other tabs, or images are sent. Suggestions are based on this metadata, not verified page contents."
+  },
+  "aiGenerating": {
+    "message": "Generating preview…"
+  },
+  "aiGeneratePreview": {
+    "message": "Connect & generate preview"
+  },
+  "aiErrorKey": {
+    "message": "Check your API Key and the model access allowed by your provider."
+  },
+  "aiErrorPermission": {
+    "message": "Website access was not granted. Allow only your chosen model service to continue."
+  },
+  "aiErrorConfig": {
+    "message": "Enter an HTTPS Base URL without credentials, query, or fragment, plus a model name."
+  },
+  "aiErrorPlan": {
+    "message": "The model returned an invalid plan. Nothing changed. Try a simpler instruction."
+  },
+  "aiErrorTimeout": {
+    "message": "The request timed out. Nothing changed. Try again."
+  },
+  "aiErrorRateLimit": {
+    "message": "The service is rate-limited or out of quota. Check your provider account."
+  },
+  "aiErrorStorage": {
+    "message": "Encrypted local settings could not be read or saved. Check browser storage. Clear the local AI settings and re-enter your key if recovery is needed."
+  },
+  "aiErrorRequest": {
+    "message": "The model request failed. Check the endpoint, network, and protocol compatibility."
+  },
+  "aiSelectionLimit": {
+    "message": "Select between 1 and 200 editable bookmarks for one AI request."
+  },
+  "aiReviewPlan": {
+    "message": "Review groups, styles, and descriptions"
+  },
+  "aiEmptyDescription": {
+    "message": "(clear description)"
+  },
+  "settingsAppearance": {
+    "message": "Appearance"
+  },
+  "settingsSearch": {
+    "message": "Search"
+  },
+  "settingsCardSizeNote": {
+    "message": "Card size applies to the grid view."
+  },
+  "resetDefaultTheme": {
+    "message": "Use default Excalidraw theme"
+  },
+  "canvasMoreActions": {
+    "message": "More canvas actions"
+  },
   "helpOpenGuide": {
     "message": "Quick guide"
   },
@@ -1065,7 +1354,7 @@
     "message": "Keep control of sync"
   },
   "guideSyncBody": {
-    "message": "Canvas changes save automatically. Full backup is available from the canvas toolbar."
+    "message": "Canvas changes save automatically. Find full backup under More canvas actions."
   },
   "guideActionFocusSearch": {
     "message": "Try search"
@@ -1116,22 +1405,22 @@
     "message": "Highlights from the latest installed version."
   },
   "guideWhatsNewSyncTitle": {
-    "message": "Silent sync that converges"
+    "message": "Your bookmarks, your canvas"
   },
   "guideWhatsNewSyncBody": {
-    "message": "Normal tab and device updates now apply automatically. Only a real cross-device edit branch asks you to choose."
+    "message": "Switch selected bookmarks between icon, compact, and detailed cards. Add notes, preview a layout, and open websites directly from their icons."
   },
   "guideWhatsNewSearchTitle": {
-    "message": "Viewport stays local"
+    "message": "Optional AI, saved on this device"
   },
   "guideWhatsNewSearchBody": {
-    "message": "Zooming, panning, opening a sidebar, or changing a drawing tool no longer creates a cloud canvas revision."
+    "message": "Configure your own model in AI settings. Review selected metadata and every proposed change before applying; undo remains available."
   },
   "guideWhatsNewStoreTitle": {
-    "message": "Safer automatic replacement"
+    "message": "Capture now, organize later"
   },
   "guideWhatsNewStoreBody": {
-    "message": "Before automatic replacement, Bookmark Atlas keeps the previous local canvas as a recovery snapshot."
+    "message": "Save the current page from the extension icon and choose whether to open the canvas. Switch English or Chinese in Settings without reloading."
   },
   "guideGithubReleases": {
     "message": "GitHub Releases"

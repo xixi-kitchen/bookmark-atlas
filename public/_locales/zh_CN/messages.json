@@ -1023,6 +1023,295 @@
   "helpMenu": {
     "message": "帮助"
   },
+  "settings": {
+    "message": "设置"
+  },
+  "uiLanguage": {
+    "message": "Language / 语言"
+  },
+  "languageAuto": {
+    "message": "跟随浏览器"
+  },
+  "languageSaveFailed": {
+    "message": "无法保存语言设置，请重试。"
+  },
+  "bookmarkDisplay": {
+    "message": "书签展示形式"
+  },
+  "bookmarkDisplayIcon": {
+    "message": "图标"
+  },
+  "bookmarkDisplayCompact": {
+    "message": "简洁"
+  },
+  "bookmarkDisplayDetailed": {
+    "message": "详细"
+  },
+  "newBookmarkDisplay": {
+    "message": "新画布书签"
+  },
+  "newBookmarkDisplayHint": {
+    "message": "仅影响之后导入的书签，已有卡片保持原布局。"
+  },
+  "bookmarkSelectionTools": {
+    "message": "选中书签操作"
+  },
+  "selectedBookmarksCount": {
+    "message": "已选 $ARG_1$ 个",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "bookmarkDescription": {
+    "message": "简介"
+  },
+  "descriptionSelectOne": {
+    "message": "请选择一个书签编辑简介"
+  },
+  "previewBookmarkLayout": {
+    "message": "排布"
+  },
+  "layoutAlreadyAligned": {
+    "message": "没有可安全应用的排布变化：当前已紧凑，或框架中包含未选中、锁定的内容。"
+  },
+  "canvasChangePreview": {
+    "message": "预览画布修改"
+  },
+  "canvasChangePreviewHint": {
+    "message": "当前仅为预览，应用后可撤销。"
+  },
+  "applyChanges": {
+    "message": "应用"
+  },
+  "canvasChangedRetryPreview": {
+    "message": "画布已有新修改，请重新生成预览后再应用。"
+  },
+  "openBookmarkIcon": {
+    "message": "打开 $ARG_1$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "aiOrganize": {
+    "message": "AI 整理"
+  },
+  "aiSettings": {
+    "message": "AI 设置"
+  },
+  "aiLocalSettingsHint": {
+    "message": "仅保存在这台设备的当前浏览器用户配置中，不同步、不共享，也不包含在备份中。"
+  },
+  "aiLocalKeyWarning": {
+    "message": "API Key 在本机加密保存，不同步、不备份。这不是系统钥匙串：能控制该浏览器用户配置或扩展运行环境的人仍可能调用它。"
+  },
+  "aiSaveLocal": {
+    "message": "保存到本机"
+  },
+  "aiClearLocal": {
+    "message": "清除本机 AI 配置"
+  },
+  "aiSettingsSaved": {
+    "message": "AI 配置已保存到本机。"
+  },
+  "aiSettingsCleared": {
+    "message": "已清除本机 AI 配置。"
+  },
+  "aiFetchModels": {
+    "message": "拉取模型"
+  },
+  "aiModelsHint": {
+    "message": "服务商需支持 GET /models 才能拉取；也可手动输入模型。列表成功不代表该模型可以生成。"
+  },
+  "aiModelsLoaded": {
+    "message": "已获取 $ARG_1$ 个模型。",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "aiTestConnection": {
+    "message": "测试所选模型"
+  },
+  "aiTestHint": {
+    "message": "仅发送固定测试提示，不发送书签；服务商可能对此测试收费。"
+  },
+  "aiTestPassed": {
+    "message": "所选模型已成功响应。"
+  },
+  "aiWorking": {
+    "message": "处理中…"
+  },
+  "aiNoSavedConfig": {
+    "message": "请先在 AI 设置中保存接口地址、模型和 API Key。"
+  },
+  "aiUsingConfig": {
+    "message": "当前使用 $ARG_1$",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "aiKeyChangedEndpoint": {
+    "message": "接口地址已更改，请为该接口重新输入 API Key。"
+  },
+  "aiUnsavedSettings": {
+    "message": "修改尚未保存。"
+  },
+  "captureCurrentPage": {
+    "message": "收藏当前网页"
+  },
+  "captureDescription": {
+    "message": "把当前网页保存为浏览器书签，并添加到 Excalidraw 画布。"
+  },
+  "captureDestination": {
+    "message": "浏览器书签文件夹"
+  },
+  "captureDestinationValue": {
+    "message": "其他书签 / Bookmark Atlas"
+  },
+  "captureAddToCanvas": {
+    "message": "添加到画布"
+  },
+  "captureAdding": {
+    "message": "正在保存…"
+  },
+  "captureOpenAfterSave": {
+    "message": "添加后打开画布"
+  },
+  "captureSavedWithoutOpening": {
+    "message": "已收藏，未打开画布。稍后打开画布即可集中整理。"
+  },
+  "captureOpenPreferenceFailed": {
+    "message": "无法保存此选项，请重试。"
+  },
+  "captureOpenPreferenceLoadFailed": {
+    "message": "无法读取此选项。除非重新勾选，否则添加后不会打开画布。"
+  },
+  "captureOpening": {
+    "message": "正在打开画布…"
+  },
+  "captureQueueFull": {
+    "message": "待添加队列已满，请先打开画布处理已有网页后重试。"
+  },
+  "captureQueueInvalid": {
+    "message": "本机待添加记录异常，已保留原数据。请联系支持恢复，浏览器书签不受影响。"
+  },
+  "captureSuccess": {
+    "message": "书签已保存，正在打开画布以完成卡片添加。"
+  },
+  "captureUnsupportedPage": {
+    "message": "仅支持普通 HTTP 和 HTTPS 网页，不支持浏览器内部页或扩展页面。"
+  },
+  "captureFailed": {
+    "message": "未能完成收藏，请重试；已有书签会直接复用。"
+  },
+  "captureUnavailable": {
+    "message": "扩展接口不可用，请重新加载扩展后重试。"
+  },
+  "capturePageLoading": {
+    "message": "正在读取当前网页…"
+  },
+  "captureCanvasAdded": {
+    "message": "已将收藏网页添加到画布。"
+  },
+  "captureCanvasPending": {
+    "message": "浏览器书签已保存，画布卡片仍待添加。请保持画布打开，或重新打开后重试。"
+  },
+  "captureBookmarkRemoved": {
+    "message": "对应浏览器书签已不存在，已取消待添加的卡片。"
+  },
+  "aiScopeHint": {
+    "message": "整理当前选中的 $ARG_1$ 个书签，不改动浏览器原生书签。",
+    "placeholders": {
+      "arg_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "aiBaseUrl": {
+    "message": "兼容 Chat Completions 的 Base URL"
+  },
+  "aiModel": {
+    "message": "模型名称"
+  },
+  "aiKeyHint": {
+    "message": "已保存的 Key 仅留在扩展本机存储，不进入同步或备份。"
+  },
+  "aiInstruction": {
+    "message": "希望怎样整理这些书签？"
+  },
+  "aiInstructionExample": {
+    "message": "按设计、开发、学习分组，使用简洁卡片。"
+  },
+  "aiDataPreview": {
+    "message": "查看将发送的标题、域名和备注"
+  },
+  "aiConsent": {
+    "message": "将所选书签的标题、域名、备注及整理要求发给上述服务。费用与数据处理遵循该服务商规则。"
+  },
+  "aiSuggestionHint": {
+    "message": "不发送完整网址、浏览历史、其他标签页或图片。结果仅基于这些信息，不是已核实的网页摘要。"
+  },
+  "aiGenerating": {
+    "message": "正在生成预览…"
+  },
+  "aiGeneratePreview": {
+    "message": "连接并生成预览"
+  },
+  "aiErrorKey": {
+    "message": "请检查 API Key 及该服务商账号的模型使用权限。"
+  },
+  "aiErrorPermission": {
+    "message": "尚未允许访问该模型服务。继续时只需授权你填写的服务域名。"
+  },
+  "aiErrorConfig": {
+    "message": "请填写不含账号密码、查询参数和片段的 HTTPS Base URL，以及模型名称。"
+  },
+  "aiErrorPlan": {
+    "message": "模型返回的方案无效，画布未变。请尝试更简单的整理要求。"
+  },
+  "aiErrorTimeout": {
+    "message": "请求超时，画布未变，请重试。"
+  },
+  "aiErrorRateLimit": {
+    "message": "服务限流或额度不足，请检查服务商账号。"
+  },
+  "aiErrorStorage": {
+    "message": "无法读取或保存加密的本机设置，请检查浏览器存储；需要恢复时可清除本机 AI 配置并重新填写密钥。"
+  },
+  "aiErrorRequest": {
+    "message": "模型请求失败，请检查接口地址、网络和协议兼容性。"
+  },
+  "aiSelectionLimit": {
+    "message": "一次请选择 1 至 200 个可编辑书签进行 AI 整理。"
+  },
+  "aiReviewPlan": {
+    "message": "核对分组、样式和简介修改"
+  },
+  "aiEmptyDescription": {
+    "message": "（清空简介）"
+  },
+  "settingsAppearance": {
+    "message": "外观"
+  },
+  "settingsSearch": {
+    "message": "搜索"
+  },
+  "settingsCardSizeNote": {
+    "message": "卡片尺寸仅影响网格视图。"
+  },
+  "resetDefaultTheme": {
+    "message": "恢复默认 Excalidraw 主题"
+  },
+  "canvasMoreActions": {
+    "message": "更多画布操作"
+  },
   "helpOpenGuide": {
     "message": "快速引导"
   },
@@ -1065,7 +1354,7 @@
     "message": "理解同步边界"
   },
   "guideSyncBody": {
-    "message": "画布会自动保存。完整备份入口在画布工具栏中。"
+    "message": "画布会自动保存。完整备份入口在“更多画布操作”中。"
   },
   "guideActionFocusSearch": {
     "message": "试试搜索"
@@ -1116,22 +1405,22 @@
     "message": "当前安装版本的重点变化。"
   },
   "guideWhatsNewSyncTitle": {
-    "message": "静默收敛的实时同步"
+    "message": "让书签适合你的画布"
   },
   "guideWhatsNewSyncBody": {
-    "message": "正常的标签页和设备更新会自动应用，只有真正的跨设备编辑分叉才需要选择。"
+    "message": "选中书签即可切换图标、简洁或详细卡片，添加简介、预览排布，也能直接点击图标打开网站。"
   },
   "guideWhatsNewSearchTitle": {
-    "message": "视图状态留在本机"
+    "message": "可选 AI，配置留在本机"
   },
   "guideWhatsNewSearchBody": {
-    "message": "缩放、移动视口、打开侧边栏或切换绘图工具不再产生云端画布版本。"
+    "message": "在 AI 设置中配置自己的模型，核对所选元数据和建议修改后再应用，仍可撤销。"
   },
   "guideWhatsNewStoreTitle": {
-    "message": "更安全的自动替换"
+    "message": "先收藏，稍后集中整理"
   },
   "guideWhatsNewStoreBody": {
-    "message": "自动替换画布前，Bookmark Atlas 会把此前的本机画布保存为恢复快照。"
+    "message": "通过扩展图标收藏当前网页，自选是否打开画布；设置中可直接切换中英文，无需刷新。"
   },
   "guideGithubReleases": {
     "message": "GitHub Releases"

@@ -15,7 +15,7 @@ import {
 } from '@excalidraw/excalidraw';
 import type { ExcalidrawElement, ExcalidrawEmbeddableElement } from '@excalidraw/excalidraw/element/types';
 import type { ImportedDataState } from '@excalidraw/excalidraw/data/types';
-import type { AppState, BinaryFileData, BinaryFiles, LibraryItems } from '@excalidraw/excalidraw/types';
+import type { AppState, BinaryFileData, BinaryFiles, LibraryItems, ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types';
 import {
   BookmarkPlus,
   Check,
@@ -23,16 +23,12 @@ import {
   CloudAlert,
   CloudOff,
   Database,
-  DatabaseBackup,
   Download,
   FolderInput,
-  Maximize2,
   RefreshCw,
   Search,
   Upload,
   X,
-  ZoomIn,
-  ZoomOut,
 } from 'lucide-react';
 import type { BookmarkNode } from '../bookmarks/types';
 import { BookmarkFavicon } from '../components/BookmarkFavicon';
@@ -92,9 +88,23 @@ import {
   type LocalSceneSignal,
 } from './realtimeSceneSync';
 import { shouldUseNativeExcalidrawEmbed, WebEmbed } from './WebEmbed';
+import { CanvasActionsMenu } from './CanvasActionsMenu';
+import { BookmarkCanvasCard } from './BookmarkCanvasCard';
+import { BookmarkSelectionTools } from './BookmarkSelectionTools';
+import { CanvasChangePreview } from './CanvasChangePreview';
+import { getSelectedBookmarkIds, layoutBookmarkElements, setBookmarkDescription, setBookmarkPresentation } from './bookmarkCommands';
+import { BOOKMARK_PRESENTATION_SIZES, type BookmarkPresentation } from './bookmarkDisplay';
+import { usePreferencesStore } from '../store/preferencesStore';
+import { useBookmarkNavigation } from './useBookmarkNavigation';
+import { getSafeBookmarkUrl } from './bookmarkNavigation';
+import { AIOrganizer } from '../ai/AIOrganizer';
+import { buildAIOrganizationPreview } from '../ai/layout';
+import { MAX_ORGANIZATION_ITEMS, type OrganizationItem, type OrganizationPlan } from '../ai/plan';
+import { useCanvasCaptureInbox } from './useCanvasCaptureInbox';
 
 type Props = {
   roots: BookmarkNode[];
+  onOpenAISettings?: () => void;
 };
 
 type SaveStatus = 'saved' | 'saving' | 'error';
@@ -119,6 +129,8 @@ type ExcalidrawOnLinkOpen = (
 ) => void;
 
 type CanvasApi = {
+  onPointerDown?: ExcalidrawImperativeAPI['onPointerDown'];
+  onPointerUp?: ExcalidrawImperativeAPI['onPointerUp'];
   getSceneElements: () => readonly ExcalidrawElement[];
   getSceneElementsIncludingDeleted: () => readonly ExcalidrawElement[];
   getAppState: () => AppState;
@@ -167,11 +179,23 @@ const HostedExcalidraw = Excalidraw as unknown as ComponentType<HostedExcalidraw
 const SAVE_DELAY_MS = 350;
 const SYNC_DELAY_MS = 4_500;
 
-export function ExcalidrawCanvas({ roots }: Props) {
+export function ExcalidrawCanvas({ roots, onOpenAISettings }: Props) {
+  const uiLanguage = getExcalidrawLanguage();
   const [api, setApi] = useState<CanvasApi | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [backupOpen, setBackupOpen] = useState(false);
   const [sceneRevision, setSceneRevision] = useState(0);
+  const [canvasInitialized, setCanvasInitialized] = useState(false);
+  const defaultPresentation = usePreferencesStore((state) => state.defaultBookmarkPresentation);
+  const [selectedBookmarkIds, setSelectedBookmarkIds] = useState<string[]>([]);
+  const selectedBookmarkKeyRef = useRef('');
+  const [changePreview, setChangePreview] = useState<{ elements: ExcalidrawElement[]; ids: string[]; baseFingerprint: string; aiPlan?: OrganizationPlan } | null>(null);
+  const changePreviewRef = useRef<typeof changePreview>(null);
+  const [previewAppState, setPreviewAppState] = useState<AppState | null>(null);
+  const [applyingPreview, setApplyingPreview] = useState(false);
+  const [aiScope, setAIScopeState] = useState<{ ids: string[]; items: OrganizationItem[]; baseFingerprint: string } | null>(null);
+  const aiScopeRef = useRef<typeof aiScope>(null);
+  const setAIScope = useCallback((scope: typeof aiScope) => { aiScopeRef.current = scope; setAIScopeState(scope); }, []);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('saved');
   const [syncStatus, setSyncStatus] = useState<SyncStatus>('idle');
   const [lastSyncManifest, setLastSyncManifest] = useState<CanvasSyncManifest | null>(null);
@@ -195,11 +219,26 @@ export function ExcalidrawCanvas({ roots }: Props) {
   const syncTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mountedRef = useRef(true);
   const localBroadcastRef = useRef<BroadcastChannel | null>(null);
+  const sceneMutationQueueRef = useRef<Promise<unknown>>(Promise.resolve());
+  const runSceneMutation = useCallback(<T,>(operation: () => Promise<T>): Promise<T> => {
+    const result = sceneMutationQueueRef.current.catch(() => undefined).then(operation);
+    sceneMutationQueueRef.current = result;
+    return result;
+  }, []);
+  const canConsumeCapture = useCallback(() => mountedRef.current && readyToPersistRef.current
+    && !applyingIncomingRef.current && !remoteUpdateRef.current && !changePreviewRef.current && !aiScopeRef.current, []);
 
   const bookmarkEntries = useMemo(() => flattenUrlBookmarks(roots), [roots]);
   const importGroups = useMemo(() => buildBookmarkImportGroups(roots), [roots]);
   const topLevelImportGroups = useMemo(() => buildTopLevelBookmarkImportGroups(roots), [roots]);
   const bookmarkIndex = useMemo(() => createBookmarkReconciliationIndex(bookmarkEntries), [bookmarkEntries]);
+  const resolveBookmarkURL = useCallback((element: ExcalidrawElement) => {
+    const data = getBookmarkElementData(element);
+    if (!data) return null;
+    const resolution = resolveBookmarkElementData(data, bookmarkIndex);
+    return resolution.status === 'matched' ? resolution.entry.node.url : data.url;
+  }, [bookmarkIndex]);
+  const { openBookmark } = useBookmarkNavigation(api, resolveBookmarkURL, !changePreview && !aiScope);
   const importedBookmarks = useMemo<BookmarkElementData[]>(
     () => api?.getSceneElements().map(getBookmarkElementData).filter((data): data is BookmarkElementData => Boolean(data)) ?? [],
     [api, sceneRevision],
@@ -247,7 +286,7 @@ export function ExcalidrawCanvas({ roots }: Props) {
 
   const persistLatest = useCallback(async () => {
     const scene = latestSceneRef.current;
-    if (!scene) return;
+    if (!scene) return false;
     setSaveStatus('saving');
     try {
       await saveStoredScene(scene);
@@ -262,8 +301,10 @@ export function ExcalidrawCanvas({ roots }: Props) {
         } satisfies LocalSceneSignal);
       }
       if (mountedRef.current) setSaveStatus('saved');
+      return true;
     } catch {
       if (mountedRef.current) setSaveStatus('error');
+      return false;
     }
   }, []);
 
@@ -348,7 +389,19 @@ export function ExcalidrawCanvas({ roots }: Props) {
   }, [syncLatest]);
 
   const handleChange = useCallback<ExcalidrawOnChange>((elements, appState, files) => {
+    const ids = getSelectedBookmarkIds(elements, appState.selectedElementIds ?? {});
+    const selectedKey = JSON.stringify(ids);
+    if (selectedKey !== selectedBookmarkKeyRef.current) {
+      selectedBookmarkKeyRef.current = selectedKey;
+      setSelectedBookmarkIds(ids);
+    }
+    if (changePreviewRef.current) {
+      setPreviewAppState((current) => current && current.scrollX === appState.scrollX && current.scrollY === appState.scrollY
+        && current.zoom.value === appState.zoom.value && current.offsetLeft === appState.offsetLeft && current.offsetTop === appState.offsetTop
+        ? current : appState);
+    }
     if (!readyToPersistRef.current || applyingIncomingRef.current) return;
+    setCanvasInitialized(true);
     const current = latestSceneRef.current;
     const next = createStoredScene(elements, appState, files, libraryItemsRef.current);
     const contentChanged = !current
@@ -365,6 +418,7 @@ export function ExcalidrawCanvas({ roots }: Props) {
     latestSceneRef.current = scene;
     if (contentChanged) {
       hasLocalChangesRef.current = true;
+      setSceneRevision((revision) => revision + 1);
     }
     setSaveStatus('saving');
 
@@ -473,11 +527,15 @@ export function ExcalidrawCanvas({ roots }: Props) {
       setSyncStatus('error');
       api.setToast({ message: t('applyRemoteFailed') });
     } finally {
-      window.setTimeout(() => { applyingIncomingRef.current = false; }, 0);
+      await new Promise<void>((resolve) => window.setTimeout(() => { applyingIncomingRef.current = false; resolve(); }, 0));
     }
   }, [api, scheduleSync]);
 
-  const queueOrApplyIncomingScene = useCallback(async (pending: PendingRemoteScene, force = false) => {
+  const queueOrApplyIncomingScene = useCallback((pending: PendingRemoteScene, force = false) => runSceneMutation(async () => {
+    // The canvas API and sync listeners can become active before initialData
+    // finishes reading the local scene, sync baseline, and device identity.
+    await initialData;
+    if (!mountedRef.current) return;
     const current = latestSceneRef.current;
     const currentFingerprint = current ? sceneSyncFingerprint(current) : '';
     const incomingFingerprint = getPendingFingerprint(pending);
@@ -543,7 +601,24 @@ export function ExcalidrawCanvas({ roots }: Props) {
       return;
     }
     await applyPendingScene(pending);
-  }, [applyPendingScene, scheduleSync]);
+  }), [applyPendingScene, initialData, scheduleSync, runSceneMutation]);
+
+  const ensureCaptureBaseline = useCallback(async () => {
+    if (!api || !canConsumeCapture()) return false;
+    const stored = await loadStoredScene();
+    if (!canConsumeCapture()) return false;
+    const readLive = () => createStoredScene(api.getSceneElementsIncludingDeleted(), api.getAppState(), api.getFiles(), libraryItemsRef.current);
+    if (!stored) return api.getSceneElementsIncludingDeleted().length === 0;
+    if (sceneSyncFingerprint(stored) === sceneSyncFingerprint(readLive())) return true;
+    // A second visible window may not have consumed the first window's broadcast yet.
+    // Let the existing reconciliation policy converge before adding another card.
+    await queueOrApplyIncomingScene({ source: 'local-tab', scene: stored });
+    return canConsumeCapture() && sceneSyncFingerprint(stored) === sceneSyncFingerprint(readLive());
+  }, [api, canConsumeCapture, queueOrApplyIncomingScene]);
+
+  useCanvasCaptureInbox({ api, ready: canvasInitialized, blocked: Boolean(remoteUpdate || changePreview || aiScope),
+    presentation: defaultPresentation, onSceneChanged: handleChange, persist: persistLatest,
+    runSceneMutation, canConsume: canConsumeCapture, ensureBaseline: ensureCaptureBaseline });
 
   const consumeSyncManifest = useCallback(async (manifest: CanvasSyncManifest) => {
     let candidate = manifest;
@@ -743,24 +818,27 @@ export function ExcalidrawCanvas({ roots }: Props) {
     const resolution = resolveBookmarkElementData(stored, bookmarkIndex);
     const current = resolution.status === 'matched' ? resolution.entry : null;
     return (
-      <BookmarkEmbed
+      <BookmarkCanvasCard
+        presentation={stored.presentation}
+        description={stored.description}
         title={current?.node.title ?? stored.title}
         url={current?.node.url ?? stored.url}
         folderPath={current?.folderPath ?? stored.folderPath}
         matchStatus={resolution.status}
+        selected={Boolean(appState.selectedElementIds[element.id])}
+        onOpen={() => openBookmark(element)}
       />
     );
-  }, [api, bookmarkIndex]);
+  }, [api, bookmarkIndex, openBookmark, uiLanguage]);
 
   const handleLinkOpen = useCallback<ExcalidrawOnLinkOpen>((element, event) => {
     const stored = getBookmarkElementData(element);
     if (!stored) return;
 
     event.preventDefault();
-    const resolution = resolveBookmarkElementData(stored, bookmarkIndex);
-    const target = resolution.status === 'matched' ? resolution.entry.node.url : stored.url;
+    const target = getSafeBookmarkUrl(resolveBookmarkURL(element));
     if (target) window.open(target, '_blank', 'noopener,noreferrer');
-  }, [bookmarkIndex]);
+  }, [resolveBookmarkURL]);
 
   const addBookmark = useCallback((node: BookmarkNode, folderPath: string) => {
     if (!api || !node.url) return;
@@ -784,10 +862,11 @@ export function ExcalidrawCanvas({ roots }: Props) {
       clientX: appState.offsetLeft + appState.width / 2,
       clientY: appState.offsetTop + appState.height / 2,
     }, appState);
+    const size = BOOKMARK_PRESENTATION_SIZES[defaultPresentation];
     const element = createBookmarkElement(node, {
-      x: center.x - 150,
-      y: center.y - 84,
-    }, { folderPath });
+      x: center.x - size.width / 2,
+      y: center.y - size.height / 2,
+    }, { folderPath, presentation: defaultPresentation });
 
     api.updateScene({
       elements: [...api.getSceneElementsIncludingDeleted(), element],
@@ -797,7 +876,7 @@ export function ExcalidrawCanvas({ roots }: Props) {
     api.scrollToContent(element, { animate: true, duration: 260 });
     api.setToast({ message: t('bookmarkAdded', node.title || t('unnamedBookmark')) });
     setSceneRevision((revision) => revision + 1);
-  }, [api, bookmarkIndex]);
+  }, [api, bookmarkIndex, defaultPresentation]);
 
   const importBookmarkGroups = useCallback((groups: BookmarkImportGroup[]) => {
     if (!api) return;
@@ -819,7 +898,7 @@ export function ExcalidrawCanvas({ roots }: Props) {
     let rowHeight = 0;
 
     for (const group of pendingGroups) {
-      const groupScene = createBookmarkGroupScene(group, { x: cursorX, y: cursorY });
+      const groupScene = createBookmarkGroupScene(group, { x: cursorX, y: cursorY }, { presentation: defaultPresentation });
       const frame = groupScene[0];
       if (!frame) continue;
       additions.push(...groupScene);
@@ -847,17 +926,7 @@ export function ExcalidrawCanvas({ roots }: Props) {
     const importedCount = pendingGroups.reduce((total, group) => total + group.entries.length, 0);
     api.setToast({ message: t('importedBookmarks', String(importedCount)) });
     setSceneRevision((revision) => revision + 1);
-  }, [api, bookmarkIndex, importedBookmarks]);
-
-  const zoomBy = useCallback((factor: number) => {
-    if (!api) return;
-    const current = api.getAppState().zoom.value;
-    const value = Math.min(3, Math.max(0.1, current * factor));
-    api.updateScene({
-      appState: { zoom: { value: value as AppState['zoom']['value'] } },
-      captureUpdate: CaptureUpdateAction.NEVER,
-    });
-  }, [api]);
+  }, [api, bookmarkIndex, importedBookmarks, defaultPresentation]);
 
   const fitElements = useCallback((bookmarkOnly = false) => {
     if (!api) return;
@@ -891,6 +960,108 @@ export function ExcalidrawCanvas({ roots }: Props) {
         || undefined,
     };
   }, [api]);
+
+  const applyElements = useCallback((elements: ExcalidrawElement[]) => {
+    if (!api) return;
+    const current = api.getSceneElementsIncludingDeleted();
+    if (elements.length === current.length && elements.every((element, index) => element === current[index])) return;
+    api.updateScene({ elements, captureUpdate: CaptureUpdateAction.IMMEDIATELY });
+    setSceneRevision((revision) => revision + 1);
+  }, [api]);
+
+  const changePresentation = (presentation: BookmarkPresentation) => {
+    if (api) applyElements(setBookmarkPresentation(api.getSceneElementsIncludingDeleted(), selectedBookmarkIds, presentation));
+  };
+  const changeDescription = (description: string) => {
+    if (api) applyElements(setBookmarkDescription(api.getSceneElementsIncludingDeleted(), selectedBookmarkIds, description));
+  };
+  const previewLayout = () => {
+    const scene = getLiveScene();
+    if (!scene || !api) return;
+    const selection = api.getAppState().selectedElementIds ?? {};
+    const frames = scene.elements.filter((element) => (element.type === 'frame' || element.type === 'magicframe') && selection[element.id]).map((element) => element.id);
+    const elements = layoutBookmarkElements(scene.elements, [...selectedBookmarkIds, ...frames]);
+    const changedIds = elements.filter((element, index) => element !== scene.elements[index]).map((element) => element.id);
+    if (!changedIds.length) { api.setToast({ message: t('layoutAlreadyAligned') }); return; }
+    const preview = { elements, ids: changedIds, baseFingerprint: sceneSyncFingerprint(scene) };
+    changePreviewRef.current = preview;
+    setChangePreview(preview);
+    setPreviewAppState(api.getAppState());
+  };
+  const cancelPreview = () => { changePreviewRef.current = null; setChangePreview(null); };
+  const applyPreview = async () => {
+    const preview = changePreviewRef.current;
+    const current = getLiveScene();
+    if (!preview || !current || !api || applyingPreview) return;
+    if (sceneSyncFingerprint(current) !== preview.baseFingerprint) {
+      cancelPreview();
+      api.setToast({ message: t('canvasChangedRetryPreview') });
+      return;
+    }
+    setApplyingPreview(true);
+    try {
+      await saveSceneRecoverySnapshot(current);
+      const latest = getLiveScene();
+      if (!latest || sceneSyncFingerprint(latest) !== preview.baseFingerprint) {
+        api.setToast({ message: t('canvasChangedRetryPreview') });
+        return;
+      }
+      applyElements(preview.elements);
+    } catch {
+      api.setToast({ message: t('saveTitleError') });
+    } finally {
+      setApplyingPreview(false);
+      cancelPreview();
+    }
+  };
+  const selectedBookmarkData = useMemo(() => {
+    const ids = new Set(selectedBookmarkIds);
+    return api?.getSceneElements().filter((element) => ids.has(element.id)).map(getBookmarkElementData)
+      .filter((data): data is BookmarkElementData => Boolean(data)) ?? [];
+  }, [api, selectedBookmarkIds, sceneRevision]);
+  const selectedPresentation = selectedBookmarkData.length && selectedBookmarkData.every((data) => (data.presentation ?? 'detailed') === (selectedBookmarkData[0]?.presentation ?? 'detailed'))
+    ? selectedBookmarkData[0]?.presentation ?? 'detailed' : 'mixed';
+
+  const startAIOrganization = () => {
+    const scene = getLiveScene();
+    if (!scene || !api) return;
+    const ids = getSelectedBookmarkIds(scene.elements, api.getAppState().selectedElementIds ?? {});
+    if (!ids.length || ids.length > MAX_ORGANIZATION_ITEMS) { api.setToast({ message: t('aiSelectionLimit') }); return; }
+    const selected = new Set(ids);
+    const items = scene.elements.filter((element) => selected.has(element.id)).map((element): OrganizationItem => {
+      const data = getBookmarkElementData(element)!;
+      const resolution = resolveBookmarkElementData(data, bookmarkIndex);
+      const title = resolution.status === 'matched' ? resolution.entry.node.title : data.title;
+      const url = resolveBookmarkURL(element);
+      let domain = '';
+      try { domain = new URL(url ?? '').hostname; } catch { /* No full URL fallback is ever sent. */ }
+      return { id: element.id, title, domain, ...(data.description ? { description: data.description } : {}) };
+    });
+    setAIScope({ ids, items, baseFingerprint: sceneSyncFingerprint(scene) });
+  };
+
+  const previewAIPlan = (plan: OrganizationPlan) => {
+    const current = getLiveScene();
+    if (!aiScope || !current || !api) return;
+    if (sceneSyncFingerprint(current) !== aiScope.baseFingerprint) {
+      setAIScope(null);
+      api.setToast({ message: t('canvasChangedRetryPreview') });
+      return;
+    }
+    try {
+      const result = buildAIOrganizationPreview(current.elements, aiScope.ids, plan, `ai-${crypto.randomUUID()}`);
+      const preview = { ...result, baseFingerprint: aiScope.baseFingerprint, aiPlan: plan };
+      changePreviewRef.current = preview;
+      setChangePreview(preview);
+      setAIScope(null);
+      setPreviewAppState(api.getAppState());
+      api.scrollToContent(result.elements.filter((element) => result.ids.includes(element.id)), {
+        fitToContent: true, maxZoom: 1, viewportZoomFactor: 0.76,
+      });
+    } catch {
+      api.setToast({ message: t('aiErrorPlan') });
+    }
+  };
 
   const exportBackup = useCallback(async () => {
     const scene = getLiveScene();
@@ -949,24 +1120,28 @@ export function ExcalidrawCanvas({ roots }: Props) {
                 {remoteUpdate ? t('remoteUpdatePending') : syncStatusLabel(syncStatus, lastSyncManifest)}
               </span>
             </button>
-            <div className="atlas-zoom-tools" role="group" aria-label={t('canvasZoom')}>
-              <button type="button" onClick={() => zoomBy(0.8)} aria-label={t('zoomOutCanvas')}><ZoomOut size={15} /></button>
-              <button type="button" onClick={() => zoomBy(1.25)} aria-label={t('zoomInCanvas')}><ZoomIn size={15} /></button>
-              <button type="button" onClick={() => fitElements(false)} aria-label={t('fitAllElements')} title={t('fitAllElementsTitle')}><Maximize2 size={15} /></button>
-              <button type="button" onClick={() => fitElements(true)} aria-label={t('focusAllBookmarks')} title={t('focusAllBookmarksTitle')}><BookmarkPlus size={15} /></button>
-            </div>
             <button type="button" className="atlas-excalidraw-button is-icon" onClick={() => setPickerOpen(true)} aria-label={t('importBookmarks')} title={t('importChromeBookmarks')}>
               <FolderInput size={16} />
             </button>
-            <button type="button" className="atlas-excalidraw-button is-secondary is-icon" onClick={() => setBackupOpen(true)} aria-label={t('fullBackup')} title={t('backupTitle')}>
-              <DatabaseBackup size={16} />
-            </button>
+            <CanvasActionsMenu onFitAll={() => fitElements(false)} onFocusBookmarks={() => fitElements(true)} onBackup={() => setBackupOpen(true)} />
           </div>
         )}
-        langCode={getExcalidrawLanguage()}
+        langCode={uiLanguage}
         name="Bookmark Atlas"
         autoFocus
       />
+
+      {selectedBookmarkIds.length > 0 && !changePreview && !aiScope && (
+        <BookmarkSelectionTools key={selectedBookmarkIds.join(':')} count={selectedBookmarkIds.length}
+          presentation={selectedPresentation} description={selectedBookmarkData[0]?.description ?? ''}
+          onPresentation={changePresentation} onDescription={changeDescription} onLayout={previewLayout} onAI={startAIOrganization} />
+      )}
+      {aiScope && <AIOrganizer items={aiScope.items} onPlan={previewAIPlan} onClose={() => setAIScope(null)}
+        onOpenSettings={onOpenAISettings ? () => { setAIScope(null); onOpenAISettings(); } : undefined} />}
+      {changePreview && previewAppState && (
+        <CanvasChangePreview elements={changePreview.elements.filter((element) => changePreview.ids.includes(element.id))}
+          appState={previewAppState} onApply={() => void applyPreview()} onCancel={cancelPreview} busy={applyingPreview} aiPlan={changePreview.aiPlan} />
+      )}
 
       {remoteUpdate && (
         <section
@@ -1122,40 +1297,6 @@ function BackupPanel({
         {error && <p className="atlas-backup-error" role="alert">{error}</p>}
         <footer>{t('backupChromeBookmarksNote')}</footer>
       </section>
-    </div>
-  );
-}
-
-function BookmarkEmbed({
-  title,
-  url,
-  folderPath,
-  matchStatus,
-}: {
-  title: string;
-  url: string;
-  folderPath?: string;
-  matchStatus: 'matched' | 'missing' | 'ambiguous';
-}) {
-  const unresolved = matchStatus !== 'matched';
-  const statusLabel = matchStatus === 'matched'
-    ? t('bookmarkMatchMatched')
-    : matchStatus === 'ambiguous'
-      ? t('bookmarkMatchAmbiguous')
-      : t('bookmarkMatchMissing');
-
-  return (
-    <div className={`atlas-bookmark-embed ${unresolved ? 'is-missing' : ''}`}>
-      <BookmarkFavicon title={title} url={url} size={42} className="atlas-bookmark-embed__favicon" />
-      <div className="atlas-bookmark-embed__copy">
-        <strong>{title || t('unnamedBookmark')}</strong>
-        <span>{hostname(url) || url}</span>
-        {folderPath && <small>{folderPath}</small>}
-      </div>
-      <div className="atlas-bookmark-embed__footer">
-        <span>{statusLabel}</span>
-        <span>{t('openWithLinkButton')}</span>
-      </div>
     </div>
   );
 }

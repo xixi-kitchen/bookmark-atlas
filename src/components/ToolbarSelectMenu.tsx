@@ -32,7 +32,13 @@ export function ToolbarSelectMenu({ label, value, options, variant, onChange }: 
   }, [open]);
 
   return (
-    <div className={`toolbar-select toolbar-select--${variant}`} ref={rootRef}>
+    <div className={`toolbar-select toolbar-select--${variant}`} ref={rootRef} onKeyDown={(event) => {
+      if (event.key === 'Escape' && open) {
+        event.stopPropagation();
+        setOpen(false);
+        rootRef.current?.querySelector<HTMLButtonElement>('button')?.focus();
+      }
+    }}>
       <button
         type="button"
         className="toolbar-select__trigger"

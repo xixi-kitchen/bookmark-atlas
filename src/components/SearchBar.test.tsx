@@ -2,11 +2,14 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { DEFAULT_SEARCH_ENGINES } from '../search';
 import { SearchBar } from './SearchBar';
+import { setLanguagePreference } from '../i18n/languagePreference';
+import { t } from '../i18n';
 
 describe('SearchBar', () => {
-  afterEach(() => {
+  afterEach(async () => {
     cleanup();
     vi.unstubAllGlobals();
+    await setLanguagePreference('auto');
   });
 
   it('uses a custom search engine menu and can open engine management', () => {
@@ -56,5 +59,19 @@ describe('SearchBar', () => {
     expect(screen.getByRole('option', { name: /Atlas tab/ })).toBeInTheDocument();
     expect(screen.getByRole('option', { name: /Atlas bookmark/ })).toBeInTheDocument();
     expect(screen.getByRole('option', { name: /Atlas history/ })).toBeInTheDocument();
+  });
+  it('updates existing result group labels when the interface language changes', async () => {
+    vi.stubGlobal('chrome', { tabs: { query: vi.fn(async () => [{ id: 2, windowId: 1, title: 'Atlas tab', url: 'https://tab.example/atlas' }]) } });
+    const props = { engines: [...DEFAULT_SEARCH_ENGINES], activeEngineId: 'chrome-default', onEngineChange: vi.fn(), onManage: vi.fn() };
+    const { rerender } = render(<SearchBar {...props} />);
+    const input = screen.getByRole('combobox', { name: 'Search content' });
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: 'atlas' } });
+    expect(await screen.findByText('Open tabs')).toBeInTheDocument();
+    await setLanguagePreference('zh-CN');
+    rerender(<SearchBar {...props} />);
+    expect(screen.getByText(t('openTabs'))).toBeInTheDocument();
+    expect(screen.queryByText('Open tabs')).not.toBeInTheDocument();
+    expect(screen.getByRole('combobox', { name: t('searchContent') })).toHaveValue('atlas');
   });
 });

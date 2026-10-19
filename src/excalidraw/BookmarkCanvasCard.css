@@ -1,0 +1,108 @@
+/* Bookmark DOM replaces iframe content; its geometry must match bookmarkNavigation. */
+.excalidraw__embeddable-container__inner:has(.atlas-bookmark-embed) {
+  pointer-events: none !important;
+}
+.excalidraw__embeddable-container__inner:has(.atlas-bookmark-embed) > .excalidraw__embeddable-hint {
+  display: none;
+}
+.excalidraw__embeddable-container .excalidraw__embeddable__outer:has(> .atlas-bookmark-embed) {
+  padding: 0 !important;
+}
+.atlas-bookmark-embed {
+  box-sizing: border-box;
+  position: relative;
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  grid-template-rows: minmax(36px, auto) minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 10px 12px;
+  width: 100%;
+  height: 100%;
+  padding: 18px;
+  overflow: hidden;
+  color: #1f1f26;
+  background: #fdfdff;
+  border: 1px solid rgb(31 31 38 / .12);
+  border-radius: 12px;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
+  pointer-events: none;
+}
+.atlas-bookmark-embed.is-compact {
+  grid-template-columns: 36px minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+}
+.atlas-bookmark-embed.is-icon {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  place-items: center;
+  gap: 0;
+  padding: 0;
+}
+.atlas-bookmark-embed.is-missing { color: #746f68; background: #f4f1ed; filter: grayscale(.8); }
+.atlas-bookmark-embed__icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  align-self: start;
+  border-radius: 8px;
+  pointer-events: auto;
+  cursor: pointer;
+  touch-action: none;
+  -webkit-user-drag: none;
+  user-select: none;
+}
+.atlas-bookmark-embed.is-compact .atlas-bookmark-embed__icon,
+.atlas-bookmark-embed.is-compact .atlas-bookmark-embed__copy { align-self: center; }
+.atlas-bookmark-embed.is-icon .atlas-bookmark-embed__icon { width: 42px; height: 42px; align-self: center; }
+.atlas-bookmark-embed__icon:focus-visible { outline: 3px solid #6965db; outline-offset: 3px; }
+.atlas-bookmark-embed__favicon { border-radius: 10px; box-shadow: 0 0 0 1px rgb(31 31 38 / .1); pointer-events: none; }
+.atlas-bookmark-embed__copy { min-width: 0; align-self: start; }
+.atlas-bookmark-embed__copy strong {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  font-size: 16px;
+  line-height: 1.25;
+}
+.atlas-bookmark-embed__description {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  margin: 0;
+  color: #6b6977;
+  font-size: 12px;
+  line-height: 1.4;
+}
+.atlas-bookmark-embed__url {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  color: #5b5967;
+  font-size: 11px;
+  line-height: 16px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.atlas-bookmark-embed__warning {
+  position: absolute;
+  right: 8px;
+  bottom: 2px;
+  left: 8px;
+  overflow: hidden;
+  color: #8a5718;
+  font-size: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

@@ -6,6 +6,14 @@ import type {
 } from '@excalidraw/excalidraw/element/types';
 import type { BookmarkNode } from '../bookmarks/types';
 import { t } from '../i18n';
+import {
+  BOOKMARK_PRESENTATION_SIZES,
+  DEFAULT_BOOKMARK_PRESENTATION,
+  getBookmarkGridColumns,
+  isBookmarkPresentation,
+  normalizeBookmarkDescription,
+  type BookmarkPresentation,
+} from './bookmarkDisplay';
 
 export type BookmarkElementData = {
   kind: 'bookmark';
@@ -15,6 +23,8 @@ export type BookmarkElementData = {
   title: string;
   url: string;
   folderPath?: string;
+  presentation?: BookmarkPresentation;
+  description?: string;
 };
 
 export type BookmarkImportEntry = {
@@ -32,31 +42,30 @@ export type BookmarkImportGroup = {
 
 type Position = { x: number; y: number };
 
-const CARD_WIDTH = 300;
-const CARD_HEIGHT = 168;
 const CARD_GAP = 32;
 const FRAME_PADDING = 48;
 const FRAME_TITLE_SPACE = 54;
-const MAX_COLUMNS = 3;
 const GROUP_GAP = 96;
 const GROUP_ROW_WIDTH = 1_700;
 
 export function createBookmarkElement(
   node: BookmarkNode,
   position: Position,
-  options: { id?: string; frameId?: string | null; folderPath?: string } = {},
+  options: { id?: string; frameId?: string | null; folderPath?: string; presentation?: BookmarkPresentation } = {},
 ): ExcalidrawEmbeddableElement {
   if (!node.url) throw new Error('Only URL bookmarks can be added to the Excalidraw canvas.');
 
   const id = options.id;
+  const presentation = options.presentation ?? DEFAULT_BOOKMARK_PRESENTATION;
+  const { width, height } = BOOKMARK_PRESENTATION_SIZES[presentation];
   const [rectangle] = convertToExcalidrawElements([
     {
       type: 'rectangle',
       id,
       x: position.x,
       y: position.y,
-      width: CARD_WIDTH,
-      height: CARD_HEIGHT,
+      width,
+      height,
       backgroundColor: '#ffffff',
       strokeColor: '#1b1b1f',
       fillStyle: 'solid',
@@ -73,6 +82,7 @@ export function createBookmarkElement(
           title: node.title,
           url: node.url,
           folderPath: options.folderPath,
+          presentation,
         } satisfies BookmarkElementData,
       },
     },
@@ -85,7 +95,12 @@ export function createBookmarkElement(
   } as ExcalidrawEmbeddableElement;
 }
 
-export function createDefaultBookmarkScene(roots: BookmarkNode[]): ExcalidrawElement[] {
+export function createDefaultBookmarkScene(
+  roots: BookmarkNode[],
+  options: { presentation?: BookmarkPresentation } = {},
+): ExcalidrawElement[] {
+  const presentation = options.presentation ?? DEFAULT_BOOKMARK_PRESENTATION;
+  const { width: cardWidth, height: cardHeight } = BOOKMARK_PRESENTATION_SIZES[presentation];
   const groups = buildBookmarkGroups(roots).filter((group) => group.bookmarks.length > 0);
   const scene: ExcalidrawElement[] = [];
   let cursorX = 0;
@@ -93,10 +108,10 @@ export function createDefaultBookmarkScene(roots: BookmarkNode[]): ExcalidrawEle
   let rowHeight = 0;
 
   for (const group of groups) {
-    const columns = Math.min(MAX_COLUMNS, Math.max(1, Math.ceil(Math.sqrt(group.bookmarks.length))));
+    const columns = getBookmarkGridColumns(group.bookmarks.length, cardWidth, cardHeight, CARD_GAP);
     const rows = Math.ceil(group.bookmarks.length / columns);
-    const width = FRAME_PADDING * 2 + columns * CARD_WIDTH + Math.max(0, columns - 1) * CARD_GAP;
-    const height = FRAME_PADDING * 2 + FRAME_TITLE_SPACE + rows * CARD_HEIGHT + Math.max(0, rows - 1) * CARD_GAP;
+    const width = FRAME_PADDING * 2 + columns * cardWidth + Math.max(0, columns - 1) * CARD_GAP;
+    const height = FRAME_PADDING * 2 + FRAME_TITLE_SPACE + rows * cardHeight + Math.max(0, rows - 1) * CARD_GAP;
 
     if (cursorX > 0 && cursorX + width > GROUP_ROW_WIDTH) {
       cursorX = 0;
@@ -108,13 +123,14 @@ export function createDefaultBookmarkScene(roots: BookmarkNode[]): ExcalidrawEle
     const cards = group.bookmarks.map(({ node, folderPath }, index) => createBookmarkElement(
       node,
       {
-        x: cursorX + FRAME_PADDING + (index % columns) * (CARD_WIDTH + CARD_GAP),
-        y: cursorY + FRAME_PADDING + FRAME_TITLE_SPACE + Math.floor(index / columns) * (CARD_HEIGHT + CARD_GAP),
+        x: cursorX + FRAME_PADDING + (index % columns) * (cardWidth + CARD_GAP),
+        y: cursorY + FRAME_PADDING + FRAME_TITLE_SPACE + Math.floor(index / columns) * (cardHeight + CARD_GAP),
       },
       {
         id: stableElementId('bookmark', node.id),
         frameId,
         folderPath,
+        presentation,
       },
     ));
 
@@ -129,21 +145,24 @@ export function createDefaultBookmarkScene(roots: BookmarkNode[]): ExcalidrawEle
 export function createBookmarkGroupScene(
   group: Pick<BookmarkImportGroup, 'id' | 'title' | 'entries'>,
   origin: Position,
+  options: { presentation?: BookmarkPresentation } = {},
 ): ExcalidrawElement[] {
   if (group.entries.length === 0) return [];
 
-  const columns = Math.min(MAX_COLUMNS, Math.max(1, Math.ceil(Math.sqrt(group.entries.length))));
+  const presentation = options.presentation ?? DEFAULT_BOOKMARK_PRESENTATION;
+  const { width: cardWidth, height: cardHeight } = BOOKMARK_PRESENTATION_SIZES[presentation];
+  const columns = getBookmarkGridColumns(group.entries.length, cardWidth, cardHeight, CARD_GAP);
   const rows = Math.ceil(group.entries.length / columns);
-  const width = FRAME_PADDING * 2 + columns * CARD_WIDTH + Math.max(0, columns - 1) * CARD_GAP;
-  const height = FRAME_PADDING * 2 + FRAME_TITLE_SPACE + rows * CARD_HEIGHT + Math.max(0, rows - 1) * CARD_GAP;
+  const width = FRAME_PADDING * 2 + columns * cardWidth + Math.max(0, columns - 1) * CARD_GAP;
+  const height = FRAME_PADDING * 2 + FRAME_TITLE_SPACE + rows * cardHeight + Math.max(0, rows - 1) * CARD_GAP;
   const frameId = stableElementId('import-frame', `${group.id}-${Date.now()}-${Math.random()}`);
   const cards = group.entries.map(({ node, folderPath }, index) => createBookmarkElement(
     node,
     {
-      x: origin.x + FRAME_PADDING + (index % columns) * (CARD_WIDTH + CARD_GAP),
-      y: origin.y + FRAME_PADDING + FRAME_TITLE_SPACE + Math.floor(index / columns) * (CARD_HEIGHT + CARD_GAP),
+      x: origin.x + FRAME_PADDING + (index % columns) * (cardWidth + CARD_GAP),
+      y: origin.y + FRAME_PADDING + FRAME_TITLE_SPACE + Math.floor(index / columns) * (cardHeight + CARD_GAP),
     },
-    { frameId, folderPath },
+    { frameId, folderPath, presentation },
   ));
 
   return [createBookmarkFrame(frameId, group.title, origin, width, height), ...cards];
@@ -171,6 +190,8 @@ export function getBookmarkElementData(element: Pick<ExcalidrawElement, 'customD
     title,
     url: data.url,
     folderPath,
+    ...(isBookmarkPresentation(data.presentation) ? { presentation: data.presentation } : {}),
+    ...(typeof data.description === 'string' ? { description: normalizeBookmarkDescription(data.description) } : {}),
   };
 }
 

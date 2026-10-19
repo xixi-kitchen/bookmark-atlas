@@ -23,6 +23,8 @@ export default defineConfig({
       'https://suggestqueries.google.com/*',
       ...(browser === 'safari' ? [] : ['https://www.youtube.com/*']),
     ],
+    // Declared capability only. AI requests ask for the exact user-chosen origin at runtime.
+    optional_host_permissions: ['https://*/*'],
     ...(browser === 'safari'
       ? { browser_specific_settings: { safari: { strict_min_version: '17.0' } } }
       : { minimum_chrome_version: '114' }),

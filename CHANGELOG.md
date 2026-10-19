@@ -1,5 +1,29 @@
 # Changelog
 
+## v0.9.5 - 2026-10-19
+
+### English
+
+- Simplified workspace actions into Settings and contextual canvas menus, kept the Excalidraw theme as the default, and improved narrow-screen search layout.
+- Fixed a canvas initialization race that could misclassify an incoming update as a local conflict before the saved scene had loaded.
+- Added icon, compact, and detailed bookmark cards, canvas-only notes, and explicit layout previews. Existing cards and positions are preserved; new imports default to compact.
+- Made bookmark icons open websites directly in a new tab while retaining selection, dragging, and keyboard navigation; aligned each card style and added a shortened URL to detailed cards.
+- Added optional AI organization with a user-configured compatible HTTPS endpoint: review selected metadata, preview groups and notes, then apply an undoable canvas change without reorganizing native bookmarks.
+- Added local-only AI settings, model discovery, a separate model connectivity test, and clearing saved configuration. Saved API keys use AES-GCM-256 encryption with endpoint binding and are excluded from sync and backups; encryption keys are generated locally, not bundled.
+- Added extension-icon capture into Other bookmarks / Bookmark Atlas and a durable local canvas-insertion queue. Choose whether to open the canvas after capture or stay on the current page and organize later.
+- Added Settings language switching between Follow browser, English, and Simplified Chinese without reloading or resetting the canvas; language and capture-navigation preferences stay local.
+
+### 中文
+
+- 将工作区操作收纳到设置和画布上下文菜单，保持 Excalidraw 为默认主题，并优化窄屏搜索栏布局。
+- 修复画布初始化期间的竞态，避免已保存场景尚未载入时把传入更新误判为本机冲突。
+- 增加图标、简洁、详细三种书签卡片、画布备注和明确确认的排布预览。保留旧卡片及位置，新导入默认使用简洁形式。
+- 单击书签图标可在新标签页打开，同时保留选择、拖动和键盘操作；分别对齐三种卡片，详细卡片增加缩略网址。
+- 增加自配兼容 HTTPS 接口的可选 AI 整理：确认选中元数据，预览分组和备注后再应用，可撤销，不重排原生书签。
+- 增加仅限本机的 AI 设置、模型拉取、独立模型连通测试和清除配置。已保存 API Key 使用 AES-GCM-256 加密并绑定接口，不参与同步或备份；加密密钥本机生成，不内置在安装包中。
+- 点击扩展图标可保存当前网页到「其他书签 / Bookmark Atlas」，并通过可靠本机队列添加至画布；可选择添加后打开画布，或留在当前页面稍后集中整理。
+- 设置中可在跟随浏览器、English 和简体中文之间切换，不刷新或重置画布；语言及收藏跳转偏好仅保存在本机。
+
 ## v0.9.4 - 2026-09-11
 
 ### English

@@ -2,15 +2,29 @@ import { afterEach, describe, expect, it } from 'vitest';
 import enMessages from '../../public/_locales/en/messages.json';
 import zhMessages from '../../public/_locales/zh_CN/messages.json';
 import { getExcalidrawLanguage, getUiLanguage, t, type MessageKey } from '.';
+import { setLanguagePreference } from './languagePreference';
 
 const originalChrome = globalThis.chrome;
 
-afterEach(() => {
+afterEach(async () => {
   Object.defineProperty(globalThis, 'chrome', { configurable: true, value: originalChrome });
   window.history.replaceState({}, '', '/');
+  await setLanguagePreference('auto');
 });
 
 describe('Bookmark Atlas i18n', () => {
+  it('lets explicit Chinese and English choices override the browser catalog without reloading', async () => {
+    const native = () => 'Native English';
+    Object.defineProperty(globalThis, 'chrome', { configurable: true, value: { i18n: { getMessage: native, getUILanguage: () => 'en-US' } } });
+    await setLanguagePreference('zh-CN');
+    expect(t('settings')).toBe('设置');
+    expect(getExcalidrawLanguage()).toBe('zh-CN');
+    await setLanguagePreference('en');
+    expect(t('settings')).toBe('Settings');
+    expect(getUiLanguage()).toBe('en');
+    await setLanguagePreference('auto');
+    expect(t('settings')).toBe('Native English');
+  });
   it('uses deterministic English fallbacks outside Chrome', () => {
     Object.defineProperty(globalThis, 'chrome', { configurable: true, value: undefined });
     expect(t('newChromeBookmark')).toBe('New browser bookmark');

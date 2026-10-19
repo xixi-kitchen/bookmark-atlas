@@ -5,15 +5,22 @@ import { createMemoryBookmarkAdapter } from './bookmarks/adapter';
 import { readOnboardingState, recordInstallationEvent } from './onboarding/onboardingState';
 import { configureBookmarkAdapterForTests } from './store/bookmarkStore';
 import { usePreferencesStore } from './store/preferencesStore';
+import { setLanguagePreference } from './i18n/languagePreference';
 
-vi.mock('./excalidraw/ExcalidrawCanvas', () => ({
-  ExcalidrawCanvas: () => <div data-testid="excalidraw-canvas" />,
-}));
+const languageHost = vi.hoisted(() => ({ canvasMounted: vi.fn() }));
+vi.mock('./excalidraw/ExcalidrawCanvas', async () => {
+  const { useEffect } = await import('react');
+  return { ExcalidrawCanvas: () => {
+    useEffect(() => { languageHost.canvasMounted(); }, []);
+    return <div data-testid="excalidraw-canvas" />;
+  } };
+});
 
 describe('App integration', () => {
-  afterEach(() => {
+  afterEach(async () => {
     cleanup();
     vi.useRealTimers();
+    await setLanguagePreference('auto');
   });
 
   beforeEach(() => {
@@ -23,7 +30,7 @@ describe('App integration', () => {
     usePreferencesStore.setState({
       viewMode: 'grid',
       cardSize: 'md',
-      themeId: 'swiss',
+      themeId: 'excalidraw',
       activeEngineId: 'baidu',
       hydrated: true,
     });
@@ -38,10 +45,29 @@ describe('App integration', () => {
     expect(screen.queryByRole('button', { name: 'List view' })).not.toBeInTheDocument();
     expect(screen.queryByRole('combobox', { name: 'Card size' })).not.toBeInTheDocument();
     expect(screen.queryByRole('combobox', { name: 'UI style' })).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Card size: Medium cards' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'UI style: Swiss International' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Card size: Medium cards' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'UI style: Excalidraw' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Settings' })).toBeInTheDocument();
     await waitFor(() => expect(screen.getByText('Chrome Extensions Docs')).toBeInTheDocument());
     expect(screen.getByRole('button', { name: 'New browser bookmark' })).toBeInTheDocument();
+  });
+
+  it('switches language in settings without remounting the current canvas', async () => {
+    languageHost.canvasMounted.mockClear();
+    render(<App />);
+    await waitFor(() => expect(screen.getByText('Chrome Extensions Docs')).toBeInTheDocument());
+    fireEvent.click(screen.getByRole('button', { name: 'Excalidraw canvas' }));
+    await screen.findByTestId('excalidraw-canvas');
+    expect(languageHost.canvasMounted).toHaveBeenCalledOnce();
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }));
+    fireEvent.change(screen.getByRole('combobox', { name: 'Language / 语言' }), { target: { value: 'zh-CN' } });
+    expect(await screen.findByRole('button', { name: '新建浏览器书签' })).toBeInTheDocument();
+    expect(screen.getByRole('dialog', { name: '设置' })).toBeInTheDocument();
+    expect(document.documentElement.lang).toBe('zh-CN');
+    expect(languageHost.canvasMounted).toHaveBeenCalledOnce();
+    fireEvent.change(screen.getByRole('combobox', { name: 'Language / 语言' }), { target: { value: 'en' } });
+    expect(await screen.findByRole('button', { name: 'New browser bookmark' })).toBeInTheDocument();
+    expect(languageHost.canvasMounted).toHaveBeenCalledOnce();
   });
 
   it('navigates folders and filters the managed view without leaving the page', async () => {
@@ -86,28 +112,60 @@ describe('App integration', () => {
   });
 
   it('shows update notes for existing installs instead of forcing onboarding', async () => {
-    await recordInstallationEvent({ reason: 'update', previousVersion: '0.9.3', version: '0.9.4' });
+    await recordInstallationEvent({ reason: 'update', previousVersion: '0.9.4', version: '0.9.5' });
 
     render(<App />);
 
-    expect(await screen.findByRole('dialog', { name: 'Bookmark Atlas v0.9.4' })).toBeInTheDocument();
+    expect(await screen.findByRole('dialog', { name: 'Bookmark Atlas v0.9.5' })).toBeInTheDocument();
     expect(screen.queryByRole('dialog', { name: 'Make the new tab useful' })).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
     fireEvent.click(screen.getByRole('button', { name: 'Got it' }));
 
-    await waitFor(async () => expect((await readOnboardingState()).seenWhatsNewVersion).toBe('0.9.4'));
+    await waitFor(async () => expect((await readOnboardingState()).seenWhatsNewVersion).toBe('0.9.5'));
   });
 
-  it('replays the guide from the fixed help menu without a pending install marker', async () => {
+  it('replays the guide from settings without a pending install marker', async () => {
     render(<App />);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Help' }));
-    const menu = screen.getByRole('menu', { name: 'Help' });
-    fireEvent.click(within(menu).getByRole('menuitem', { name: /Quick guide/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }));
+    const menu = screen.getByRole('dialog', { name: 'Settings' });
+    fireEvent.click(within(menu).getByRole('button', { name: 'Quick guide' }));
 
     expect(await screen.findByRole('dialog', { name: 'Make the new tab useful' })).toBeInTheDocument();
+    expect(screen.queryByRole('dialog', { name: 'Settings' })).not.toBeInTheDocument();
+  });
+
+  it('keeps appearance and engine management reachable from settings', async () => {
+    render(<App />);
+    await screen.findByText('Chrome Extensions Docs');
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }));
+    const panel = screen.getByRole('dialog', { name: 'Settings' });
+    fireEvent.click(within(panel).getByRole('button', { name: 'UI style: Excalidraw' }));
+    fireEvent.click(screen.getByRole('option', { name: 'Swiss International' }));
+    expect(document.documentElement.dataset.theme).toBe('swiss');
+    fireEvent.click(within(panel).getByRole('button', { name: 'Use default Excalidraw theme' }));
+    expect(document.documentElement.dataset.theme).toBe('excalidraw');
+    fireEvent.click(within(panel).getByRole('button', { name: 'Manage search engines' }));
+    expect(screen.queryByRole('dialog', { name: 'Settings' })).not.toBeInTheDocument();
+    expect(screen.getByRole('dialog', { name: 'Search engines' })).toBeInTheDocument();
+  });
+
+  it('closes the nested picker before settings with Escape and restores focus', async () => {
+    render(<App />);
+    await screen.findByText('Chrome Extensions Docs');
+    const trigger = screen.getByRole('button', { name: 'Settings' });
+    fireEvent.click(trigger);
+    const themeTrigger = screen.getByRole('button', { name: 'UI style: Excalidraw' });
+    fireEvent.click(themeTrigger);
+    fireEvent.keyDown(screen.getByRole('option', { name: 'Swiss International' }), { key: 'Escape' });
+    expect(screen.queryByRole('listbox', { name: 'Choose UI style' })).not.toBeInTheDocument();
+    expect(screen.getByRole('dialog', { name: 'Settings' })).toBeInTheDocument();
+    expect(themeTrigger).toHaveFocus();
+    fireEvent.keyDown(themeTrigger, { key: 'Escape' });
+    expect(screen.queryByRole('dialog', { name: 'Settings' })).not.toBeInTheDocument();
+    expect(trigger).toHaveFocus();
   });
 
   it('keeps onboarding optional and respects an explicit skip', async () => {

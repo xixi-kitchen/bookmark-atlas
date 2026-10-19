@@ -33,7 +33,8 @@ describe('Excalidraw bookmark elements', () => {
     const element = createBookmarkElement(roots[0]!.children![0]!, { x: 20, y: 40 });
 
     expect(element.type).toBe('embeddable');
-    expect(element.width).toBe(300);
+    expect(element.width).toBe(220);
+    expect(element.height).toBe(88);
     expect(getBookmarkElementData(element)).toMatchObject({
       kind: 'bookmark',
       bookmarkId: 'bookmark-1',
@@ -41,6 +42,7 @@ describe('Excalidraw bookmark elements', () => {
       normalizedUrl: 'https://openai.com/',
       title: 'OpenAI',
       url: 'https://openai.com',
+      presentation: 'compact',
     });
   });
 
@@ -71,6 +73,58 @@ describe('Excalidraw bookmark elements', () => {
     expect(scene[0]?.type).toBe('frame');
     expect(bookmarks.map((bookmark) => bookmark!.bookmarkId)).toEqual(['bookmark-1', 'bookmark-2']);
     expect(bookmarks.every((bookmark) => bookmark!.folderPath?.startsWith('工作'))).toBe(true);
+  });
+
+  it('preserves historical data and geometry without assigning a new presentation', () => {
+    const element = createBookmarkElement(roots[0]!.children![0]!, { x: 20, y: 40 }, { presentation: 'detailed' });
+    const { presentation: _presentation, ...historicalData } = element.customData!.bookmarkAtlas;
+    const historical = { ...element, customData: { bookmarkAtlas: historicalData } };
+    const serialized = JSON.stringify(historical);
+
+    expect(getBookmarkElementData(historical)?.presentation).toBeUndefined();
+    expect(getBookmarkElementData(historical)?.description).toBeUndefined();
+    expect(historical).toMatchObject({ x: 20, y: 40, width: 300, height: 168 });
+    expect(JSON.stringify(historical)).toBe(serialized);
+  });
+
+  it('retains supported presentation and Unicode descriptions when parsing', () => {
+    const element = createBookmarkElement(roots[0]!.children![0]!, { x: 0, y: 0 });
+    element.customData!.bookmarkAtlas = {
+      ...element.customData!.bookmarkAtlas,
+      presentation: 'icon',
+      description: '😀'.repeat(141),
+    };
+    expect(getBookmarkElementData(element)).toMatchObject({ presentation: 'icon', description: '😀'.repeat(140) });
+
+    element.customData!.bookmarkAtlas.presentation = 'unknown';
+    element.customData!.bookmarkAtlas.description = 123;
+    expect(getBookmarkElementData(element)?.presentation).toBeUndefined();
+    expect(getBookmarkElementData(element)?.description).toBeUndefined();
+  });
+
+  it.each(['icon', 'compact', 'detailed'] as const)('fits imported %s cards in their content-sized frame', (presentation) => {
+    const group = buildBookmarkImportGroups(roots)[0]!;
+    const scene = createBookmarkGroupScene(group, { x: 100, y: 200 }, { presentation });
+    const frame = scene[0]!;
+    const cards = scene.slice(1);
+
+    for (const card of cards) {
+      expect(getBookmarkElementData(card)?.presentation).toBe(presentation);
+      expect(card.x).toBeGreaterThanOrEqual(frame.x + 48);
+      expect(card.y).toBeGreaterThanOrEqual(frame.y + 48 + 54);
+      expect(card.x + card.width).toBeLessThanOrEqual(frame.x + frame.width - 48);
+      expect(card.y + card.height).toBeLessThanOrEqual(frame.y + frame.height - 48);
+    }
+    expect(Math.max(...cards.map((card) => card.x + card.width))).toBe(frame.x + frame.width - 48);
+    expect(Math.max(...cards.map((card) => card.y + card.height))).toBe(frame.y + frame.height - 48);
+  });
+
+  it('uses compact geometry in the default scene and accepts a new-bookmark presentation override', () => {
+    const compact = createDefaultBookmarkScene(roots);
+    const detailed = createDefaultBookmarkScene(roots, { presentation: 'detailed' });
+    expect(compact.slice(1).every((element) => element.width === 220 && element.height === 88)).toBe(true);
+    expect(detailed.slice(1).every((element) => element.width === 300 && element.height === 168)).toBe(true);
+    expect(compact[0]!.height).toBeLessThan(detailed[0]!.height);
   });
 
 });

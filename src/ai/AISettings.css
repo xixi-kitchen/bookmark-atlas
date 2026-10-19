@@ -1,0 +1,5 @@
+.atlas-ai-settings { z-index: 48; }
+.atlas-ai-settings footer { flex-wrap: wrap; margin-top: 16px; }
+.atlas-ai-settings footer button { white-space: normal; }
+.atlas-ai-settings small { overflow-wrap: anywhere; }
+.atlas-ai-config-summary { display: flex; flex-direction: column; align-items: start; gap: 8px; margin: 16px 0; overflow-wrap: anywhere; }

@@ -1,7 +1,8 @@
 import { create } from 'zustand';
 import { DEFAULT_SEARCH_ENGINES, type SearchEngine } from '../search';
-import { THEMES, type ThemeId } from '../themes';
+import { DEFAULT_THEME_ID, THEMES, type ThemeId } from '../themes';
 import type { CardSize, ViewMode } from '../types/ui';
+import { DEFAULT_BOOKMARK_PRESENTATION, isBookmarkPresentation, type BookmarkPresentation } from '../excalidraw/bookmarkDisplay';
 
 export type PersistedPreferences = {
   viewMode: ViewMode;
@@ -9,6 +10,7 @@ export type PersistedPreferences = {
   themeId: ThemeId;
   activeEngineId: string;
   engines: SearchEngine[];
+  defaultBookmarkPresentation: BookmarkPresentation;
 };
 
 type PreferencesState = PersistedPreferences & {
@@ -19,6 +21,7 @@ type PreferencesState = PersistedPreferences & {
   setThemeId: (themeId: ThemeId) => void;
   setActiveEngineId: (activeEngineId: string) => void;
   setEngines: (engines: SearchEngine[]) => void;
+  setDefaultBookmarkPresentation: (presentation: BookmarkPresentation) => void;
   restorePreferences: (preferences: Partial<PersistedPreferences>) => Promise<void>;
 };
 
@@ -27,9 +30,10 @@ const KEY = 'bookmark-atlas:preferences:v1';
 const defaults: PersistedPreferences = {
   viewMode: 'canvas',
   cardSize: 'md',
-  themeId: 'swiss',
+  themeId: DEFAULT_THEME_ID,
   activeEngineId: 'chrome-default',
   engines: DEFAULT_SEARCH_ENGINES.map((engine) => ({ ...engine })),
+  defaultBookmarkPresentation: DEFAULT_BOOKMARK_PRESENTATION,
 };
 
 let saveTimer: ReturnType<typeof setTimeout> | undefined;
@@ -54,9 +58,9 @@ async function persist(value: PersistedPreferences) {
 }
 
 function sanitizePreferences(saved: Partial<PersistedPreferences>): PersistedPreferences {
-  const viewMode = saved.viewMode === 'canvas' ? 'canvas' : 'grid';
+  const viewMode = saved.viewMode === undefined ? defaults.viewMode : saved.viewMode === 'canvas' ? 'canvas' : 'grid';
   const cardSize = saved.cardSize === 'sm' || saved.cardSize === 'lg' ? saved.cardSize : 'md';
-  const themeId = saved.themeId && saved.themeId in THEMES ? saved.themeId : defaults.themeId;
+  const themeId = saved.themeId && Object.prototype.hasOwnProperty.call(THEMES, saved.themeId) ? saved.themeId : defaults.themeId;
   const savedEngines = Array.isArray(saved.engines) ? saved.engines : [];
   const defaultIds = new Set(DEFAULT_SEARCH_ENGINES.map((engine) => engine.id));
   const engines = [
@@ -76,7 +80,9 @@ function sanitizePreferences(saved: Partial<PersistedPreferences>): PersistedPre
     ? saved.activeEngineId!
     : (engines.find((engine) => engine.enabled)?.id ?? '');
 
-  return { viewMode, cardSize, themeId, activeEngineId, engines };
+  const defaultBookmarkPresentation = isBookmarkPresentation(saved.defaultBookmarkPresentation)
+    ? saved.defaultBookmarkPresentation : defaults.defaultBookmarkPresentation;
+  return { viewMode, cardSize, themeId, activeEngineId, engines, defaultBookmarkPresentation };
 }
 
 function stripCustomSuggestionAccess(engine: SearchEngine): SearchEngine {
@@ -85,13 +91,14 @@ function stripCustomSuggestionAccess(engine: SearchEngine): SearchEngine {
 }
 
 export function getPreferencesSnapshot(): PersistedPreferences {
-  const { viewMode, cardSize, themeId, activeEngineId, engines } = usePreferencesStore.getState();
+  const { viewMode, cardSize, themeId, activeEngineId, engines, defaultBookmarkPresentation } = usePreferencesStore.getState();
   return {
     viewMode,
     cardSize,
     themeId,
     activeEngineId,
     engines: engines.map((engine) => ({ ...engine })),
+    defaultBookmarkPresentation,
   };
 }
 
@@ -99,13 +106,14 @@ function scheduleSave(changes: Partial<PersistedPreferences>) {
   pendingLocalChanges = { ...pendingLocalChanges, ...changes };
   if (saveTimer) clearTimeout(saveTimer);
   saveTimer = setTimeout(() => {
-    const { viewMode, cardSize, themeId, activeEngineId, engines } = usePreferencesStore.getState();
+    const { viewMode, cardSize, themeId, activeEngineId, engines, defaultBookmarkPresentation } = usePreferencesStore.getState();
     const next = sanitizePreferences({
       viewMode,
       cardSize,
       themeId,
       activeEngineId,
       engines,
+      defaultBookmarkPresentation,
       ...pendingLocalChanges,
     });
     pendingLocalChanges = {};
@@ -146,6 +154,10 @@ export const usePreferencesStore = create<PreferencesState>((set, get) => ({
       : (engines.find((engine) => engine.enabled)?.id ?? '');
     set({ engines, activeEngineId });
     scheduleSave({ engines, activeEngineId });
+  },
+  setDefaultBookmarkPresentation: (defaultBookmarkPresentation) => {
+    set({ defaultBookmarkPresentation });
+    scheduleSave({ defaultBookmarkPresentation });
   },
   restorePreferences: async (preferences) => {
     const restored = sanitizePreferences(preferences);
