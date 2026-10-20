@@ -12,14 +12,15 @@ bookmarks, search, persistent web embeds, and a full Excalidraw canvas.
 
 简体中文说明见本文件下方的「中文说明」。
 
-## v0.9.5 Release Candidate
+## v0.9.5
 
-The v0.9.5 candidate adds three canvas bookmark presentations (icon,
+The v0.9.5 release adds three canvas bookmark presentations (icon,
 compact, detailed), canvas-only notes, direct icon navigation, current-page
 capture from the extension popup, and optional AI organization previews with
-central local settings. User acceptance is complete; Chrome Web Store submission
-and review are pending. The store link may still serve v0.9.4 until the update
-is approved and published. See the [v0.9.5 notes](docs/releases/v0.9.5.md).
+central local settings. User acceptance is complete and Chrome Web Store review
+has passed. Install through the store link above, or see the
+[v0.9.5 release](https://github.com/xixi-kitchen/bookmark-atlas/releases/tag/v0.9.5)
+for the formal package, checksum, and bilingual release notes.
 
 Existing cards and their positions are preserved. Historical cards without a
 presentation field retain the detailed style; new imports default to compact.
@@ -75,11 +76,10 @@ declared saved to the cloud before the normal canvas consumer completes.
 Review your provider's fees, privacy, retention, and training terms. Metadata-only
 AI suggestions are not verified webpage summaries. Preview does not save canvas
 changes; applying a plan is explicit and undoable and does not reorganize native
-browser bookmarks. The user has completed real-use acceptance of this candidate,
+browser bookmarks. The user has completed real-use acceptance of this release,
 including AI organization; this does not guarantee compatibility with every
-provider or model. Store submission must use matching privacy, data-use, and
-optional-permission disclosures; source documentation alone is not evidence of
-store publication.
+provider or model. The store submission includes matching privacy, data-use, and
+optional-permission disclosures.
 
 ## Features
 
@@ -198,9 +198,9 @@ Bookmark Atlas 是一个本地优先的 Chrome 新标签页扩展，把 Chrome �
 · [获取帮助](SUPPORT.md)
 · [反馈问题](https://github.com/xixi-kitchen/bookmark-atlas/issues/new/choose)
 
-### v0.9.5 发布候选
+### v0.9.5
 
-v0.9.5 候选增加了图标、简洁、详细三种书签展示、画布备注、单击图标打开、扩展图标收藏当前网页和带集中本机设置的可选 AI 整理预览。用户已完成使用验收，商店提交及审核待完成；批准并发布前，商店链接可能仍提供 v0.9.4。见 [v0.9.5 发布说明](docs/releases/v0.9.5.md)。
+v0.9.5 增加了图标、简洁、详细三种书签展示、画布备注、单击图标打开、扩展图标收藏当前网页和带集中本机设置的可选 AI 整理预览。用户已完成使用验收，Chrome 商店审核已通过。可通过上方商店链接安装，或在 [v0.9.5 正式发布页](https://github.com/xixi-kitchen/bookmark-atlas/releases/tag/v0.9.5) 获取正式包、校验文件及双语更新说明。
 
 旧卡片与原位置保持不变，没有展示字段的历史卡片沿用详细形式，新导入默认简洁，可在设置中更改未来导入的默认值。详细卡片包含缩略网址，单击图标可新标签页打开，同时保留拖动。
 
