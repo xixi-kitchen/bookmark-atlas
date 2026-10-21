@@ -18,18 +18,18 @@ export function BookmarkSelectionTools({ count, presentation, description, onPre
   const [draft, setDraft] = useState(description);
   useEffect(() => { setDraft(description); setEditing(false); }, [description, count]);
   return (
-    <div className="atlas-bookmark-tools" role="toolbar" aria-label={t('bookmarkSelectionTools')}>
+    <div data-learning-target="selection-tools" className="atlas-bookmark-tools" role="toolbar" aria-label={t('bookmarkSelectionTools')}>
       <span className="atlas-bookmark-tools__count">{t('selectedBookmarksCount', String(count))}</span>
       <div className="segmented" role="group" aria-label={t('bookmarkDisplay')}>
         {(['icon', 'compact', 'detailed'] as const).map((value) => (
-          <button type="button" key={value} aria-pressed={presentation === value} className={presentation === value ? 'is-active' : ''}
+          <button data-learning-target="presentation-option" type="button" key={value} aria-pressed={presentation === value} className={presentation === value ? 'is-active' : ''}
             onClick={() => onPresentation(value)}>{t(value === 'icon' ? 'bookmarkDisplayIcon' : value === 'compact' ? 'bookmarkDisplayCompact' : 'bookmarkDisplayDetailed')}</button>
         ))}
       </div>
       <button type="button" disabled={count !== 1} title={count === 1 ? t('bookmarkDescription') : t('descriptionSelectOne')}
         onClick={() => setEditing((value) => !value)}><FileText size={15} />{t('bookmarkDescription')}</button>
-      <button type="button" disabled={count < 2} onClick={onLayout}><AlignHorizontalJustifyCenter size={15} />{t('previewBookmarkLayout')}</button>
-      {onAI && <button type="button" onClick={onAI}>{t('aiOrganize')}</button>}
+      <button data-learning-target="layout-preview" type="button" disabled={count < 2} onClick={onLayout}><AlignHorizontalJustifyCenter size={15} />{t('previewBookmarkLayout')}</button>
+      {onAI && <button data-learning-target="ai-open" type="button" onClick={onAI}>{t('aiOrganize')}</button>}
       {editing && (
         <form className="atlas-bookmark-description" onKeyDown={(event) => {
           event.stopPropagation();

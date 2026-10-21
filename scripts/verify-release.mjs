@@ -1,8 +1,11 @@
 import { access, readFile } from 'node:fs/promises';
+import { validateReleaseNotes } from './lib/validate-release-notes.mjs';
 
 const root = new URL('../', import.meta.url);
 const packageMetadata = JSON.parse(await readFile(new URL('package.json', root), 'utf8'));
 const version = packageMetadata.version;
+const catalogue = JSON.parse(await readFile(new URL('src/onboarding/releaseNotes.json', root), 'utf8'));
+validateReleaseNotes(catalogue, version);
 const versionHeading = `## v${version}`;
 const changelog = await readFile(new URL('CHANGELOG.md', root), 'utf8');
 const releaseNotesUrl = new URL(`docs/releases/v${version}.md`, root);

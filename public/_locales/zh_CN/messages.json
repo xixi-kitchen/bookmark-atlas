@@ -1313,10 +1313,10 @@
     "message": "更多画布操作"
   },
   "helpOpenGuide": {
-    "message": "快速引导"
+    "message": "使用指南"
   },
   "helpOpenGuideDescription": {
-    "message": "重新查看首次使用引导"
+    "message": "选择章节或继续实操学习"
   },
   "helpWhatsNew": {
     "message": "更新内容"

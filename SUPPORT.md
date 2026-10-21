@@ -6,8 +6,8 @@ For help, bug reports, and feature suggestions:
 
 - Read the latest notes in `CHANGELOG.md` and `docs/releases/`.
 - Use GitHub Issues:
-  - Bug report: `.github/ISSUE_TEMPLATE/bug_report.md`
-  - Feature request: `.github/ISSUE_TEMPLATE/feature_request.md`
+  - [Bug report](https://github.com/xixi-kitchen/bookmark-atlas/issues/new?template=bug_report.yml)
+  - [Feature request](https://github.com/xixi-kitchen/bookmark-atlas/issues/new?template=feature_request.yml)
 - If the issue is urgent and affects data safety, include:
   - Browser version and extension version
   - Reproduction steps
@@ -21,8 +21,8 @@ We generally reply within business days and provide workaround steps if needed.
 
 - 查看最新发布说明：`CHANGELOG.md` 与 `docs/releases/`。
 - 提交 GitHub Issue：
-  - Bug 报告：`.github/ISSUE_TEMPLATE/bug_report.md`
-  - 功能建议：`.github/ISSUE_TEMPLATE/feature_request.md`
+  - [Bug 报告](https://github.com/xixi-kitchen/bookmark-atlas/issues/new?template=bug_report.yml)
+  - [功能建议](https://github.com/xixi-kitchen/bookmark-atlas/issues/new?template=feature_request.yml)
 - 涉及数据安全或同步异常时，请尽量提供：
   - 浏览器版本、扩展版本
   - 复现步骤

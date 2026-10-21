@@ -6,6 +6,8 @@ import { readOnboardingState, recordInstallationEvent } from './onboarding/onboa
 import { configureBookmarkAdapterForTests } from './store/bookmarkStore';
 import { usePreferencesStore } from './store/preferencesStore';
 import { setLanguagePreference } from './i18n/languagePreference';
+import { advanceLearning, pauseLearning, readLearningProgress, startLearning } from './onboarding/learningState';
+import { recordReleaseEducation } from './onboarding/releaseEducation';
 
 const languageHost = vi.hoisted(() => ({ canvasMounted: vi.fn() }));
 vi.mock('./excalidraw/ExcalidrawCanvas', async () => {
@@ -82,48 +84,41 @@ describe('App integration', () => {
     expect(screen.queryByRole('button', { name: 'Bookmark: Figma' })).not.toBeInTheDocument();
   });
 
-  it('shows the first-run guide from the install marker and lets users finish it', async () => {
+  it('offers hands-on learning without completing onboarding from passive reading', async () => {
     await recordInstallationEvent({ reason: 'install', version: '0.9.2' });
 
     render(<App />);
 
-    expect(await screen.findByRole('dialog', { name: 'Make the new tab useful' })).toBeInTheDocument();
-    expect(screen.getByText('Search where you already work')).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('button', { name: 'Try search' }));
-    expect(screen.getByRole('combobox', { name: 'Search content' })).toHaveFocus();
-    expect(screen.getByText('Switch to the canvas')).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('button', { name: 'Open canvas' }));
-    expect(screen.getByText('Keep control of sync')).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Start using Atlas' }));
-
-    await waitFor(async () => expect((await readOnboardingState()).onboardingCompleted).toBe(true));
-    expect(screen.queryByRole('dialog', { name: 'Make the new tab useful' })).not.toBeInTheDocument();
+    expect(await screen.findByRole('dialog', { name: 'Learning guide' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Next' })).not.toBeInTheDocument();
+    expect((await readOnboardingState()).onboardingCompleted).not.toBe(true);
   });
 
   it('observes an install marker written after the new-tab page has started', async () => {
     render(<App />);
-    expect(screen.queryByRole('dialog', { name: 'Make the new tab useful' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('dialog', { name: 'Learning guide' })).not.toBeInTheDocument();
 
     await recordInstallationEvent({ reason: 'install', version: '0.9.3' });
 
-    expect(await screen.findByRole('dialog', { name: 'Make the new tab useful' })).toBeInTheDocument();
+    expect(await screen.findByRole('dialog', { name: 'Learning guide' })).toBeInTheDocument();
   });
 
-  it('shows update notes for existing installs instead of forcing onboarding', async () => {
-    await recordInstallationEvent({ reason: 'update', previousVersion: '0.9.4', version: '0.9.5' });
+  it('keeps minor updates quiet and clears their marker when notes are read', async () => {
+    await recordInstallationEvent({ reason: 'update', previousVersion: '0.9.5', version: '0.9.6' });
 
     render(<App />);
 
-    expect(await screen.findByRole('dialog', { name: 'Bookmark Atlas v0.9.5' })).toBeInTheDocument();
-    expect(screen.queryByRole('dialog', { name: 'Make the new tab useful' })).not.toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    await screen.findByText('Chrome Extensions Docs');
+    expect(screen.queryByRole('dialog', { name: 'Bookmark Atlas v0.9.6' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('dialog', { name: 'Learning guide' })).not.toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Settings' })).toHaveAttribute('data-unread-update', 'true'));
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }));
+    fireEvent.click(within(screen.getByRole('dialog', { name: 'Settings' })).getByRole('button', { name: 'What is new' }));
+    expect(await screen.findByRole('dialog', { name: 'Bookmark Atlas v0.9.6' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Got it' }));
 
-    await waitFor(async () => expect((await readOnboardingState()).seenWhatsNewVersion).toBe('0.9.5'));
+    await waitFor(async () => expect((await readOnboardingState()).seenWhatsNewVersion).toBe('0.9.6'));
+    expect(screen.getByRole('button', { name: 'Settings' })).toHaveAttribute('data-unread-update', 'false');
   });
 
   it('replays the guide from settings without a pending install marker', async () => {
@@ -131,10 +126,53 @@ describe('App integration', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Settings' }));
     const menu = screen.getByRole('dialog', { name: 'Settings' });
-    fireEvent.click(within(menu).getByRole('button', { name: 'Quick guide' }));
+    fireEvent.click(within(menu).getByRole('button', { name: 'Learning guide' }));
 
-    expect(await screen.findByRole('dialog', { name: 'Make the new tab useful' })).toBeInTheDocument();
+    expect(await screen.findByRole('dialog', { name: 'Learning guide' })).toBeInTheDocument();
     expect(screen.queryByRole('dialog', { name: 'Settings' })).not.toBeInTheDocument();
+  });
+
+  it('returns to the canvas when resuming a paused course from the grid', async () => {
+    await startLearning('basics');
+    await advanceLearning({ type: 'bookmark-added' });
+    await advanceLearning({ type: 'bookmark-opened' });
+    await pauseLearning();
+    render(<App />);
+    await screen.findByText('Chrome Extensions Docs');
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }));
+    fireEvent.click(within(screen.getByRole('dialog', { name: 'Settings' })).getByRole('button', { name: 'Learning guide' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Resume learning' }));
+    await screen.findByTestId('excalidraw-canvas');
+    expect((await readLearningProgress())?.step).toBe('move');
+    expect((await readLearningProgress())?.status).toBe('active');
+    expect((await readOnboardingState()).onboardingCompleted).not.toBe(true);
+  });
+
+  it('keeps settings above the guide without pausing or completing the course', async () => {
+    await startLearning('basics');
+    render(<App />);
+    await screen.findByRole('dialog', { name: 'Learning guide' });
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }));
+    const panel = screen.getByRole('dialog', { name: 'Settings' });
+    expect(screen.queryByRole('dialog', { name: 'Learning guide' })).not.toBeInTheDocument();
+    fireEvent.click(within(panel).getByRole('button', { name: 'Close' }));
+    await screen.findByRole('dialog', { name: 'Learning guide' });
+    expect((await readLearningProgress())?.status).toBe('active');
+    expect((await readLearningProgress())?.step).toBe('import');
+  });
+
+  it('invites only the explicit major-update chapter once and keeps unread notes separate', async () => {
+    await recordInstallationEvent({ reason: 'update', previousVersion: '0.9.5', version: '0.9.6' });
+    await recordReleaseEducation({ version: '0.9.6', level: 'feature-tour', chapters: ['ai'] });
+    const view = render(<App />);
+    fireEvent.click(await screen.findByRole('button', { name: 'Not now' }));
+    expect(screen.queryByRole('dialog', { name: 'Try what changed' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Settings' })).toHaveAttribute('data-unread-update', 'true');
+    view.unmount();
+    render(<App />);
+    await screen.findByText('Chrome Extensions Docs');
+    expect(screen.queryByRole('dialog', { name: 'Try what changed' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('dialog', { name: 'Learning guide' })).not.toBeInTheDocument();
   });
 
   it('keeps appearance and engine management reachable from settings', async () => {
@@ -173,10 +211,10 @@ describe('App integration', () => {
 
     render(<App />);
 
-    expect(await screen.findByRole('dialog', { name: 'Make the new tab useful' })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Skip for now' }));
+    const guide = await screen.findByRole('dialog', { name: 'Learning guide' });
+    fireEvent.keyDown(guide, { key: 'Escape' });
 
-    expect(screen.queryByRole('dialog', { name: 'Make the new tab useful' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('dialog', { name: 'Learning guide' })).not.toBeInTheDocument();
     await waitFor(async () => expect((await readOnboardingState()).pendingOnboarding).toBe(false));
     expect((await readOnboardingState()).onboardingSkipped).toBe(true);
   });

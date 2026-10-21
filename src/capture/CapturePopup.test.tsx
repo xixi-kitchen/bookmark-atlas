@@ -5,6 +5,8 @@ import { CapturePopup } from './CapturePopup';
 import { CaptureError, ackCapture, captureActiveTab, openCaptureCanvas } from './captureQueue';
 import { t } from '../i18n';
 import { CAPTURE_OPEN_AFTER_SAVE_KEY } from './capturePreferences';
+import { LEARNING_PROGRESS_STORAGE_KEY, readLearningProgress, startLearning } from '../onboarding/learningState';
+import { readReleaseNotice, recordReleaseEducation } from '../onboarding/releaseEducation';
 
 vi.mock('./captureQueue', async (original) => ({
   ...await original<typeof import('./captureQueue')>(), captureActiveTab: vi.fn(), openCaptureCanvas: vi.fn(), ackCapture: vi.fn(),
@@ -28,6 +30,28 @@ beforeEach(() => {
 afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.clearAllMocks(); vi.unstubAllGlobals(); });
 
 describe('toolbar capture popup', () => {
+  it('waits for local learning completion before navigating away and closing the popup', async () => {
+    await startLearning('capture');
+    let finish!: () => void;
+    const stored = new Promise<void>((resolve) => { finish = resolve; });
+    const waiting = vi.fn();
+    vi.mocked(chrome.storage.local.set).mockImplementation(async (values) => {
+      if (LEARNING_PROGRESS_STORAGE_KEY in values) { waiting(); await stored; }
+      Object.assign(localValues, values);
+    });
+    render(<CapturePopup />);
+    const button = await screen.findByRole('button', { name: t('captureAddToCanvas') });
+    await waitFor(() => expect(button).toBeEnabled());
+    fireEvent.click(button);
+    await waitFor(() => expect(waiting).toHaveBeenCalledOnce());
+    try {
+      expect(openCaptureCanvas).not.toHaveBeenCalled();
+      expect(window.close).not.toHaveBeenCalled();
+    } finally { await act(async () => finish()); }
+    await waitFor(() => expect(window.close).toHaveBeenCalledOnce());
+    expect((await readLearningProgress())?.status).toBe('completed');
+  });
+
   it('only captures after a clear user action and never displays private URL parameters', async () => {
     render(<CapturePopup />);
     const button = await screen.findByRole('button', { name: t('captureAddToCanvas') });
@@ -128,7 +152,8 @@ describe('toolbar capture popup', () => {
 
   it('waits for a saved preference before enabling collection and never reads a default too early', async () => {
     let resolve!: (value: Record<string, unknown>) => void;
-    vi.mocked(chrome.storage.local.get).mockImplementationOnce(() => new Promise((done) => { resolve = done; }) as never);
+    vi.mocked(chrome.storage.local.get).mockImplementation((key) => key === CAPTURE_OPEN_AFTER_SAVE_KEY
+      ? new Promise((done) => { resolve = done; }) : Promise.resolve({ [String(key)]: localValues[String(key)] }));
     render(<CapturePopup />);
     await screen.findByText('Example page');
     const button = screen.getByRole('button');
@@ -163,7 +188,10 @@ describe('toolbar capture popup', () => {
   });
 
   it('can collect safely without navigating when local preference retrieval fails', async () => {
-    vi.mocked(chrome.storage.local.get).mockRejectedValueOnce(new Error('secret'));
+    vi.mocked(chrome.storage.local.get).mockImplementation(async (key) => {
+      if (key === CAPTURE_OPEN_AFTER_SAVE_KEY) throw new Error('secret');
+      return { [String(key)]: localValues[String(key)] };
+    });
     render(<CapturePopup />);
     expect(await screen.findByRole('alert')).toHaveTextContent(t('captureOpenPreferenceLoadFailed'));
     const button = screen.getByRole('button');
@@ -187,5 +215,18 @@ describe('toolbar capture popup', () => {
     await screen.findByText(t('captureSavedWithoutOpening'));
     expect(openCaptureCanvas).not.toHaveBeenCalled();
     expect(window.close).not.toHaveBeenCalled();
+  });
+
+  it('clears a used capture feature marker without pretending update notes were read', async () => {
+    await recordReleaseEducation({ version: '0.9.6', level: 'notes', chapters: ['capture'] });
+    render(<CapturePopup />);
+    expect(await screen.findByText('NEW')).toBeInTheDocument();
+    const button = screen.getByRole('button');
+    await waitFor(() => expect(button).toBeEnabled());
+    fireEvent.click(button);
+    await waitFor(() => expect(window.close).toHaveBeenCalledOnce());
+    expect(await readReleaseNotice('0.9.6')).toMatchObject({ unread: true });
+    expect((await readReleaseNotice('0.9.6')).featureChapters).toBeUndefined();
+    expect(await readLearningProgress()).toBeNull();
   });
 });

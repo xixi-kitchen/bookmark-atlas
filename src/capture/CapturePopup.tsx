@@ -2,7 +2,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ArrowUpRight, BookmarkPlus, Check, Folder } from 'lucide-react';
 import { CaptureError, captureActiveTab, isCapturableUrl, openCaptureCanvas, type CaptureErrorCode, type CaptureIntent } from './captureQueue';
 import { loadCaptureOpenAfterSave, saveCaptureOpenAfterSave } from './capturePreferences';
-import { t } from '../i18n';
+import { getUiLanguage, t } from '../i18n';
+import { advanceLearning } from '../onboarding/learningState';
+import { markReleaseFeatureUsed, readReleaseNotice } from '../onboarding/releaseEducation';
+import packageMetadata from '../../package.json';
+
+const appVersion = globalThis.chrome?.runtime?.getManifest?.().version ?? packageMetadata.version;
 
 export function CapturePopup() {
   const [tab, setTab] = useState<chrome.tabs.Tab | null>(null);
@@ -15,10 +20,19 @@ export function CapturePopup() {
   const [savingPreference, setSavingPreference] = useState(false);
   const [preferenceError, setPreferenceError] = useState<'load' | 'save' | null>(null);
   const [savedWithoutOpening, setSavedWithoutOpening] = useState(false);
+  const [newFeature, setNewFeature] = useState(false);
   const pending = useRef(false);
   const preferencePending = useRef(false);
   const capturedIntent = useRef<CaptureIntent | null>(null);
   const canCapture = tab?.id !== undefined && Boolean(tab.active) && !tab.incognito && isCapturableUrl(tab.url);
+
+  useEffect(() => {
+    let cancelled = false;
+    void readReleaseNotice(appVersion).then((notice) => {
+      if (!cancelled) setNewFeature(notice.featureChapters?.includes('capture') === true);
+    }).catch(() => undefined);
+    return () => { cancelled = true; };
+  }, []);
 
   useEffect(() => {
     chrome.tabs.query({ active: true, currentWindow: true }).then(([active]) => {
@@ -68,6 +82,9 @@ export function CapturePopup() {
       // Retrying a navigation failure should not create a second capture.
       const intent = capturedIntent.current ?? await captureActiveTab(tab.id);
       capturedIntent.current = intent;
+      // Learning is optional and cannot turn a successful capture into an error.
+      await Promise.allSettled([advanceLearning({ type: 'capture-saved' }), markReleaseFeatureUsed(appVersion, 'capture')]);
+      setNewFeature(false);
       setSaved(true);
       if (openAfterSave) {
         await openCaptureCanvas(intent.id);
@@ -92,6 +109,7 @@ export function CapturePopup() {
         <span>Bookmark Atlas</span>
       </header>
       <h1>{t('captureCurrentPage')}</h1>
+      {newFeature && <small className="capture-popup__new">{getUiLanguage() === 'zh-CN' ? '新功能' : 'NEW'}</small>}
       <p className="capture-popup__intro">{t('captureDescription')}</p>
       <section className="capture-popup__page" aria-busy={loading}>
         <strong>{loading ? t('capturePageLoading') : tab?.title || hostname || t('captureUnavailable')}</strong>

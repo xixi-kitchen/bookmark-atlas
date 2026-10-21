@@ -25,9 +25,9 @@ export function BookmarkCanvasCard({ title, url, folderPath, description, presen
   const cleanupPointer = useRef<(() => void) | null>(null);
   useEffect(() => () => cleanupPointer.current?.(), []);
   return (
-    <div className={`atlas-bookmark-embed is-${presentation} ${matchStatus !== 'matched' ? 'is-missing' : ''}`}
+    <div data-learning-target="bookmark" className={`atlas-bookmark-embed is-${presentation} ${matchStatus !== 'matched' ? 'is-missing' : ''}`}
       title={[name, displayUrl, description, folderPath].filter(Boolean).join('\n')}>
-      {safeUrl && onOpen ? <a className="atlas-bookmark-embed__icon" href={safeUrl} target="_blank" rel="noopener noreferrer"
+      {safeUrl && onOpen ? <a data-learning-target="bookmark-open" className="atlas-bookmark-embed__icon" href={safeUrl} target="_blank" rel="noopener noreferrer"
         aria-label={t('openBookmarkIcon', name)} tabIndex={selected ? 0 : -1} draggable={false}
         onPointerDown={(event) => {
           cleanupPointer.current?.();

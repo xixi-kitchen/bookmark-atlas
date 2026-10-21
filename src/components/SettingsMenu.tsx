@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { BookOpen, Search, Settings, Sparkles, X } from 'lucide-react';
-import { t } from '../i18n';
+import { getUiLanguage, t } from '../i18n';
 import { usePreferencesStore } from '../store/preferencesStore';
 import { DEFAULT_THEME_ID, THEMES, type ThemeId } from '../themes';
 import type { CardSize } from '../types/ui';
@@ -15,9 +15,12 @@ type Props = {
   onOpenGuide: () => void;
   onWhatsNew: () => void;
   onAISettings?: () => void;
+  updateUnread?: boolean;
+  newAI?: boolean;
+  onOpenChange?: (open: boolean) => void;
 };
 
-export function SettingsMenu({ version, onManageEngines, onOpenGuide, onWhatsNew, onAISettings }: Props) {
+export function SettingsMenu({ version, onManageEngines, onOpenGuide, onWhatsNew, onAISettings, updateUnread = false, newAI = false, onOpenChange }: Props) {
   const preferences = usePreferencesStore();
   const { preference: languagePreference } = useLanguagePreference();
   const [languageSaving, setLanguageSaving] = useState(false);
@@ -26,6 +29,11 @@ export function SettingsMenu({ version, onManageEngines, onOpenGuide, onWhatsNew
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    onOpenChange?.(open);
+    return () => onOpenChange?.(false);
+  }, [open, onOpenChange]);
 
   useEffect(() => {
     if (!open) return;
@@ -52,9 +60,11 @@ export function SettingsMenu({ version, onManageEngines, onOpenGuide, onWhatsNew
       }
     }}>
       <button ref={triggerRef} className="icon-button" type="button" aria-label={t('settings')}
+        data-unread-update={String(updateUnread)} aria-describedby={updateUnread ? 'atlas-update-unread' : undefined}
         title={t('settings')} aria-expanded={open} aria-haspopup="dialog"
         aria-controls={open ? 'atlas-settings' : undefined} onClick={() => setOpen((value) => !value)}>
         <Settings size={17} />
+        {updateUnread && <><span className="atlas-update-dot" aria-hidden="true" /><span className="sr-only" id="atlas-update-unread">{getUiLanguage() === 'zh-CN' ? '有未读更新说明' : 'Unread update notes'}</span></>}
       </button>
       {open && (
         <aside ref={panelRef} id="atlas-settings" className="settings-menu__panel" role="dialog" aria-label={t('settings')}>
@@ -111,12 +121,12 @@ export function SettingsMenu({ version, onManageEngines, onOpenGuide, onWhatsNew
           </section>
           {onAISettings && <section aria-label={t('aiSettings')}>
             <h2>{t('aiSettings')}</h2>
-            <button className="settings-menu__action" type="button" onClick={() => run(onAISettings)}><Sparkles size={16} /><span>{t('aiSettings')}</span></button>
+            <button className="settings-menu__action" type="button" aria-describedby={newAI ? 'atlas-ai-new' : undefined} onClick={() => run(onAISettings)}><Sparkles size={16} /><span>{t('aiSettings')}</span>{newAI && <><small className="atlas-update-label" aria-hidden="true">{getUiLanguage() === 'zh-CN' ? '新功能' : 'NEW'}</small><span className="sr-only" id="atlas-ai-new">{getUiLanguage() === 'zh-CN' ? '本次更新的新功能' : 'New in this update'}</span></>}</button>
           </section>}
           <section aria-label={t('helpMenu')}>
             <h2>{t('helpMenu')}</h2>
             <button className="settings-menu__action" type="button" onClick={() => run(onOpenGuide)}><BookOpen size={16} /><span>{t('helpOpenGuide')}</span></button>
-            <button className="settings-menu__action" type="button" onClick={() => run(onWhatsNew)}><Sparkles size={16} /><span>{t('helpWhatsNew')}</span></button>
+            <button className="settings-menu__action" type="button" onClick={() => run(onWhatsNew)}><Sparkles size={16} /><span>{t('helpWhatsNew')}</span>{updateUnread && <small className="atlas-update-label" aria-hidden="true">{getUiLanguage() === 'zh-CN' ? '新内容' : 'NEW'}</small>}</button>
           </section>
         </aside>
       )}

@@ -1,10 +1,15 @@
 import { readFile } from 'node:fs/promises';
+import { assertLicenseNotice } from './lib/license-notice.mjs';
 
 const browser = process.argv[2] ?? 'chrome';
 if (!['chrome', 'edge', 'safari'].includes(browser)) throw new Error(`Unsupported browser target: ${browser}`);
 const outputRoot = new URL(`../output/${browser}-mv3/`, import.meta.url);
 const manifest = JSON.parse(await readFile(new URL('manifest.json', outputRoot), 'utf8'));
 const permissions = [...(manifest.permissions ?? [])].sort();
+assertLicenseNotice(
+  await readFile(new URL('THIRD_PARTY_NOTICES.txt', outputRoot), 'utf8'),
+  await readFile(new URL('../node_modules/driver.js/license', import.meta.url), 'utf8'),
+);
 
 if (manifest.manifest_version !== 3) throw new Error('Expected Manifest V3.');
 if (manifest.chrome_url_overrides?.newtab !== 'newtab.html') throw new Error('Missing new tab override.');

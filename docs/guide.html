@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Get started with Bookmark Atlas: add a bookmark, arrange your canvas, open a saved page, and understand local storage and sync.">
+  <title>Getting started · Bookmark Atlas</title>
+  <link rel="stylesheet" href="site.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <div class="site-shell">
+    <header class="site-nav">
+      <a class="site-brand" href="index.html"><img src="store-assets/icon-128.png" width="38" height="38" alt="">Bookmark Atlas</a>
+      <nav aria-label="Primary"><a href="guide.html" aria-current="page">Get started</a><a href="changelog.html">Updates</a><a href="support.html">Support</a><a href="#zh-cn" lang="zh-CN">中文</a><a href="https://github.com/xixi-kitchen/bookmark-atlas">GitHub ↗</a></nav>
+    </header>
+    <main id="main-content">
+      <article class="document">
+        <span class="eyebrow">Getting started</span>
+        <h1>One bookmark.<br>Then make it yours.</h1>
+        <p class="lede">Start with a page you want to return to. You can explore the rest when you need it.</p>
+        <p>Install <a href="https://chromewebstore.google.com/detail/bookmark-atlas/bkdplfepaegfdabniedlkaodllnmnbfl">Bookmark Atlas from the Chrome Web Store</a>, then open a new tab. Pin the extension in Chrome’s extensions menu to reach its capture button more easily.</p>
+        <nav class="document-nav" aria-label="Guide sections"><a href="#add">01 Add</a><a href="#organize">02 Organize</a><a href="#open">03 Open</a><a href="#keep">Keep a copy</a></nav>
+        <section id="add" class="guide-step">
+          <span class="eyebrow">01 / Add</span><h2>Save a page you care about.</h2>
+          <p>Visit an ordinary HTTP or HTTPS page, click the Bookmark Atlas extension icon, then choose <strong>Add to canvas</strong>. The page is saved as a native Chrome bookmark under <strong>Other bookmarks / Bookmark Atlas</strong> and queued locally for the canvas.</p>
+          <p>Keep <strong>Open canvas after adding</strong> enabled to continue on the canvas. Turn it off to stay on the page and collect a few links first; the queued cards appear when you next open and save the canvas.</p>
+          <p>Already have bookmarks? Open the canvas’s import control and choose existing bookmarks. You do not need to recreate your bookmark library.</p>
+        </section>
+        <section id="organize" class="guide-step">
+          <span class="eyebrow">02 / Organize</span><h2>Make the canvas useful to you.</h2>
+          <p>Drag a bookmark card to a useful spot. Select cards to change their presentation to icon, compact, or detailed, add a canvas note, or arrange them together. Use Excalidraw’s drawing and text tools to connect ideas.</p>
+          <p>Canvas placement and notes belong to your workspace. Native bookmark edits, such as changing a title, moving a bookmark to another folder, or deleting it, affect your Chrome bookmarks. Read the confirmation before deleting.</p>
+          <p>Optional AI organization is available with your own compatible service. Select the cards, review the metadata to send, and preview the proposed changes before applying them. You can organize manually without connecting AI.</p>
+        </section>
+        <section id="open" class="guide-step">
+          <span class="eyebrow">03 / Open</span><h2>Return to a saved page.</h2>
+          <p>Click a bookmark’s favicon to open the page. The rest of the card remains available for selection and dragging. You can also use unified search to find bookmarks, open tabs, and browser history.</p>
+          <p>For pages you want alongside your notes, add a web embed. The target website must allow embedding; if it blocks the frame, use the external-open action. <a href="support.html#embeds">Read about embed limits</a>.</p>
+        </section>
+        <section id="keep" class="guide-step">
+          <span class="eyebrow">Before you switch devices</span><h2>Keep a complete copy.</h2>
+          <p>The full canvas is saved locally. Use the full JSON backup/export flow to keep a complete copy that includes local attachment data. Store the file somewhere you control and handle it as private data.</p>
+          <p>Lightweight canvas data can sync when you use the same Chrome account, enable the relevant Chrome Sync settings, and stay within quota. Sync does not guarantee a delivery time. Images and binary attachments remain on the device where they were added.</p>
+          <p>AI settings and saved credentials are excluded from sync and backups. Configure them separately on each device. <a href="privacy.html">Read the data handling details</a>.</p>
+        </section>
+        <p class="small-copy">The Chrome Web Store version is the supported public release. Source code may include features still being prepared. <a href="changelog.html">Check release status</a>.</p>
+      </article>
+      <article id="zh-cn" class="document secondary-document" lang="zh-CN">
+        <span class="eyebrow">简体中文 / 上手指南</span><h2>从一个书签开始。</h2>
+        <p>从 <a href="https://chromewebstore.google.com/detail/bookmark-atlas/bkdplfepaegfdabniedlkaodllnmnbfl">Chrome 应用商店安装</a> 后，打开新标签页。在 Chrome 扩展菜单中固定 Bookmark Atlas，方便随时收藏。</p>
+        <h3>01 / 收藏</h3>
+        <p>在普通 HTTP 或 HTTPS 网页上点击扩展图标，再选择「添加到画布」。网页会保存到「其他书签 / Bookmark Atlas」，并加入本机画布待处理队列。保留「添加后打开画布」可直接继续整理；关闭后可留在当前网页，下次打开画布并成功保存时完成添加。已有书签可从画布导入，不必重新收藏。</p>
+        <h3>02 / 整理</h3>
+        <p>拖动卡片，选择图标、简洁或详细样式，添加画布备注，再使用 Excalidraw 文字和绘图工具连接想法。画布位置和备注属于工作空间；修改、移动或删除原生书签会影响 Chrome 书签，删除前请阅读确认信息。</p>
+        <p>AI 整理完全可选，使用你自配的兼容服务。选中卡片，确认要发送的元数据并预览建议，之后再应用；不连接 AI 也可以正常整理。</p>
+        <h3>03 / 打开</h3>
+        <p>点击卡片的网站图标打开网页，卡片其余位置用于选择和拖动。统一搜索可查找书签、已打开标签页和浏览历史。网页嵌入取决于目标网站是否允许，不允许时请从外部打开。</p>
+        <h3>切换设备前，先备份</h3>
+        <p>完整画布保存在本机。使用完整 JSON 备份/导出功能保留含本地附件的数据副本，并妥善保管。同一 Chrome 账号在启用同步且配额允许时可同步轻量画布数据，但不保证固定到达时间；图片和二进制附件只在添加它们的设备上。AI 配置和凭据不进入同步或备份，需要在每台设备单独配置。</p>
+        <p><a href="support.html#zh-cn">遇到问题？查看帮助</a> · <a href="privacy.html#zh-cn">隐私政策</a> · <a href="changelog.html">更新记录</a></p>
+      </article>
+    </main>
+    <footer class="site-footer"><p>Bookmark Atlas <span>Start small. Make it yours.</span></p><nav aria-label="Footer"><a href="index.html">Home</a><a href="changelog.html">Updates</a><a href="privacy.html">Privacy</a><a href="support.html">Support</a></nav></footer>
+  </div>
+</body>
+</html>

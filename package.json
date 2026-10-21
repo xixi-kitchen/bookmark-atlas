@@ -1,6 +1,6 @@
 {
   "name": "bookmark-atlas",
-  "version": "0.9.5",
+  "version": "0.9.6",
   "private": true,
   "type": "module",
   "scripts": {
@@ -14,7 +14,9 @@
     "verify:manifest": "node scripts/verify-manifest.mjs chrome",
     "verify:manifest:edge": "node scripts/verify-manifest.mjs edge",
     "verify:manifest:safari": "node scripts/verify-manifest.mjs safari",
-    "verify:release": "node scripts/verify-release.mjs",
+    "verify:release": "node scripts/verify-release.mjs && node scripts/generate-public-releases.mjs --check",
+    "docs:release": "node scripts/generate-public-releases.mjs",
+    "docs:release:check": "node scripts/generate-public-releases.mjs --check",
     "zip": "npm run zip:chrome",
     "zip:chrome": "node scripts/generate-locales.mjs && wxt zip -b chrome --mv3",
     "zip:edge": "node scripts/generate-locales.mjs && wxt zip -b edge --mv3",
@@ -30,6 +32,7 @@
     "@dagrejs/dagre": "^1.1.5",
     "@excalidraw/excalidraw": "^0.18.1",
     "@xyflow/react": "^12.8.4",
+    "driver.js": "1.10.2",
     "lucide-react": "^0.468.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

@@ -1,5 +1,31 @@
 # Changelog
 
+## v0.9.6 - 2026-10-21
+
+Formal package freeze date; Chrome Web Store submission, approval, and publication are separate channel events. This entry does not claim store approval or availability.
+
+### English
+
+- Added optional hands-on chapters for basics, webpage capture, and AI organization. Progress follows successful real actions; returning users are not forced to restart completed basics.
+- Added local pause, resume, and chapter replay, with one active guide coordinated across open extension pages.
+- Added a fully offline AI demonstration that requires no API key, sends no requests, leaves the real canvas untouched, and does not count as completing real AI organization.
+- Improved guidance to highlight the exact button or field while keeping the canvas interactive; collapsible English and Chinese lessons adapt to narrow windows and offer recovery when a target, selection, or preview is unavailable.
+- Added complete, version-specific bilingual introductions with categorized changes, benefits, entry points, starting steps, and notices. Introductions remain available after unread markers expire; unknown versions do not borrow another version's content.
+- Added a release-notes standard and validation gate requiring an introduction for the package version. Small updates remain quiet notes; additional feature teaching requires explicit release metadata and never replaces the introduction.
+- Kept reading notes, using a feature, and completing a lesson independent. Existing bookmarks, canvas data, saved settings, permissions, AI consent, browser support, and sync boundaries are unchanged.
+
+### 中文
+
+- 增加基础体验、随手收藏网页与可选 AI 整理实操章节，真实操作成功后才推进进度；老用户不会被要求重新学习已完成的基础课程。
+- 增加本机暂停、续学与章节重播，并在多个扩展页面之间协调单一指南展示。
+- 增加完全离线的 AI 效果演示：无需 API Key、不发送请求、不改真实画布，也不计为完成真实 AI 整理。
+- 引导精准高亮所需按钮或输入框，同时保留画布交互；可折叠的中英说明适配窄窗口，目标入口、选区或预览丢失时提供恢复指引。
+- 增加逐版本完整双语介绍，包含分类变化、用户收益、具体入口、上手步骤与注意事项；未读提示过期后仍可查看，未知版本不会借用其他版本正文。
+- 增加版本介绍规范与发布校验门禁，要求当前包版本有自己的介绍。小更新安静提示，额外新功能教学需明确配置，且不能替代版本介绍。
+- 阅读说明、使用功能与完成课程独立记录；保留已有书签、画布数据、已保存设置、权限、AI 同意机制、浏览器支持及同步边界。
+
+上述日期为正式包冻结日期；Chrome 应用商店提交、批准和实际上架是独立渠道事件，本条不代表已通过审核或已上架。
+
 ## v0.9.5 - 2026-10-19
 
 ### English

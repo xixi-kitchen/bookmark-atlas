@@ -32,7 +32,7 @@ import {
 } from 'lucide-react';
 import type { BookmarkNode } from '../bookmarks/types';
 import { BookmarkFavicon } from '../components/BookmarkFavicon';
-import { getExcalidrawLanguage, t } from '../i18n';
+import { getExcalidrawLanguage, getUiLanguage, t } from '../i18n';
 import {
   buildBookmarkImportGroups,
   buildTopLevelBookmarkImportGroups,
@@ -101,10 +101,16 @@ import { AIOrganizer } from '../ai/AIOrganizer';
 import { buildAIOrganizationPreview } from '../ai/layout';
 import { MAX_ORGANIZATION_ITEMS, type OrganizationItem, type OrganizationPlan } from '../ai/plan';
 import { useCanvasCaptureInbox } from './useCanvasCaptureInbox';
+import { createCanvasLearningSignals } from '../onboarding/canvasLearningSignals';
+import { emitLearningEvent } from '../onboarding/learningEvents';
+import type { LearningStep } from '../onboarding/learningState';
 
 type Props = {
   roots: BookmarkNode[];
   onOpenAISettings?: () => void;
+  onGuideBlockedChange?: (blocked: boolean) => void;
+  learningActive?: boolean;
+  learningStep?: LearningStep;
 };
 
 type SaveStatus = 'saved' | 'saving' | 'error';
@@ -129,6 +135,7 @@ type ExcalidrawOnLinkOpen = (
 ) => void;
 
 type CanvasApi = {
+  setActiveTool?: ExcalidrawImperativeAPI['setActiveTool'];
   onPointerDown?: ExcalidrawImperativeAPI['onPointerDown'];
   onPointerUp?: ExcalidrawImperativeAPI['onPointerUp'];
   getSceneElements: () => readonly ExcalidrawElement[];
@@ -179,10 +186,17 @@ const HostedExcalidraw = Excalidraw as unknown as ComponentType<HostedExcalidraw
 const SAVE_DELAY_MS = 350;
 const SYNC_DELAY_MS = 4_500;
 
-export function ExcalidrawCanvas({ roots, onOpenAISettings }: Props) {
+export function ExcalidrawCanvas({ roots, onOpenAISettings, onGuideBlockedChange, learningActive = false, learningStep }: Props) {
+  const learningActiveRef = useRef(learningActive);
+  learningActiveRef.current = learningActive;
   const uiLanguage = getExcalidrawLanguage();
   const [api, setApi] = useState<CanvasApi | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
+  const makeLearningSignals = () => createCanvasLearningSignals((event) => {
+    if (event.type === 'bookmark-added') setPickerOpen(false);
+    emitLearningEvent(event);
+  });
+  const learningSignals = useRef(makeLearningSignals());
   const [backupOpen, setBackupOpen] = useState(false);
   const [sceneRevision, setSceneRevision] = useState(0);
   const [canvasInitialized, setCanvasInitialized] = useState(false);
@@ -290,6 +304,7 @@ export function ExcalidrawCanvas({ roots, onOpenAISettings }: Props) {
     setSaveStatus('saving');
     try {
       await saveStoredScene(scene);
+      if (mountedRef.current && learningActiveRef.current) learningSignals.current.persisted(scene.elements);
       const fingerprint = sceneSyncFingerprint(scene);
       if (fingerprint !== lastBroadcastFingerprintRef.current) {
         lastBroadcastFingerprintRef.current = fingerprint;
@@ -400,7 +415,11 @@ export function ExcalidrawCanvas({ roots, onOpenAISettings }: Props) {
         && current.zoom.value === appState.zoom.value && current.offsetLeft === appState.offsetLeft && current.offsetTop === appState.offsetTop
         ? current : appState);
     }
-    if (!readyToPersistRef.current || applyingIncomingRef.current) return;
+    if (!readyToPersistRef.current || applyingIncomingRef.current) {
+      if (applyingIncomingRef.current) learningSignals.current = makeLearningSignals();
+      else learningSignals.current.cancelPointer();
+      return;
+    }
     setCanvasInitialized(true);
     const current = latestSceneRef.current;
     const next = createStoredScene(elements, appState, files, libraryItemsRef.current);
@@ -838,6 +857,7 @@ export function ExcalidrawCanvas({ roots, onOpenAISettings }: Props) {
     event.preventDefault();
     const target = getSafeBookmarkUrl(resolveBookmarkURL(element));
     if (target) window.open(target, '_blank', 'noopener,noreferrer');
+    if (target) emitLearningEvent({ type: 'bookmark-opened' });
   }, [resolveBookmarkURL]);
 
   const addBookmark = useCallback((node: BookmarkNode, folderPath: string) => {
@@ -848,6 +868,10 @@ export function ExcalidrawCanvas({ roots, onOpenAISettings }: Props) {
       return data ? isBookmarkEntryAlreadyImported({ node, folderPath }, [data], bookmarkIndex) : false;
     });
     if (existing) {
+      if (learningActiveRef.current) {
+        learningSignals.current.queueImport([existing.id]);
+        void persistLatest();
+      }
       api.updateScene({
         appState: { selectedElementIds: { [existing.id]: true } },
         captureUpdate: CaptureUpdateAction.NEVER,
@@ -867,6 +891,7 @@ export function ExcalidrawCanvas({ roots, onOpenAISettings }: Props) {
       x: center.x - size.width / 2,
       y: center.y - size.height / 2,
     }, { folderPath, presentation: defaultPresentation });
+    if (learningActiveRef.current) learningSignals.current.queueImport([element.id]);
 
     api.updateScene({
       elements: [...api.getSceneElementsIncludingDeleted(), element],
@@ -876,7 +901,7 @@ export function ExcalidrawCanvas({ roots, onOpenAISettings }: Props) {
     api.scrollToContent(element, { animate: true, duration: 260 });
     api.setToast({ message: t('bookmarkAdded', node.title || t('unnamedBookmark')) });
     setSceneRevision((revision) => revision + 1);
-  }, [api, bookmarkIndex, defaultPresentation]);
+  }, [api, bookmarkIndex, defaultPresentation, persistLatest]);
 
   const importBookmarkGroups = useCallback((groups: BookmarkImportGroup[]) => {
     if (!api) return;
@@ -911,6 +936,7 @@ export function ExcalidrawCanvas({ roots, onOpenAISettings }: Props) {
       }
     }
 
+    if (learningActiveRef.current) learningSignals.current.queueImport(additions.filter((element) => getBookmarkElementData(element)).map((element) => element.id));
     api.updateScene({
       elements: [...api.getSceneElementsIncludingDeleted(), ...additions],
       appState: { selectedElementIds: {} },
@@ -962,15 +988,16 @@ export function ExcalidrawCanvas({ roots, onOpenAISettings }: Props) {
   }, [api]);
 
   const applyElements = useCallback((elements: ExcalidrawElement[]) => {
-    if (!api) return;
+    if (!api) return false;
     const current = api.getSceneElementsIncludingDeleted();
-    if (elements.length === current.length && elements.every((element, index) => element === current[index])) return;
+    if (elements.length === current.length && elements.every((element, index) => element === current[index])) return false;
     api.updateScene({ elements, captureUpdate: CaptureUpdateAction.IMMEDIATELY });
     setSceneRevision((revision) => revision + 1);
+    return true;
   }, [api]);
 
   const changePresentation = (presentation: BookmarkPresentation) => {
-    if (api) applyElements(setBookmarkPresentation(api.getSceneElementsIncludingDeleted(), selectedBookmarkIds, presentation));
+    if (api && applyElements(setBookmarkPresentation(api.getSceneElementsIncludingDeleted(), selectedBookmarkIds, presentation))) emitLearningEvent({ type: 'presentation-changed' });
   };
   const changeDescription = (description: string) => {
     if (api) applyElements(setBookmarkDescription(api.getSceneElementsIncludingDeleted(), selectedBookmarkIds, description));
@@ -987,6 +1014,7 @@ export function ExcalidrawCanvas({ roots, onOpenAISettings }: Props) {
     changePreviewRef.current = preview;
     setChangePreview(preview);
     setPreviewAppState(api.getAppState());
+    emitLearningEvent({ type: 'layout-previewed' });
   };
   const cancelPreview = () => { changePreviewRef.current = null; setChangePreview(null); };
   const applyPreview = async () => {
@@ -1007,6 +1035,7 @@ export function ExcalidrawCanvas({ roots, onOpenAISettings }: Props) {
         return;
       }
       applyElements(preview.elements);
+      if (learningActiveRef.current) learningSignals.current.queueCommit({ type: preview.aiPlan ? 'ai-applied' : 'layout-applied' }, preview.elements);
     } catch {
       api.setToast({ message: t('saveTitleError') });
     } finally {
@@ -1055,6 +1084,7 @@ export function ExcalidrawCanvas({ roots, onOpenAISettings }: Props) {
       setChangePreview(preview);
       setAIScope(null);
       setPreviewAppState(api.getAppState());
+      emitLearningEvent({ type: 'ai-previewed' });
       api.scrollToContent(result.elements.filter((element) => result.ids.includes(element.id)), {
         fitToContent: true, maxZoom: 1, viewportZoomFactor: 0.76,
       });
@@ -1084,6 +1114,62 @@ export function ExcalidrawCanvas({ roots, onOpenAISettings }: Props) {
     await restoreBookmarkAtlasBackup(backup);
     window.location.reload();
   }, []);
+
+  useEffect(() => {
+    onGuideBlockedChange?.(!canvasInitialized || Boolean(aiScope || remoteUpdate || backupOpen));
+    return () => onGuideBlockedChange?.(false);
+  }, [canvasInitialized, Boolean(aiScope), Boolean(remoteUpdate), backupOpen, onGuideBlockedChange]);
+
+  useEffect(() => {
+    const showImport = () => setPickerOpen(true);
+    const showAI = () => startAIOrganization();
+    const showLayout = () => {
+      if (!api || getSelectedBookmarkIds(api.getSceneElements(), api.getAppState().selectedElementIds ?? {}).length < 2) {
+        api?.setToast({ message: getUiLanguage() === 'zh-CN' ? '请先框选至少两张书签。' : 'Select at least two bookmarks first.' });
+        return;
+      }
+      previewLayout();
+    };
+    const locateBookmarks = () => {
+      const first = api?.getSceneElements().find((element) => getBookmarkElementData(element));
+      if (first) api?.scrollToContent(first, { animate: true, duration: 260, fitToContent: true, maxZoom: 1, viewportZoomFactor: 0.8 });
+    };
+    window.addEventListener('bookmark-atlas:learning-import', showImport);
+    window.addEventListener('bookmark-atlas:learning-ai', showAI);
+    window.addEventListener('bookmark-atlas:learning-layout', showLayout);
+    window.addEventListener('bookmark-atlas:learning-locate', locateBookmarks);
+    return () => {
+      window.removeEventListener('bookmark-atlas:learning-import', showImport);
+      window.removeEventListener('bookmark-atlas:learning-ai', showAI);
+      window.removeEventListener('bookmark-atlas:learning-layout', showLayout);
+      window.removeEventListener('bookmark-atlas:learning-locate', locateBookmarks);
+    };
+  });
+
+  useEffect(() => {
+    if (!api || !learningActive || !api.onPointerDown || !api.onPointerUp) {
+      learningSignals.current = makeLearningSignals();
+      return;
+    }
+    api.setActiveTool?.({ type: 'selection' });
+    const pending = new Set<ReturnType<typeof setTimeout>>();
+    const down = api.onPointerDown((tool) => {
+      if (tool.type === 'selection') learningSignals.current.pointerDown(api.getSceneElements());
+      else learningSignals.current.cancelPointer();
+    });
+    const up = api.onPointerUp(() => {
+      const timer = setTimeout(() => {
+        pending.delete(timer);
+        if (applyingIncomingRef.current || !learningActiveRef.current) { learningSignals.current.cancelPointer(); return; }
+        learningSignals.current.pointerUp(api.getSceneElements(), getSelectedBookmarkIds(api.getSceneElements(), api.getAppState().selectedElementIds ?? {}).length);
+      }, 0);
+      pending.add(timer);
+    });
+    const cancel = () => learningSignals.current.cancelPointer();
+    window.addEventListener('blur', cancel);
+    window.addEventListener('pointercancel', cancel);
+    return () => { down(); up(); pending.forEach(clearTimeout); cancel(); window.removeEventListener('blur', cancel); window.removeEventListener('pointercancel', cancel); };
+  }, [api, learningActive]);
 
   return (
     <section className="excalidraw-canvas" aria-label={t('excalidrawCanvasLabel')}>
@@ -1120,7 +1206,7 @@ export function ExcalidrawCanvas({ roots, onOpenAISettings }: Props) {
                 {remoteUpdate ? t('remoteUpdatePending') : syncStatusLabel(syncStatus, lastSyncManifest)}
               </span>
             </button>
-            <button type="button" className="atlas-excalidraw-button is-icon" onClick={() => setPickerOpen(true)} aria-label={t('importBookmarks')} title={t('importChromeBookmarks')}>
+            <button data-learning-target="import" type="button" className="atlas-excalidraw-button is-icon" onClick={() => setPickerOpen(true)} aria-label={t('importBookmarks')} title={t('importChromeBookmarks')}>
               <FolderInput size={16} />
             </button>
             <CanvasActionsMenu onFitAll={() => fitElements(false)} onFocusBookmarks={() => fitElements(true)} onBackup={() => setBackupOpen(true)} />
@@ -1172,6 +1258,13 @@ export function ExcalidrawCanvas({ roots, onOpenAISettings }: Props) {
           bookmarkIndex={bookmarkIndex}
           onAdd={addBookmark}
           onImportGroups={importBookmarkGroups}
+          onUseExisting={learningActive && learningStep === 'import' && importedBookmarks.length > 0 ? () => {
+            const first = api?.getSceneElements().find((element) => getBookmarkElementData(element));
+            if (!first) return;
+            learningSignals.current.queueImport([first.id]);
+            api?.scrollToContent(first, { animate: true, duration: 260 });
+            void persistLatest();
+          } : undefined}
           onClose={() => setPickerOpen(false)}
         />
       )}
@@ -1309,6 +1402,7 @@ function BookmarkPicker({
   bookmarkIndex,
   onAdd,
   onImportGroups,
+  onUseExisting,
   onClose,
 }: {
   entries: BookmarkImportEntry[];
@@ -1318,6 +1412,7 @@ function BookmarkPicker({
   bookmarkIndex: BookmarkReconciliationIndex;
   onAdd: (node: BookmarkNode, folderPath: string) => void;
   onImportGroups: (groups: BookmarkImportGroup[]) => void;
+  onUseExisting?: () => void;
   onClose: () => void;
 }) {
   const [query, setQuery] = useState('');
@@ -1338,7 +1433,8 @@ function BookmarkPicker({
 
   return (
     <div className="atlas-picker-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
-      <section className="atlas-bookmark-picker atlas-bookmark-picker--import" role="dialog" aria-modal="true" aria-labelledby="atlas-picker-title">
+      <section data-learning-target="picker" className="atlas-bookmark-picker atlas-bookmark-picker--import" role="dialog" aria-modal="true" aria-labelledby="atlas-picker-title">
+        {onUseExisting && <button type="button" className="secondary-button" onClick={onUseExisting}>{getUiLanguage() === 'zh-CN' ? '使用画布已有书签继续' : 'Continue with bookmarks already on the canvas'}</button>}
         <header>
           <div>
             <h2 id="atlas-picker-title">{t('importChromeBookmarks')}</h2>
@@ -1396,7 +1492,7 @@ function BookmarkPicker({
               {visible.map(({ node, folderPath }) => {
                 const imported = isBookmarkEntryAlreadyImported({ node, folderPath }, importedBookmarks, bookmarkIndex);
                 return (
-                  <button type="button" key={node.id} className={`atlas-bookmark-picker__item ${imported ? 'is-imported' : ''}`} disabled={imported} onClick={() => onAdd(node, folderPath)}>
+                  <button data-learning-target="picker-add" type="button" key={node.id} className={`atlas-bookmark-picker__item ${imported ? 'is-imported' : ''}`} disabled={imported} onClick={() => onAdd(node, folderPath)}>
                     <BookmarkFavicon node={node} size={30} />
                     <span>
                       <strong>{node.title || t('unnamedBookmark')}</strong>

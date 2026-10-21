@@ -1,9 +1,10 @@
 # Bookmark Atlas Privacy Policy
 
-Effective: 2026-10-19 · Applies to Bookmark Atlas v0.9.5, including optional AI
-organization and current-page capture. Feature availability depends on the
-version installed; this policy also explains data handling before you enable
-those optional features.
+Last updated: 2026-10-21 · Applies to Bookmark Atlas v0.9.6, including the optional
+AI organization and current-page capture capabilities introduced in v0.9.5.
+Feature availability depends on the version installed; coverage of v0.9.6 does
+not indicate that it is available in the store. This policy also explains data
+handling before you enable optional features.
 
 Bookmark Atlas is a local-first Chrome extension. It does not sell your data or
 send bookmarks, open tabs, browsing history, or canvas content to a
@@ -73,6 +74,31 @@ across devices or browser tabs.
 Synced bookmark cards are reconciled on each device by normalized URL, title,
 and folder path. Chrome bookmark IDs are local to a specific browser profile and
 are not treated as cross-device identifiers.
+
+## Local Learning and Update Notices
+
+The learning guide stores the current chapter and step, completed steps and
+chapters, and active, paused, or completed status. Update notices store version
+metadata, the first-seen timestamp, whether notes have been read, which relevant
+feature chapters have been used, and whether a learning invitation has been
+claimed or dismissed. Installation and update flags retain the installed/previous
+version and whether onboarding or update notes are pending, completed, skipped,
+or already seen. These records let you resume learning, avoid repeated prompts,
+and show quiet update markers. Local tab coordination prevents multiple open
+extension pages from displaying the same guide or invitation simultaneously.
+
+These records stay in extension-local storage in the current browser profile
+and do not participate in Chrome Sync. They are not telemetry and are not sent
+to the developer or a model provider. Learning signals carry only an action type
+and, where needed, a count; the learning and update records do not store bookmark
+content, API keys, prompts, or other business-operation payloads. Uninstalling
+the extension clears these local records.
+
+The offline AI teaching demonstration uses fixed samples bundled with the
+extension. It makes no model-provider request, sends no user data, incurs no
+provider charge, and does not change the real canvas or create bookmarks. It
+does not complete a real AI task. Choosing to configure or use a real AI service
+instead follows the optional AI data handling described below.
 
 ## Remote Requests
 
@@ -145,7 +171,8 @@ an explicit, undoable action. Applied groups and notes may sync as canvas conten
 
 ## Data Deletion
 
-Uninstalling the extension removes local extension storage from the device.
+Uninstalling the extension removes local extension storage from the device,
+including learning progress, onboarding flags, and update-notice records.
 Chrome account sync data is managed by Chrome. Uninstalling Bookmark Atlas does
 not delete the user's Chrome bookmarks.
 
@@ -167,7 +194,7 @@ Store User Data Policy, including the Limited Use requirements.
 
 ## 中文隐私说明
 
-生效日期：2026-10-19。适用于 Bookmark Atlas v0.9.5，包括可选 AI 整理与当前网页收藏。实际可用功能取决于已安装版本；本政策也在启用这些可选功能前说明其数据处理方式。
+最后更新：2026-10-21。适用于 Bookmark Atlas v0.9.6，包括 v0.9.5 已有的可选 AI 整理与当前网页收藏能力。实际可用功能取决于已安装版本；本政策涵盖 v0.9.6 不代表该版本已经在商店上线，也在启用可选功能前说明其数据处理方式。
 
 Bookmark Atlas 是本地优先的 Chrome 扩展。默认不把你的书签、标签页、
 浏览历史或画布内容发送到开发者服务器，也不出售数据、不包含广告、追踪器或远程扩展代码。可选 AI 整理仅在你明确同意后，把选中范围的指定信息发送给你配置的模型服务。
@@ -190,6 +217,22 @@ Bookmark Atlas 是本地优先的 Chrome 扩展。默认不把你的书签、标
 
 Chrome Sync 由用户自己的 Chrome 账号设置控制。Bookmark Atlas 会在本地内容变化时写入可同步的轻量数据，并监听其他扩展页面的 Chrome storage 变化事件。它通常表现为近实时同步，但 Chrome 不保证跨设备或多标签页的固定到达时间。书签卡片会按规范化 URL、标题和文件夹路径重新关联当前设备的书签，不把 Chrome 本地书签 ID 当作跨设备主键。
 
+本机学习与更新提示：
+
+实操引导保存当前章节与步骤、已完成的步骤和章节，以及进行中、暂停或完成状态。
+更新提示保存版本元数据、首次遇到该版本的时间、说明是否已读、相关功能章节是否已使用、
+学习邀请是否已领取显示或被关闭。安装与更新标记保存已安装/上一个版本，以及新手引导或更新说明
+是否待处理、已完成、已跳过或已看过。这些记录用于续学、防止重复提示和显示轻量更新标记；
+本机标签页协调避免多个已打开的扩展页面同时展示同一引导或邀请。
+
+上述记录仅保存在当前浏览器用户配置的扩展本机存储中，不参与 Chrome Sync，
+不是遥测，不发送给开发者或模型服务商。学习信号仅包含操作类型及必要的数量；
+学习和更新记录不保存书签内容、API Key、提示词或其他业务操作数据。卸载扩展会清除这些本机记录。
+
+AI 离线教学演示使用扩展内置的固定示例，不请求模型服务、不发送用户数据、不产生服务商费用，
+不改动真实画布、不创建书签，也不完成真实 AI 任务。另行选择配置或使用真实 AI 服务时，
+仍遵循下文的可选 AI 数据处理说明。
+
 远程请求：
 
 - 用户提交搜索时，搜索词会发送给当前选择的搜索服务。
@@ -207,4 +250,4 @@ Chrome Sync 由用户自己的 Chrome 账号设置控制。Bookmark Atlas 会在
 - 服务商会处理提交的数据和认证信息，其收费、隐私、保留期限和训练政策适用，请在连接前查阅。请求携带 `store: false`，但扩展无法保证第三方遵守或完全不保留数据；不提供开发者付费账号或共享密钥。
 - AI 返回的是经过校验的数据建议，不执行远程代码；根据标题、域名和备注生成的简介不是已访问网页后的事实摘要。预览不改变已保存画布，确认应用后可撤销；应用后的分组和备注可随画布同步。
 
-卸载扩展会删除当前设备上的扩展本地数据（含已保存 AI 配置、加密密钥及待处理收藏队列），但不会删除用户的 Chrome 书签。Chrome 账号同步数据由 Chrome 自身管理。清除本机 AI 配置会删除当前用户配置内已保存的接口、模型和 API 凭据；为支持并发操作，本机保留不含服务商 token 的加密密钥。关闭面板本身不会删除已保存配置；扩展备份不含 AI 配置、凭据或加密密钥。已发送给服务商的数据不随卸载自动删除，需要按该服务商的流程处理。
+卸载扩展会删除当前设备上的扩展本地数据（含学习进度、新手引导标记、更新提示记录、已保存 AI 配置、加密密钥及待处理收藏队列），但不会删除用户的 Chrome 书签。Chrome 账号同步数据由 Chrome 自身管理。清除本机 AI 配置会删除当前用户配置内已保存的接口、模型和 API 凭据；为支持并发操作，本机保留不含服务商 token 的加密密钥。关闭面板本身不会删除已保存配置；扩展备份不含 AI 配置、凭据或加密密钥。已发送给服务商的数据不随卸载自动删除，需要按该服务商的流程处理。

@@ -3,65 +3,70 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Bookmark Atlas help for Chrome Sync, local attachments, web embeds, optional AI, and bug reports.">
   <title>Support · Bookmark Atlas</title>
   <link rel="stylesheet" href="site.css">
 </head>
 <body>
-  <main class="site-shell">
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <div class="site-shell">
     <header class="site-nav">
-      <a class="site-brand" href="index.html"><img src="store-assets/icon-128.png" alt="">Bookmark Atlas</a>
-      <nav aria-label="Primary">
-        <a href="#zh-cn">中文</a>
-        <a href="privacy.html">Privacy</a>
-        <a href="support.html">Support</a>
-        <a href="https://github.com/xixi-kitchen/bookmark-atlas/releases">Changelog</a>
-        <a href="https://github.com/xixi-kitchen/bookmark-atlas">GitHub</a>
-      </nav>
+      <a class="site-brand" href="index.html"><img src="store-assets/icon-128.png" width="38" height="38" alt="">Bookmark Atlas</a>
+      <nav aria-label="Primary"><a href="guide.html">Get started</a><a href="changelog.html">Updates</a><a href="support.html" aria-current="page">Support</a><a href="#zh-cn" lang="zh-CN">中文</a><a href="https://github.com/xixi-kitchen/bookmark-atlas">GitHub ↗</a></nav>
     </header>
-
-    <article class="document">
-      <span class="eyebrow">Support</span>
-      <h1>Support</h1>
-
-      <h2>Cross-device sync requirements</h2>
-      <p>Sign in to the same Chrome account on each device and enable Chrome Sync for extensions, settings, and bookmarks. Bookmark Atlas writes eligible lightweight canvas data when local changes occur, sends same-device tab updates through BroadcastChannel, and listens for Chrome storage change events from Chrome Sync.</p>
-      <p>Sync is event-driven and usually near real time. Visible extension tabs also check for newer cloud state on focus, when returning to the tab, and every 30 seconds as a fallback. If another device is offline, sync resumes when Chrome Sync is available again.</p>
-
-      <h2>Why attachments do not appear on another device</h2>
-      <p>Chrome Sync has strict storage limits. Images and binary attachments stay on the device where they were added. Use the full JSON backup/export flow when you need a complete copy that includes local attachment data.</p>
-
-      <h2>Web embeds</h2>
-      <p>Regular HTTPS pages and Bilibili home pages can display directly when the target website allows iframe embedding. Custom iframes are sandboxed so the embedded page cannot navigate the extension's top-level page or escape through popups. Bilibili video URLs use the official player with autoplay disabled and can be switched to a protected full video page from the embed toolbar.</p>
-
-      <h2>Why some websites cannot be embedded</h2>
-      <p>Some websites block iframe embedding with security headers such as <code>X-Frame-Options</code> or CSP <code>frame-ancestors</code>. Bookmark Atlas cannot override that browser-enforced policy. Use the external-open action when a site blocks embedding.</p>
-
-      <h2>Contact</h2>
-      <p>Open a <a href="https://github.com/xixi-kitchen/bookmark-atlas/issues/new/choose">GitHub issue</a> for reproducible bugs and feature requests. Do not include passwords, tokens, or private bookmark content.</p>
-    </article>
-
-    <article id="zh-cn" class="document secondary-document" lang="zh-CN">
-      <span class="eyebrow">简体中文</span>
-      <h1>支持</h1>
-
-      <h2>跨设备同步条件</h2>
-      <p>在每台设备上登录同一个 Chrome 账号，并开启扩展、设置和书签同步。Bookmark Atlas 会在本地内容变化时写入可同步的轻量画布数据，通过 BroadcastChannel 同步同设备已打开的插件标签页，并监听来自 Chrome Sync 的 storage 变化事件。</p>
-      <p>同步是事件驱动的，通常接近实时。可见的插件标签页还会在窗口聚焦、重新回到页面，以及每 30 秒兜底检查一次较新的云端状态。离线设备会在 Chrome Sync 恢复可用后继续同步。</p>
-
-      <h2>为什么附件没有出现在另一台设备？</h2>
-      <p>Chrome Sync 有严格容量限制。图片和二进制附件只保存在添加它们的设备上。需要完整复制时，请使用完整 JSON 备份/导出功能。</p>
-
-      <h2>网页嵌入</h2>
-      <p>普通 HTTPS 网页和 Bilibili 首页在目标网站允许 iframe 时会直接显示。自定义 iframe 会被 sandbox 限制，嵌入网页不能覆盖跳转插件顶层页面，也不能通过弹窗逃逸。Bilibili 视频链接使用关闭自动播放的官方播放器，并可以从嵌入工具栏切换到受保护的完整视频页面。</p>
-
-      <h2>为什么有些网页仍然不能嵌入？</h2>
-      <p>部分网站会通过 <code>X-Frame-Options</code> 或 CSP <code>frame-ancestors</code> 禁止 iframe 嵌入。这是浏览器强制执行的网站安全策略，扩展不能安全绕过。遇到这种情况请使用外部打开操作。</p>
-
-      <h2>联系支持</h2>
-      <p>可通过 <a href="https://github.com/xixi-kitchen/bookmark-atlas/issues/new/choose">GitHub Issue</a> 反馈可复现问题和功能建议。请勿提交密码、令牌或私密书签内容。</p>
-    </article>
-
-    <footer class="site-footer">Bookmark Atlas Support</footer>
-  </main>
+    <main id="main-content">
+      <article class="document">
+        <span class="eyebrow">Help & support</span><h1>A clear next step.</h1>
+        <p class="lede">Find an answer below, or share a reproducible issue with the project.</p>
+        <p>New here? The <a href="guide.html">getting started guide</a> walks through saving, arranging, and opening your first bookmark. For version availability, check the <a href="changelog.html">release history</a>.</p>
+        <details id="sync" open>
+          <summary>My canvas has not appeared on another device.</summary>
+          <p>Sign in to the same Chrome account on each device and enable Chrome Sync for extensions, settings, and bookmarks. Check that both devices are online and using the expected browser profile.</p>
+          <p>Eligible lightweight canvas data syncs when Chrome Sync is available and quota allows. Chrome does not guarantee a delivery time. Return to the open extension tab to check for newer state; visible tabs also check every 30 seconds as a fallback.</p>
+          <p>Chrome bookmarks and canvas content use distinct browser storage paths. Seeing a bookmark on another device does not mean every canvas change or attachment has arrived. <a href="guide.html#keep">Keep a full backup before switching devices</a>.</p>
+        </details>
+        <details id="attachments">
+          <summary>Images or attachments are missing on another device.</summary>
+          <p>Images and binary attachments stay on the device where they were added. They are excluded from Chrome Sync because of its storage limits.</p>
+          <p>Use the full JSON backup/export flow when you need a complete copy with local attachment data. Keep the original copy until you have checked the imported result.</p>
+        </details>
+        <details id="embeds">
+          <summary>A website or video will not display inside the canvas.</summary>
+          <p>The website must allow iframe embedding. Security headers such as <code>X-Frame-Options</code> or CSP <code>frame-ancestors</code> can block it. Bookmark Atlas cannot override these browser-enforced rules. Use the external-open action to visit the website in a regular tab.</p>
+          <p>Custom iframes are sandboxed to limit top-level navigation and popups. Bilibili video URLs use the official player with autoplay disabled; the embed toolbar can switch to a protected full video page.</p>
+        </details>
+        <details id="capture">
+          <summary>I saved a page, but did not open the canvas.</summary>
+          <p>If <strong>Open canvas after adding</strong> is off, capture keeps you on the current page. The native bookmark is saved under <strong>Other bookmarks / Bookmark Atlas</strong>; its canvas insertion remains queued locally until a canvas is opened and saved successfully.</p>
+        </details>
+        <details id="ai">
+          <summary>Do I need an AI account or API key?</summary>
+          <p>No AI connection is required for bookmarks, search, drawing, or manual organization. Optional AI uses your own compatible endpoint and key. Review the selected metadata before sending and the proposed changes before applying.</p>
+          <p>Saved credentials are encrypted on the current device and excluded from sync and backups, but this is not an OS keychain. Your service provider’s fees and data policies apply. See the <a href="privacy.html">privacy policy</a> before connecting.</p>
+        </details>
+        <details id="browsers">
+          <summary>Which browsers are officially supported?</summary>
+          <p>The public release supports Chrome. Edge and Safari are not officially supported; development builds or compatibility checks do not establish store availability.</p>
+        </details>
+        <section id="contact">
+          <h2>Report a problem</h2>
+          <p>Open a <a href="https://github.com/xixi-kitchen/bookmark-atlas/issues/new/choose">GitHub issue</a> with your extension version, Chrome version, steps to reproduce, and the expected and actual result. A small public example or a screenshot with private details removed helps.</p>
+          <p>Do not include passwords, API keys, tokens, full backups, or private bookmark content. Check the <a href="changelog.html">release history</a> for related changes before reporting.</p>
+        </section>
+      </article>
+      <article id="zh-cn" class="document secondary-document" lang="zh-CN">
+        <span class="eyebrow">简体中文 / 帮助与支持</span><h2>找到下一步。</h2>
+        <p>初次使用可先看 <a href="guide.html#zh-cn">上手指南</a>。版本是否可安装，请以 <a href="changelog.html">更新记录与发布状态</a> 和 Chrome 商店为准。</p>
+        <details open><summary>另一台设备还没看到画布？</summary><p>确认两台设备登录同一个 Chrome 账号，已开启扩展、设置和书签同步，并使用正确的浏览器用户配置。轻量画布仅在同步可用、配额允许时传输，不保证固定到达时间。回到已打开的扩展页面会检查新状态；可见页面也会每 30 秒兜底检查。</p><p>原生书签与画布使用不同的存储路径。书签已到达，并不代表全部画布内容或附件已经同步。</p></details>
+        <details><summary>为什么图片和附件没有同步？</summary><p>图片和二进制附件只保存在添加它们的设备上，不进入 Chrome Sync。需要完整复制时请使用完整 JSON 备份/导出，确认导入结果后再处理原始副本。</p></details>
+        <details><summary>网页或视频为什么不能嵌入？</summary><p>目标网站必须允许 iframe。<code>X-Frame-Options</code> 或 CSP <code>frame-ancestors</code> 可阻止嵌入，扩展不能绕过浏览器强制执行的限制，请从外部打开。自定义 iframe 有 sandbox 限制；Bilibili 视频使用关闭自动播放的官方播放器，也可从工具栏切换到受保护的完整视频页面。</p></details>
+        <details><summary>收藏之后为什么留在原网页？</summary><p>关闭「添加后打开画布」时，网页仍会保存到「其他书签 / Bookmark Atlas」，画布添加任务保留在本机队列，下次打开画布并成功保存时完成。</p></details>
+        <details><summary>必须使用 AI 吗？</summary><p>不需要。书签、搜索、绘图和手动整理不依赖 AI。可选 AI 使用你自配的兼容服务，确认所选元数据并预览后再应用。已保存凭据本机加密，不进入同步或备份，但不等同于操作系统钥匙串；服务商费用和数据政策适用，连接前请查看 <a href="privacy.html#zh-cn">隐私政策</a>。</p></details>
+        <details><summary>支持哪些浏览器？</summary><p>正式公开版本支持 Chrome。Edge 和 Safari 尚非正式支持；开发构建或兼容性检查不等于相应商店已经上架。</p></details>
+        <h3>反馈问题</h3><p>请通过 <a href="https://github.com/xixi-kitchen/bookmark-atlas/issues/new/choose">GitHub Issue</a> 提供扩展版本、Chrome 版本、复现步骤、预期和实际结果。截图请先移除私密内容，不要提交密码、API Key、令牌、完整备份或私密书签。</p>
+      </article>
+    </main>
+    <footer class="site-footer"><p>Bookmark Atlas <span>Help, without the guesswork.</span></p><nav aria-label="Footer"><a href="index.html">Home</a><a href="guide.html">Guide</a><a href="changelog.html">Updates</a><a href="privacy.html">Privacy</a></nav></footer>
+  </div>
 </body>
 </html>

@@ -3,6 +3,7 @@ import { CaptureUpdateAction, viewportCoordsToSceneCoords } from '@excalidraw/ex
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
 import type { AppState, ExcalidrawImperativeAPI, PointerDownState } from '@excalidraw/excalidraw/types';
 import { getBookmarkElementData } from './bookmarkElements';
+import { emitLearningEvent } from '../onboarding/learningEvents';
 import {
   getSafeBookmarkUrl,
   hitBookmarkIcon,
@@ -75,6 +76,7 @@ export function useBookmarkNavigation(
     if (!url || isRepeatedBookmarkClick(previousClick.current, click)) return false;
     previousClick.current = click;
     window.open(url, '_blank', 'noopener,noreferrer');
+    emitLearningEvent({ type: 'bookmark-opened' });
     return true;
   }, [api, enabled]);
   const openBookmark = useCallback((element: ExcalidrawElement) => navigate(element), [navigate]);

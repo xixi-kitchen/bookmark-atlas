@@ -8,6 +8,7 @@ import {
 import { aiErrorMessage } from './errorMessage';
 import { AIError } from './plan';
 import './AISettings.css';
+import { emitLearningEvent } from '../onboarding/learningEvents';
 
 export function AISettings({ onClose }: { onClose: () => void }) {
   const [baseUrl, setBaseUrl] = useState('');
@@ -59,7 +60,7 @@ export function AISettings({ onClose }: { onClose: () => void }) {
     try {
       if (operation === 'save') {
         await saveLocalAISettings({ baseUrl, model, apiKey });
-        if (current()) { setStatus(t('aiSettingsSaved')); setDirty(false); }
+        if (current()) { setStatus(t('aiSettingsSaved')); setDirty(false); emitLearningEvent({ type: 'ai-settings-saved' }); }
       } else if (operation === 'clear') {
         await clearLocalAISettings();
         if (current()) { setBaseUrl(''); setModel(''); setApiKey(''); setModels([]); setDirty(false); setStatus(t('aiSettingsCleared')); }
@@ -84,7 +85,7 @@ export function AISettings({ onClose }: { onClose: () => void }) {
     }
   };
 
-  return <aside className="atlas-ai-panel atlas-ai-settings" role="dialog" aria-labelledby="atlas-ai-settings-title"
+  return <aside data-learning-target="ai-settings" className="atlas-ai-panel atlas-ai-settings" role="dialog" aria-labelledby="atlas-ai-settings-title"
     onKeyDown={(event) => { event.stopPropagation(); if (event.key === 'Escape') { event.preventDefault(); close(); } }}>
     <header><h2 id="atlas-ai-settings-title" tabIndex={-1} ref={heading}>{t('aiSettings')}</h2>
       <button type="button" onClick={close} aria-label={t('close')}><X size={18} /></button></header>

@@ -10,6 +10,7 @@ body { width: 344px; margin: 0; }
 .capture-popup { padding: 20px; }
 .capture-popup header { display: flex; gap: 9px; align-items: center; font-size: 13px; font-weight: 650; }
 .capture-popup h1 { margin: 22px 0 5px; font-size: 19px; line-height: 1.35; letter-spacing: -.015em; }
+.capture-popup__new { display: inline-block; margin: 3px 0 8px; color: oklch(50% 0.14 285); font-size: 11px; }
 .capture-popup__intro { margin: 0; color: oklch(48% 0.02 283); }
 .capture-popup__page { display: flex; flex-direction: column; gap: 3px; min-width: 0; margin: 17px 0 12px; padding: 13px; border: 1px solid oklch(85% 0.02 283); border-radius: 11px 13px 10px 12px; background: oklch(97% 0.007 283); }
 .capture-popup__page strong { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; font-weight: 600; }

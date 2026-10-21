@@ -30,7 +30,7 @@ export function CanvasChangePreview({ elements, appState, onApply, onCancel, bus
           </g>;
         })}
       </svg>
-      <aside className="atlas-preview-actions" role="dialog" aria-label={t('canvasChangePreview')}>
+      <aside data-learning-target="preview-actions" className="atlas-preview-actions" role="dialog" aria-label={t('canvasChangePreview')}>
         <span>{t('canvasChangePreviewHint')}</span>
         {aiPlan && <details className="atlas-ai-review" open>
           <summary>{t('aiReviewPlan')}</summary>
@@ -47,7 +47,7 @@ export function CanvasChangePreview({ elements, appState, onApply, onCancel, bus
           </section>)}</div>
         </details>}
         <button className="secondary-button" type="button" disabled={busy} onClick={onCancel}>{t('cancel')}</button>
-        <button className="primary-button" type="button" disabled={busy} onClick={onApply}>{busy ? t('saving') : t('applyChanges')}</button>
+        <button data-learning-target="preview-apply" className="primary-button" type="button" disabled={busy} onClick={onApply}>{busy ? t('saving') : t('applyChanges')}</button>
       </aside>
     </>
   );

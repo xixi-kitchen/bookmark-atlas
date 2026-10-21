@@ -73,7 +73,7 @@ export function AIOrganizer({ items, onPlan, onClose, onOpenSettings }: {
     }
   };
 
-  return <aside className="atlas-ai-panel" role="dialog" aria-labelledby="atlas-ai-title" onKeyDown={(event) => {
+  return <aside data-learning-target="ai-organizer" className="atlas-ai-panel" role="dialog" aria-labelledby="atlas-ai-title" onKeyDown={(event) => {
     event.stopPropagation(); if (event.key === 'Escape') { event.preventDefault(); close(); }
   }}>
     <header><h2 id="atlas-ai-title" tabIndex={-1} ref={heading}>{t('aiOrganize')}</h2>

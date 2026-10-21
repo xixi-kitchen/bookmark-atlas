@@ -1313,10 +1313,10 @@
     "message": "More canvas actions"
   },
   "helpOpenGuide": {
-    "message": "Quick guide"
+    "message": "Learning guide"
   },
   "helpOpenGuideDescription": {
-    "message": "Replay the first-run guide"
+    "message": "Choose a chapter or resume hands-on learning"
   },
   "helpWhatsNew": {
     "message": "What is new"
