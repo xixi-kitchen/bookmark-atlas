@@ -15,7 +15,7 @@ notes and drawings, and find your way back with one search box.
 ![Bookmark Atlas canvas with bookmarks, notes, and drawings](docs/store-assets/screenshots/01-canvas-en-1280x800.png)
 
 Chrome Web Store stable: **v0.9.5**. **v0.9.6** has completed user acceptance and
-is being prepared for store review. Its hands-on learning guide is not yet part
+was submitted for store review on **2026-10-21**. Its hands-on learning guide is not yet part
 of the stable store release. The
 [v0.9.5 release](https://github.com/xixi-kitchen/bookmark-atlas/releases/tag/v0.9.5)
 remains available with the original package and checksum.
@@ -128,7 +128,7 @@ Excalidraw 画布，与备注、绘图和网页嵌入一起整理，再通过统
 · [隐私政策](https://xixi-kitchen.github.io/bookmark-atlas/privacy.html)
 · [支持](https://xixi-kitchen.github.io/bookmark-atlas/support.html)
 
-Chrome 商店当前稳定版为 **v0.9.5**。**v0.9.6** 已完成用户验收，正在准备送审；
+Chrome 商店当前稳定版为 **v0.9.5**。**v0.9.6** 已完成用户验收，于 **2026-10-21** 提交审核；
 它新增的实操引导尚未在商店稳定版上线。
 [v0.9.5 正式发布页](https://github.com/xixi-kitchen/bookmark-atlas/releases/tag/v0.9.5)
 继续提供原安装包和校验文件。
