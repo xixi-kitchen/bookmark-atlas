@@ -41,7 +41,7 @@
               "en": "Read the version date, categorized changes, benefits, concrete entry points, starting steps, and notices in English or Chinese. Introductions stay available after the seven-day unread marker expires. A release check now requires a valid introduction for the package version, and an unknown version never borrows another release's content.",
               "zh-CN": "用中英文查看版本日期、分类变化、用户收益、具体入口、上手步骤及注意事项。七天未读提示到期后，介绍仍可查看。发布检查要求当前包版本有合规介绍，未知版本也不会借用其他版本正文。"
             },
-            "where": { "en": "Settings → What is new → release introduction and full release notes", "zh-CN": "设置 → 本次更新 → 版本介绍与完整发布说明" }
+            "where": { "en": "Settings → What is new → release introduction and full release notes", "zh-CN": "设置 → 更新内容 → 版本介绍与完整发布说明" }
           }
         ]
       },
@@ -62,7 +62,7 @@
               "en": "This learning update uses quiet notes and a basics marker, without automatically restarting a lesson for returning users. Future releases can explicitly invite only a relevant feature chapter while keeping their full version introduction separately accessible.",
               "zh-CN": "本次教学改进采用安静的版本说明和基础体验提示，不会自动要求老用户重新学习。后续版本可明确配置相关新功能章节邀请，同时保留独立完整的版本介绍入口。"
             },
-            "where": { "en": "Settings → What is new; Settings → Learning guide when you choose to learn", "zh-CN": "设置 → 本次更新；希望学习时再打开「设置 → 使用指南」" }
+            "where": { "en": "Settings → What is new; Settings → Learning guide when you choose to learn", "zh-CN": "设置 → 更新内容；希望学习时再打开「设置 → 使用指南」" }
           }
         ]
       },
@@ -81,7 +81,7 @@
       }
     ],
     "gettingStarted": [
-      { "en": "Open Settings → What is new to read this introduction. Returning users can continue using their existing canvas immediately; this update does not automatically restart a course.", "zh-CN": "打开「设置 → 本次更新」阅读介绍。老用户可直接继续使用已有画布，本次更新不会自动重启课程。" },
+      { "en": "Open Settings → What is new to read this introduction. Returning users can continue using their existing canvas immediately; this update does not automatically restart a course.", "zh-CN": "打开「设置 → 更新内容」阅读介绍。老用户可直接继续使用已有画布，本次更新不会自动重启课程。" },
       { "en": "Open Settings → Learning guide and choose Hands-on basics, Capture a webpage, or AI organization (optional). Follow the highlighted real control; expand or collapse the instructions when you need more canvas space.", "zh-CN": "打开「设置 → 使用指南」，选择基础体验、随手收藏网页或 AI 整理（可选）。跟随高亮的真实操作入口，需要更多画布空间时可展开或收起说明。" },
       { "en": "Pause when you want to stop and use Resume learning to continue later. In the AI chapter, try the offline demo before deciding whether to configure a provider; only a real, approved AI preview and application complete that practical lesson.", "zh-CN": "需要离开时暂停，之后点击继续学习接着练习。AI 章节可先看离线演示，再决定是否配置服务商；真实 AI 实操仍需确认生成预览并应用才算完成。" }
     ],
