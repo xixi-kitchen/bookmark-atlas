@@ -104,7 +104,7 @@ ${history.map((entry) => renderEntry(entry, status, 'zh-CN')).join('\n')}
   </div>
 </body>
 </html>
-`;
+`.replace(/[\t ]+$/gm, '');
 }
 
 function renderEntry(entry, status, locale) {
