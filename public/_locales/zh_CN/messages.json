@@ -353,6 +353,9 @@
   "chromeDefaultSearchEngine": {
     "message": "浏览器默认搜索引擎"
   },
+  "browserDefaultEngine": {
+    "message": "浏览器默认"
+  },
   "switchSearchEngine": {
     "message": "切换搜索引擎"
   },
@@ -930,6 +933,33 @@
   },
   "webEmbedInteracting": {
     "message": "网页交互中"
+  },
+  "webEmbedLoadingHelp": {
+    "message": "网页加载帮助"
+  },
+  "webEmbedHelpTitle": {
+    "message": "关于网页加载"
+  },
+  "webEmbedWaiting": {
+    "message": "加载中"
+  },
+  "webEmbedSlow": {
+    "message": "加载较慢"
+  },
+  "webEmbedSlowDescription": {
+    "message": "页面等待时间较长，但仍在继续加载，不会自动重试。"
+  },
+  "webEmbedRestrictionsDescription": {
+    "message": "页面空白、拒绝连接或播放器报错？目标网站可能限制嵌入、要求登录，或限制播放。"
+  },
+  "webEmbedLoadSignalDescription": {
+    "message": "收到加载信号，不代表网站允许嵌入或视频已能播放。"
+  },
+  "webEmbedRecoveryDescription": {
+    "message": "需要时使用上方的刷新或在新标签页打开。除非你主动刷新或修改网址，否则不会因此重新加载网页。"
+  },
+  "webEmbedCloseHelp": {
+    "message": "关闭加载说明"
   },
   "webEmbedRefresh": {
     "message": "刷新这个嵌入网页"

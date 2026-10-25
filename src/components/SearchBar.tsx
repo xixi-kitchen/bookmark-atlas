@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent, type MouseEvent, type Ref } from 'react';
 import { Check, ChevronDown, Search, Settings2 } from 'lucide-react';
 import { activateBrowserSearchResult, searchLocalBrowserContent, type BrowserSearchGroups, type BrowserSearchResult } from '../search/browserSearch';
-import { fetchRemoteSuggestions, runSearch, type SearchEngine } from '../search';
+import { fetchRemoteSuggestions, getSearchEngineLabel, runSearch, type SearchEngine } from '../search';
 import { SearchEngineIcon } from './SearchEngineIcon';
 import { BookmarkFavicon } from './BookmarkFavicon';
 import { getUiLanguage, t } from '../i18n';
@@ -156,7 +156,7 @@ export function SearchBar({ engines, activeEngineId, onEngineChange, onManage, i
           }}
         >
           {active ? <SearchEngineIcon engine={active} /> : <span className="search-engine-mark">?</span>}
-          <span>{active?.name ?? t('noSearchEngineSelected')}</span>
+          <span>{active ? getSearchEngineLabel(active) : t('noSearchEngineSelected')}</span>
           <ChevronDown size={14} />
         </button>
         {engineMenuOpen && (
@@ -177,7 +177,7 @@ export function SearchBar({ engines, activeEngineId, onEngineChange, onManage, i
                   }}
                 >
                   <SearchEngineIcon engine={engine} />
-                  <span><strong>{engine.name}</strong><small>{engine.shortcut || t('searchShortcut')}</small></span>
+                  <span><strong>{getSearchEngineLabel(engine)}</strong><small>{engine.shortcut || t('searchShortcut')}</small></span>
                   {selected && <Check size={16} />}
                 </button>
               );
@@ -216,7 +216,7 @@ export function SearchBar({ engines, activeEngineId, onEngineChange, onManage, i
           setActiveIndex(-1);
         }}
         onKeyDown={handleInputKeyDown}
-        placeholder={active ? t('searchPlaceholder', active.name) : t('searchPlaceholderNoEngine')}
+        placeholder={active ? t('searchPlaceholder', getSearchEngineLabel(active)) : t('searchPlaceholderNoEngine')}
         aria-label={t('searchContent')}
         autoComplete="off"
       />
@@ -272,7 +272,7 @@ function SuggestionIcon({ item, activeEngine }: { item: SuggestionItem; activeEn
 }
 
 function suggestionSubtitle(item: SuggestionItem, activeEngine?: SearchEngine) {
-  if (item.kind === 'search') return t('searchDirectlyWith', activeEngine?.name ?? t('searchEngines'));
+  if (item.kind === 'search') return t('searchDirectlyWith', activeEngine ? getSearchEngineLabel(activeEngine) : t('searchEngines'));
   if (item.kind === 'remote') return t('remoteSuggestionTerm');
   return 'subtitle' in item ? item.subtitle : '';
 }

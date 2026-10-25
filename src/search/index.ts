@@ -1,4 +1,5 @@
 import { isStoreScreenshotMode } from '../storeScreenshot';
+import { t } from '../i18n';
 
 export type SearchEngine = {
   id: string;
@@ -15,7 +16,7 @@ export type SearchEngine = {
 export const DEFAULT_SEARCH_ENGINES: readonly SearchEngine[] = [
   {
     id: 'chrome-default',
-    name: 'Chrome Default',
+    name: 'Browser Default',
     kind: 'chrome-default',
     queryUrlTemplate: '',
     shortcut: 'default',
@@ -47,6 +48,11 @@ export const DEFAULT_SEARCH_ENGINES: readonly SearchEngine[] = [
     enabled: true,
   },
 ] as const;
+
+// Keep the persisted chrome-default identity; old saved labels must not leak browser branding.
+export function getSearchEngineLabel(engine: SearchEngine): string {
+  return engine.kind === 'chrome-default' ? t('browserDefaultEngine') : engine.name;
+}
 
 export function validateSearchEngine(engine: SearchEngine): string | null {
   if (!engine.id.trim()) {

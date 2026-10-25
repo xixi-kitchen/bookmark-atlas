@@ -1,14 +1,25 @@
 import { readFile } from 'node:fs/promises';
+import { resolve, sep } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { parseArgs } from 'node:util';
 import { assertLicenseNotice } from './lib/license-notice.mjs';
 
-const browser = process.argv[2] ?? 'chrome';
+const { values, positionals } = parseArgs({ allowPositionals: true, options: { root: { type: 'string' } } });
+if (positionals.length > 1) throw new Error('Expected one browser target.');
+const browser = positionals[0] ?? 'chrome';
 if (!['chrome', 'edge', 'safari'].includes(browser)) throw new Error(`Unsupported browser target: ${browser}`);
-const outputRoot = new URL(`../output/${browser}-mv3/`, import.meta.url);
+const root = pathToFileURL(resolve(values.root ?? fileURLToPath(new URL('../', import.meta.url))) + sep);
+const outputRoot = new URL(`output/${browser}-mv3/`, root);
 const manifest = JSON.parse(await readFile(new URL('manifest.json', outputRoot), 'utf8'));
+const packageMetadata = JSON.parse(await readFile(new URL('package.json', root), 'utf8'));
+if (manifest.version !== packageMetadata.version) {
+  throw new Error(`Built ${browser} manifest is ${manifest.version}; package.json is ${packageMetadata.version}. Rebuild before release.`);
+}
+if (browser === 'edge' && manifest.update_url) throw new Error('Edge submission must not contain update_url.');
 const permissions = [...(manifest.permissions ?? [])].sort();
 assertLicenseNotice(
   await readFile(new URL('THIRD_PARTY_NOTICES.txt', outputRoot), 'utf8'),
-  await readFile(new URL('../node_modules/driver.js/license', import.meta.url), 'utf8'),
+  await readFile(new URL('node_modules/driver.js/license', root), 'utf8'),
 );
 
 if (manifest.manifest_version !== 3) throw new Error('Expected Manifest V3.');

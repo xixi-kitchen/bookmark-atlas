@@ -3,6 +3,7 @@ import { ArrowDown, ArrowUp, Plus, Trash2, X } from 'lucide-react';
 import {
   addSearchEngine,
   DEFAULT_SEARCH_ENGINES,
+  getSearchEngineLabel,
   removeSearchEngine,
   reorderSearchEngine,
   setSearchEngineEnabled,
@@ -53,11 +54,11 @@ export function EngineManager({ engines, onChange, onClose }: Props) {
                   type="checkbox"
                   checked={engine.enabled}
                   onChange={(event) => onChange(setSearchEngineEnabled(engines, engine.id, event.target.checked))}
-                  aria-label={t('enableEngine', engine.name)}
+                  aria-label={t('enableEngine', getSearchEngineLabel(engine))}
                 />
                 <SearchEngineIcon engine={engine} size={28} />
                 <button className="engine-row__copy" disabled={isBuiltInEngine(engine)} onClick={() => setDraft({ ...engine })}>
-                  <strong>{engine.name}</strong>
+                  <strong>{getSearchEngineLabel(engine)}</strong>
                   <small>{engine.kind === 'chrome-default' ? t('engineChromeDefaultDescription') : engine.queryUrlTemplate}</small>
                 </button>
                 <div className="field-inline">

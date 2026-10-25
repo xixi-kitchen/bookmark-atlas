@@ -15,6 +15,7 @@
     "verify:manifest:edge": "node scripts/verify-manifest.mjs edge",
     "verify:manifest:safari": "node scripts/verify-manifest.mjs safari",
     "verify:release": "node scripts/verify-release.mjs && node scripts/generate-public-releases.mjs --check && node scripts/generate-support-pages.mjs --check",
+    "verify:release:edge": "node scripts/verify-release.mjs edge && npm run docs:release:check",
     "docs:release": "node scripts/generate-public-releases.mjs && node scripts/generate-support-pages.mjs",
     "docs:release:check": "node scripts/generate-public-releases.mjs --check && node scripts/generate-support-pages.mjs --check",
     "support:generate": "node scripts/generate-support-pages.mjs",
@@ -23,11 +24,12 @@
     "zip:chrome": "node scripts/generate-locales.mjs && wxt zip -b chrome --mv3",
     "zip:edge": "node scripts/generate-locales.mjs && wxt zip -b edge --mv3",
     "package:sync-test": "npm run build:chrome && node scripts/create-sync-test-package.mjs",
+    "package:edge-test": "npm run build:edge && npm run verify:manifest:edge && node scripts/create-sync-test-package.mjs edge",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "check": "npm run typecheck && npm run test && npm run build:chrome && npm run verify:manifest && npm run verify:release",
-    "check:edge": "npm run typecheck && npm run test && npm run build:edge && npm run verify:manifest:edge",
+    "check:edge": "npm run typecheck && npm run test && npm run build:edge && npm run verify:manifest:edge && npm run verify:release:edge",
     "check:safari": "npm run typecheck && npm run test && npm run build:safari && npm run verify:manifest:safari"
   },
   "dependencies": {

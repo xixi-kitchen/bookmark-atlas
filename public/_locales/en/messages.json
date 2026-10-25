@@ -353,6 +353,9 @@
   "chromeDefaultSearchEngine": {
     "message": "Browser default search engine"
   },
+  "browserDefaultEngine": {
+    "message": "Browser default"
+  },
   "switchSearchEngine": {
     "message": "Switch search engine"
   },
@@ -930,6 +933,33 @@
   },
   "webEmbedInteracting": {
     "message": "Interacting with page"
+  },
+  "webEmbedLoadingHelp": {
+    "message": "Embedded page loading help"
+  },
+  "webEmbedHelpTitle": {
+    "message": "About embedded page loading"
+  },
+  "webEmbedWaiting": {
+    "message": "Loading"
+  },
+  "webEmbedSlow": {
+    "message": "Taking longer"
+  },
+  "webEmbedSlowDescription": {
+    "message": "This page is taking longer to load. It is still loading; no automatic retry is performed."
+  },
+  "webEmbedRestrictionsDescription": {
+    "message": "Blank page, refused connection, or player error? The website may restrict embedding, require sign-in, or limit playback."
+  },
+  "webEmbedLoadSignalDescription": {
+    "message": "A load signal does not confirm that embedding or playback succeeded."
+  },
+  "webEmbedRecoveryDescription": {
+    "message": "Use the Refresh or Open in new tab controls above if needed. The page stays loaded unless you choose to refresh or change its URL."
+  },
+  "webEmbedCloseHelp": {
+    "message": "Close loading help"
   },
   "webEmbedRefresh": {
     "message": "Refresh this embedded page"

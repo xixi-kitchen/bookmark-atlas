@@ -2,6 +2,8 @@
 
 Date: 2026-09-10
 
+> Historical feasibility report. Edge was resumed on 2026-10-26 using current source and official Microsoft guidance; see [current Edge validation](edge-validation-2026-10-26.md) and [acceptance checklist](edge-acceptance-test.md). The old manifest versions, sizes and pending statements below describe the September probe, not the current candidate. Safari findings have not been revalidated in this Edge-only round.
+
 Scope: feasibility validation only. No store submission was performed. A disposable macOS Xcode packaging project was generated under `/tmp` to obtain Apple compatibility diagnostics; it is not a product deliverable. This report covers same-browser, same-account sync only. It does not propose or validate cross-browser sync between Chrome, Microsoft Edge, and Safari.
 
 ## Executive Result
