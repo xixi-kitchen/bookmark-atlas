@@ -1,9 +1,12 @@
-import { BookOpen, Github, MessageSquare } from 'lucide-react';
+import { BookOpen, Github, Heart, MessageSquare } from 'lucide-react';
 import { getUiLanguage } from '../i18n';
+import supportConfig from '../support/support.config.json';
+import { getProjectSupportUrl } from '../support/config.mjs';
 import './CommunityLinks.css';
 
 export function CommunityLinks() {
   const chinese = getUiLanguage() === 'zh-CN';
+  const supportUrl = getProjectSupportUrl(supportConfig, chinese ? 'zh-CN' : 'en');
 
   return (
     <nav className="community-links" aria-label={chinese ? '社区与在线帮助' : 'Community and online help'}>
@@ -23,6 +26,11 @@ export function CommunityLinks() {
         <MessageSquare size={16} aria-hidden="true" />
         <span>{chinese ? '反馈问题 / 申请网站适配' : 'Report an issue / request site support'}</span>
       </a>
+      {supportUrl && <a className="settings-menu__action community-links__link"
+        href={supportUrl} target="_blank" rel="noopener noreferrer">
+        <Heart size={16} aria-hidden="true" />
+        <span>{chinese ? '支持项目' : 'Support this project'}</span>
+      </a>}
       <p className="community-links__hint">{chinese
         ? '已适配 B站和 YouTube。其他网站可提交网址申请适配；并非所有网站都能嵌入。'
         : 'Bilibili and YouTube are adapted. Submit a URL to request another site; site restrictions may still apply.'}</p>
