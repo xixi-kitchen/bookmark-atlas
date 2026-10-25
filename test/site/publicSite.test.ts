@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 const page = (name: string) => new DOMParser().parseFromString(readFileSync(resolve('docs', name), 'utf8'), 'text/html');
+const releaseStatus = JSON.parse(readFileSync(resolve('docs/release-status.json'), 'utf8'));
 
 describe('public website', () => {
   it('offers a complete local path from installation to help and release history without JavaScript', () => {
@@ -11,9 +12,20 @@ describe('public website', () => {
       expect(home.querySelector(`a[href="${target}"]`), target).not.toBeNull();
     }
     expect(home.querySelector('a[href^="https://chromewebstore.google.com/detail/"]')).not.toBeNull();
-    expect(home.querySelector('[data-release-status]')?.textContent).toContain('0.9.5');
-    expect(home.querySelector('[data-release-status="en"]')?.textContent).toMatch(/0\.9\.6.*(prepar|review|submitted)/i);
-    expect(home.querySelector('[data-release-status="zh-CN"]')?.textContent).toContain('0.9.5');
+    const englishStatus = home.querySelector('[data-release-status="en"]')?.textContent;
+    const chineseStatus = home.querySelector('[data-release-status="zh-CN"]')?.textContent;
+    expect(englishStatus).toContain(`Chrome Web Store: ${releaseStatus.storeVersion}.`);
+    expect(chineseStatus).toContain(`Chrome 商店当前版本：${releaseStatus.storeVersion}。`);
+    if (releaseStatus.stage === 'published') {
+      expect(englishStatus).toContain(`Published on ${releaseStatus.publishedAt}.`);
+      expect(chineseStatus).toContain(`实际上架日期：${releaseStatus.publishedAt}。`);
+      expect(englishStatus).not.toMatch(/candidate|not yet published/i);
+      expect(chineseStatus).not.toMatch(/候选版本|尚未上架/);
+    } else {
+      expect(englishStatus).toContain(`Candidate ${releaseStatus.candidateVersion}`);
+      expect(chineseStatus).toContain(`候选版本 ${releaseStatus.candidateVersion}`);
+      expect(englishStatus).toMatch(/prepar|review|submitted/i);
+    }
     expect(home.querySelector('[data-release-status="en"]')?.children).toHaveLength(0);
     expect(home.querySelector('[data-release-status="zh-CN"]')?.children).toHaveLength(0);
     expect(home.querySelector('main[id="main-content"]')).not.toBeNull();

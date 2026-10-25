@@ -14,11 +14,11 @@ notes and drawings, and find your way back with one search box.
 
 ![Bookmark Atlas canvas with bookmarks, notes, and drawings](docs/store-assets/screenshots/01-canvas-en-1280x800.png)
 
-Chrome Web Store stable: **v0.9.5**. **v0.9.6** has completed user acceptance and
-was submitted for store review on **2026-10-21**. Its hands-on learning guide is not yet part
-of the stable store release. The
-[v0.9.5 release](https://github.com/xixi-kitchen/bookmark-atlas/releases/tag/v0.9.5)
-remains available with the original package and checksum.
+Chrome Web Store stable: **v0.9.6**, published on **2026-10-22**.
+Practice on the real canvas with the optional learning guide and read complete
+bilingual version introductions. The
+[v0.9.6 release](https://github.com/xixi-kitchen/bookmark-atlas/releases/tag/v0.9.6)
+includes the matching package, checksum, and release notes; previous releases remain available.
 
 ## Quick start
 
@@ -33,7 +33,7 @@ remains available with the original package and checksum.
 4. Optionally configure your own AI service for organization suggestions. Review
    the selected metadata before sending, preview the result, and apply it when
    you are ready. The website [guide](https://xixi-kitchen.github.io/bookmark-atlas/guide.html)
-   covers the workflow; v0.9.6 also adds **Settings → Learning guide** in the app.
+   covers the workflow; **Settings → Learning guide** offers optional in-app practice.
 
 ## What you can do
 
@@ -128,10 +128,10 @@ Excalidraw 画布，与备注、绘图和网页嵌入一起整理，再通过统
 · [隐私政策](https://xixi-kitchen.github.io/bookmark-atlas/privacy.html)
 · [支持](https://xixi-kitchen.github.io/bookmark-atlas/support.html)
 
-Chrome 商店当前稳定版为 **v0.9.5**。**v0.9.6** 已完成用户验收，于 **2026-10-21** 提交审核；
-它新增的实操引导尚未在商店稳定版上线。
-[v0.9.5 正式发布页](https://github.com/xixi-kitchen/bookmark-atlas/releases/tag/v0.9.5)
-继续提供原安装包和校验文件。
+Chrome 商店当前稳定版为 **v0.9.6**，已于 **2026-10-22** 上架。
+本版提供真实画布上的可选实操引导，以及完整双语版本介绍。
+[v0.9.6 正式发布页](https://github.com/xixi-kitchen/bookmark-atlas/releases/tag/v0.9.6)
+提供对应安装包、校验文件和发布说明；历史版本继续保留。
 
 ### 快速开始
 
@@ -141,7 +141,7 @@ Chrome 商店当前稳定版为 **v0.9.5**。**v0.9.6** 已完成用户验收，
 3. 单击卡片的网站图标打开网页；在画布上多选卡片，一起移动、排布，再添加备注、绘图或框架。
 4. 需要时自行配置 AI 服务，确认所选信息的发送范围，先预览、再决定是否应用。
    [官网指南](https://xixi-kitchen.github.io/bookmark-atlas/guide.html)说明完整用法；
-   v0.9.6 还将在「设置 → 使用指南」提供应用内实操引导。
+   「设置 → 使用指南」提供可选的应用内实操引导。
 
 ### 主要能力
 
