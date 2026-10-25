@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="排查同步、网页嵌入、视频和可选 AI 问题，或通过 GitHub 提出新网站适配申请。">
+  <title>帮助与网站适配 · Bookmark Atlas</title>
+  <link rel="canonical" href="https://xixi-kitchen.github.io/bookmark-atlas/zh/support.html">
+  <link rel="alternate" hreflang="en" href="https://xixi-kitchen.github.io/bookmark-atlas/support.html">
+  <link rel="alternate" hreflang="zh-CN" href="https://xixi-kitchen.github.io/bookmark-atlas/zh/support.html">
+  <link rel="stylesheet" href="../site.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">跳到正文</a>
+  <div class="site-shell">
+    <header class="site-nav">
+      <a class="site-brand" href="index.html" aria-label="Bookmark Atlas 首页"><img src="../store-assets/icon-128.png" width="38" height="38" alt="">Bookmark Atlas</a>
+      <nav aria-label="主导航"><a href="guide.html">使用指南</a><a href="changelog.html">更新记录</a><a href="support.html" aria-current="page">帮助</a><a class="language-switch" id="en" href="../support.html" lang="en" hreflang="en" aria-label="Switch this page to English">English</a><a href="https://github.com/xixi-kitchen/bookmark-atlas">GitHub</a></nav>
+    </header>
+    <main id="main-content">
+<article class="document"><h1>找到下一步。</h1><p class="lede">先查常见问题，也欢迎带着复现信息来反馈。</p><p><a href="guide.html">初次使用？打开完整指南</a> · <a href="changelog.html">查看当前版本与更新</a></p>
+<details id="sync" open><summary>另一台设备没有看到画布？</summary><p>确认两台设备登录同一 Chrome 账号，启用扩展、设置和书签同步，网络在线且使用正确的浏览器用户配置。轻量数据仅在 Chrome Sync 可用、配额允许时同步，不保证固定到达时间。回到扩展页面会检查新状态；可见页面每 30 秒也会兜底检查。</p><p>原生书签与画布是不同的存储路径，书签出现不代表全部画布或附件已经到达。<a href="guide.html#keep">切换前先完整备份</a>。</p></details>
+<details id="attachments"><summary>图片和附件为什么没有同步？</summary><p>图片和二进制附件仅保存在添加它们的设备上，不写入 Chrome Sync。需要完整复制时使用完整 JSON 备份 / 导出，并在确认导入结果之前保留原始副本。</p></details>
+<details id="embeds"><summary>网页或视频无法嵌入，怎么办？</summary><p>先确认使用「网页嵌入」而不是书签导入。<a href="guide.html#embeds">按具体步骤添加</a>。</p><p>Bilibili 首页按网页加载；BV / av / player 视频使用关闭自动播放的官方播放器，也可从激活工具栏切换原始视频网页。b23.tv 短链不自动解析。YouTube 支持视频、Shorts、直播和播放列表，不支持把首页当成视频播放页。</p><p>网站可通过 X-Frame-Options 或 CSP frame-ancestors 禁止嵌入。登录、地区、年龄和版权限制仍然适用，扩展不会绕过它们。iframe 沙箱限制顶层导航，不能直接覆盖插件页面；仍可能出现网站内的弹窗、请求或下载。</p><p>无法使用时，从嵌入工具栏在新标签页打开。希望改进其他网站的兼容性，<a href="https://github.com/xixi-kitchen/bookmark-atlas/issues/new/choose">提交适配申请</a>，附公开网址、Chrome / 扩展版本和复现步骤。适配需评估，不承诺所有网站可用或固定完成时间。</p></details>
+<details id="capture"><summary>收藏后为什么留在原网页？</summary><p>关闭「添加后打开画布」时会保留当前页面，原生书签仍保存到「其他书签 / Bookmark Atlas」。画布添加任务留在本机队列，下次打开画布并成功保存后完成。</p></details>
+<details id="ai"><summary>必须有 AI 账号或 Key 吗？</summary><p>不需要。书签、搜索、绘图和手动整理不依赖 AI。离线示例不联网；真实整理才使用你配置的兼容服务，并在发送选中元数据前征得明确同意。</p><p>配置和凭据只在本机加密保存，不同步、不备份，也不是操作系统钥匙串。模型测试也可能收费。<a href="guide.html#ai">查看 AI 操作步骤</a>与<a href="privacy.html">隐私政策</a>。</p></details>
+<details id="browsers"><summary>正式支持哪些浏览器？</summary><p>当前正式公开版本支持 Chrome。Edge 和 Safari 尚未正式支持，开发构建或兼容性探测不等于已经上架。</p></details>
+<section id="contact"><h2>反馈问题与网站适配</h2><p>通过 <a href="https://github.com/xixi-kitchen/bookmark-atlas/issues/new/choose">GitHub Issue</a> 提供 Chrome 和扩展版本、公开网址、操作步骤、预期与实际结果。截图请先打码，不要上传密码、API Key、令牌、完整备份或私密书签。</p><p><a href="https://github.com/xixi-kitchen/bookmark-atlas">在 GitHub 收藏项目，关注进展</a></p></section></article>
+    </main>
+    <footer class="site-footer"><p>Bookmark Atlas <span>给收藏的内容，一个自由画布。</span></p><nav aria-label="页脚"><a href="index.html">首页</a><a href="guide.html">指南</a><a href="changelog.html">更新</a><a href="privacy.html">隐私</a><a href="support.html">帮助</a><a href="https://github.com/xixi-kitchen/bookmark-atlas/issues/new/choose">反馈 / 适配申请</a></nav></footer>
+  </div>
+</body>
+</html>

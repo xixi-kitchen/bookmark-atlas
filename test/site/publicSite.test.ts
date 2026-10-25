@@ -13,7 +13,7 @@ describe('public website', () => {
     }
     expect(home.querySelector('a[href^="https://chromewebstore.google.com/detail/"]')).not.toBeNull();
     const englishStatus = home.querySelector('[data-release-status="en"]')?.textContent;
-    const chineseStatus = home.querySelector('[data-release-status="zh-CN"]')?.textContent;
+    const chineseStatus = page('zh/index.html').querySelector('[data-release-status="zh-CN"]')?.textContent;
     expect(englishStatus).toContain(`Chrome Web Store: ${releaseStatus.storeVersion}.`);
     expect(chineseStatus).toContain(`Chrome 商店当前版本：${releaseStatus.storeVersion}。`);
     if (releaseStatus.stage === 'published') {
@@ -27,7 +27,7 @@ describe('public website', () => {
       expect(englishStatus).toMatch(/prepar|review|submitted/i);
     }
     expect(home.querySelector('[data-release-status="en"]')?.children).toHaveLength(0);
-    expect(home.querySelector('[data-release-status="zh-CN"]')?.children).toHaveLength(0);
+    expect(page('zh/index.html').querySelector('[data-release-status="zh-CN"]')?.children).toHaveLength(0);
     expect(home.querySelector('main[id="main-content"]')).not.toBeNull();
     expect(home.querySelector('a[href="#main-content"]')).not.toBeNull();
   });
@@ -40,7 +40,7 @@ describe('public website', () => {
     expect(demo?.getAttribute('height')).toBe('800');
     expect(demo?.getAttribute('alt')?.length).toBeGreaterThan(20);
     expect([...home.querySelectorAll('#get-started h3')].map((heading) => heading.textContent)).toEqual(['Add', 'Organize', 'Open']);
-    expect(home.querySelector('#zh-cn')?.getAttribute('lang')).toBe('zh-CN');
+    expect(home.querySelector('a[hreflang="zh-CN"]')?.getAttribute('href')).toBe('zh/index.html');
     expect(home.body.textContent).toContain('Attachments stay on the device');
     expect(home.body.textContent).toContain('does not guarantee a delivery time');
     expect(home.body.textContent).toMatch(/Edge and Safari.*not officially supported/);
@@ -64,10 +64,10 @@ describe('public website', () => {
     expect(guide.querySelector('#add')).not.toBeNull();
     expect(guide.querySelector('#organize')).not.toBeNull();
     expect(guide.querySelector('#open')).not.toBeNull();
-    expect(guide.querySelector('#zh-cn')?.textContent).toContain('备份');
+    expect(page('zh/guide.html').querySelector('#keep')?.textContent).toContain('备份');
     const support = page('support.html');
     expect(support.querySelector('details summary')).not.toBeNull();
     expect(support.body.textContent).toContain('does not guarantee a delivery time');
-    expect(support.querySelector('#zh-cn')?.textContent).toContain('固定到达时间');
+    expect(page('zh/support.html').querySelector('#sync')?.textContent).toContain('固定到达时间');
   });
 });

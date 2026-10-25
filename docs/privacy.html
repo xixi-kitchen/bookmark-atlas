@@ -3,26 +3,25 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Privacy Policy · Bookmark Atlas</title>
+  <meta name="description" content="How Bookmark Atlas handles bookmarks, canvas data, synchronization, web embeds and optional AI credentials.">
+  <title>Privacy policy · Bookmark Atlas</title>
+  <link rel="canonical" href="https://xixi-kitchen.github.io/bookmark-atlas/privacy.html">
+  <link rel="alternate" hreflang="en" href="https://xixi-kitchen.github.io/bookmark-atlas/privacy.html">
+  <link rel="alternate" hreflang="zh-CN" href="https://xixi-kitchen.github.io/bookmark-atlas/zh/privacy.html">
   <link rel="stylesheet" href="site.css">
 </head>
 <body>
-  <main class="site-shell">
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <div class="site-shell">
     <header class="site-nav">
-      <a class="site-brand" href="index.html"><img src="store-assets/icon-128.png" alt="">Bookmark Atlas</a>
-      <nav aria-label="Primary">
-        <a href="#zh-cn">中文</a>
-        <a href="privacy.html">Privacy</a>
-        <a href="support.html">Support</a>
-        <a href="https://github.com/xixi-kitchen/bookmark-atlas/releases">Changelog</a>
-        <a href="https://github.com/xixi-kitchen/bookmark-atlas">GitHub</a>
-      </nav>
+      <a class="site-brand" href="index.html" aria-label="Bookmark Atlas home"><img src="store-assets/icon-128.png" width="38" height="38" alt="">Bookmark Atlas</a>
+      <nav aria-label="Primary"><a href="guide.html">Guide</a><a href="changelog.html">Updates</a><a href="support.html">Help</a><a class="language-switch" id="zh-cn" href="zh/privacy.html" lang="zh-CN" hreflang="zh-CN" aria-label="切换此页为简体中文">中文</a><a href="https://github.com/xixi-kitchen/bookmark-atlas">GitHub</a></nav>
     </header>
+    <main id="main-content">
+<article class="document">
 
-    <article class="document">
-      <span class="eyebrow">Privacy / v0.9.6 · Last updated 2026-10-21</span>
       <h1>Privacy Policy</h1>
-      <p>Last updated: 2026-10-21. This policy applies to Bookmark Atlas v0.9.6, including the optional AI organization and current-page capture capabilities introduced in v0.9.5. Feature availability depends on your installed version; coverage of v0.9.6 does not indicate that it is available in the store. The policy also explains data handling before you enable optional features.</p>
+      <p>Last updated: 2026-10-21. This policy applies to Bookmark Atlas v0.9.6, including the optional AI organization and current-page capture capabilities introduced in v0.9.5. The policy also explains data handling before you enable optional features.</p>
       <p>Bookmark Atlas is a local-first Chrome extension. It does not sell your data or send bookmarks, open tabs, browsing history, or canvas content to a developer-operated server by default. Optional AI organization sends only user-approved selected metadata to the model service you choose. It does not include ads, trackers, or remote extension code execution.</p>
 
       <h2>Data handled by the extension</h2>
@@ -67,47 +66,8 @@
       <h2>Limited Use</h2>
       <p>The use of information received from Google APIs will adhere to the Chrome Web Store User Data Policy, including the Limited Use requirements.</p>
     </article>
-
-    <article id="zh-cn" class="document secondary-document" lang="zh-CN">
-      <span class="eyebrow">简体中文</span>
-      <h1>隐私政策</h1>
-      <p>最后更新：2026-10-21。适用于 Bookmark Atlas v0.9.6，包括 v0.9.5 已有的可选 AI 整理与当前网页收藏能力。实际可用功能取决于已安装版本；本政策涵盖 v0.9.6 不代表该版本已经在商店上线，也在启用可选功能前说明其数据处理方式。</p>
-      <p>Bookmark Atlas 是本地优先的 Chrome 扩展。默认不把你的书签、标签页、浏览历史或画布内容发送到开发者服务器，也不出售数据、不包含广告、追踪器或远程扩展代码。可选 AI 整理仅在明确同意后，把选中范围的指定信息发送给你配置的模型服务。</p>
-      <h2>处理的数据</h2>
-      <ul>
-        <li>使用 Chrome Bookmarks API 在本地读取和修改用户主动管理的书签。</li>
-        <li>点击扩展图标并主动添加当前网页时，读取活动标签页的标题和网址，保存到原生「其他书签 / Bookmark Atlas」文件夹。对应任务存入扩展本机待处理队列，画布成功落盘后才确认完成；不读取网页正文，不移动或改写其他书签。原生书签按用户的浏览器书签同步设置管理，待处理队列本身不由扩展同步或共享。</li>
-        <li>使用 Chrome Favicon API 从浏览器本地图标缓存显示网站图标。</li>
-        <li>在本地读取已打开标签页和浏览历史，用于搜索框预搜索结果。</li>
-        <li>完整 Excalidraw 画布和用户添加的附件保存在当前设备的 IndexedDB。</li>
-        <li>图形、文字、书签引用、画布文档设置和素材库会在配额允许时写入 Chrome Sync。</li>
-        <li>视口、缩放、侧边栏和绘图工具偏好只保存在本机。</li>
-        <li>界面语言和「添加后打开画布」偏好只保存在本机扩展存储中。切换语言不刷新或重置画布，也不更改 Chrome 自身语言；关闭收藏跳转后，卡片待处理项保留在本机，之后打开画布并成功保存才完成添加。</li>
-        <li>图片和二进制附件不会进入 Chrome Sync，只保存在添加它们的设备上。</li>
-        <li>书签展示形式和画布备注可随轻量画布同步。</li>
-        <li>AI 接口地址和模型仅在明确点击「保存到本机」后保存。API Key 使用 AES-GCM-256、每次全新 96 位 IV 加密，并以规范化接口地址进行认证绑定；<code>chrome.storage.local</code> 的凭据记录仅包含密文、IV 和接口地址，而非明文 Key。本机生成、不可导出的 CryptoKey 保存在扩展专用 IndexedDB，安装包不内置加密密钥；配置和加密密钥均不同步、不共享、不进入扩展备份。这不是操作系统钥匙串或绝对防护，完全控制浏览器用户配置或扩展运行环境的人仍可能调用或恢复凭据访问。关闭面板不会删除已保存凭据；旧开发版明文配置只有成功加密并替换后才继续使用，IndexedDB 或加密不可用时明确报错，不回退明文，也不静默改为仅会话保存。</li>
-      </ul>
-      <h2>同步说明</h2>
-      <p>Chrome Sync 由用户自己的 Chrome 账号设置控制。Bookmark Atlas 会在本地内容变化时写入可同步的轻量数据，并监听其他扩展页面的 Chrome storage 变化事件。它通常表现为近实时同步，但 Chrome 不保证跨设备或多标签页的固定到达时间。书签卡片会按规范化 URL、标题和文件夹路径重新关联当前设备的书签，不把 Chrome 本地书签 ID 当作跨设备主键。</p>
-      <h2>本机学习与更新提示</h2>
-      <p>实操引导保存当前章节与步骤、已完成的步骤和章节，以及进行中、暂停或完成状态。更新提示保存版本元数据、首次遇到该版本的时间、说明是否已读、相关功能章节是否已使用、学习邀请是否已领取显示或被关闭。安装与更新标记保存已安装/上一个版本，以及新手引导或更新说明是否待处理、已完成、已跳过或已看过。这些记录用于续学、防止重复提示和显示轻量更新标记；本机标签页协调避免多个已打开的扩展页面同时展示同一引导或邀请。</p>
-      <p>上述记录仅保存在当前浏览器用户配置的扩展本机存储中，不参与 Chrome Sync，不是遥测，不发送给开发者或模型服务商。学习信号仅包含操作类型及必要的数量；学习和更新记录不保存书签内容、API Key、提示词或其他业务操作数据。卸载扩展会清除这些本机记录。</p>
-      <p>AI 离线教学演示使用扩展内置的固定示例，不请求模型服务、不发送用户数据、不产生服务商费用，不改动真实画布、不创建书签，也不完成真实 AI 任务。另行选择配置或使用真实 AI 服务时，仍遵循下文的可选 AI 数据处理说明。</p>
-      <h2>远程请求</h2>
-      <p>用户主动选择百度、必应或 Google 后，输入词会发送给对应的固定联想接口。使用「Chrome 默认」或自定义搜索引擎时，扩展不会额外调用远程联想接口。画布中的网页嵌入会按浏览器规则连接目标网站；Bookmark Atlas 不代理、检查或记录这些请求。</p>
-      <p>扩展为自己创建的 YouTube <code>/embed/</code> 请求设置固定客户端 referrer，不读取请求内容，也不影响其他网站创建的播放器。</p>
-      <h2>可选 AI 整理</h2>
-      <p>默认不开启。你配置兼容的 HTTPS 模型接口、选中书签并确认发送范围后，才会发送所选卡片的标题、域名、已有备注、所选卡片 ID 和整理要求。完整网址、文件夹路径、网址参数或片段、历史记录、其他标签页、图片、其他画布元素及 API Key 不进入模型提示词；API Key 仅作为认证请求头发送到你配置的服务端点。</p>
-      <p>可选 HTTPS 主机能力声明不等于安装时获得所有网站权限；点击连接时才申请配置服务实际 origin 的权限。请求不携带浏览器 Cookie，也不跟随重定向。</p>
-      <p>模型列表与连通测试只在主动点击时请求。列表通过 <code>GET /models</code> 获取，列表成功不代表所选模型能生成；「测试所选模型」通过 <code>POST /chat/completions</code> 只发送固定简短提示，不发送书签或画布，服务商可能收费。两者均不会自动保存设置。</p>
-      <p>服务商按自己的收费、隐私、保留期限和训练政策处理提交的数据及认证信息，请在连接前查阅。请求携带 <code>store: false</code>，但扩展无法保证第三方遵守或完全不保留数据；不提供开发者付费账号或共享密钥。</p>
-      <p>AI 返回的是经过校验的数据建议，不执行代码；根据元数据生成的简介不是已访问网页后的事实摘要。预览不改变已保存画布，确认应用后可撤销，分组和备注可随画布同步。</p>
-      <h2>删除数据</h2>
-      <p>卸载扩展会删除当前设备上的扩展本地数据，包括学习进度、新手引导标记与更新提示记录，但不会删除用户的 Chrome 书签。Chrome 账号同步数据由 Chrome 自身管理。</p>
-      <p>清除本机 AI 配置会删除当前浏览器用户配置中保存的接口、模型和 API 凭据；为支持并发操作，本机保留不含服务商 token 的加密密钥。卸载会移除扩展存储，包括该密钥与本机待处理收藏队列。关闭面板本身不会删除已保存的配置。已发送给服务商的数据不随卸载自动删除，需要按该服务商的流程处理。扩展备份不包含 AI 凭据、模型接口配置或加密密钥。</p>
-    </article>
-
-    <footer class="site-footer">Privacy Policy v0.9.6 · Last updated / 最后更新：2026-10-21</footer>
-  </main>
+    </main>
+    <footer class="site-footer"><p>Bookmark Atlas <span>A freeform home for the things you save.</span></p><nav aria-label="Footer"><a href="index.html">Home</a><a href="guide.html">Guide</a><a href="changelog.html">Updates</a><a href="privacy.html">Privacy</a><a href="support.html">Help</a><a href="https://github.com/xixi-kitchen/bookmark-atlas/issues/new/choose">Issues / site requests</a></nav></footer>
+  </div>
 </body>
 </html>

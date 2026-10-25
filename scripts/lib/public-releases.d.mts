@@ -8,5 +8,5 @@ export type ReleaseStatus = {
 };
 export function validateReleaseStatus(status: unknown): asserts status is ReleaseStatus;
 export function formatReleaseStatus(status: ReleaseStatus, locale: 'en' | 'zh-CN'): string;
-export function renderPublicReleases(entries: unknown, status: ReleaseStatus): string;
-export function updateHomepageReleaseStatus(html: string, status: ReleaseStatus): string;
+export function renderPublicReleases(entries: unknown, status: ReleaseStatus, locale?: 'en' | 'zh-CN'): string;
+export function updateHomepageReleaseStatus(html: string, status: ReleaseStatus, locale?: 'en' | 'zh-CN'): string;

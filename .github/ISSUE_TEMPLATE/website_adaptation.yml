@@ -1,0 +1,40 @@
+name: Website embedding / 网站嵌入适配
+description: Report an embed issue or request support for another website / 反馈嵌入问题或申请新网站适配
+title: "[Embed] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Provider embedding, sign-in, region and copyright rules still apply. Not every website can be adapted.
+        网站的嵌入、登录、地区与版权限制仍然适用，并非所有网站都能适配。
+        Use public example URLs only. Never include passwords, tokens, API keys, private bookmarks or backups.
+        仅提供公开示例链接。不要提交密码、令牌、API Key、私密书签或备份。
+  - type: input
+    id: website
+    attributes:
+      label: Public example URL / 公开示例网址
+      placeholder: https://example.com/public-page
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Chrome and extension versions / Chrome 与扩展版本
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps and actual result / 操作步骤与实际表现
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected use on the canvas / 希望在画布中如何使用
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Redacted screenshot or error / 已去除私密信息的截图或错误

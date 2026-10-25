@@ -3,70 +3,31 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Bookmark Atlas help for Chrome Sync, local attachments, web embeds, optional AI, and bug reports.">
-  <title>Support · Bookmark Atlas</title>
+  <meta name="description" content="Troubleshoot sync, webpage embeds, videos and optional AI, or request support for another website on GitHub.">
+  <title>Help and website requests · Bookmark Atlas</title>
+  <link rel="canonical" href="https://xixi-kitchen.github.io/bookmark-atlas/support.html">
+  <link rel="alternate" hreflang="en" href="https://xixi-kitchen.github.io/bookmark-atlas/support.html">
+  <link rel="alternate" hreflang="zh-CN" href="https://xixi-kitchen.github.io/bookmark-atlas/zh/support.html">
   <link rel="stylesheet" href="site.css">
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to content</a>
   <div class="site-shell">
     <header class="site-nav">
-      <a class="site-brand" href="index.html"><img src="store-assets/icon-128.png" width="38" height="38" alt="">Bookmark Atlas</a>
-      <nav aria-label="Primary"><a href="guide.html">Get started</a><a href="changelog.html">Updates</a><a href="support.html" aria-current="page">Support</a><a href="#zh-cn" lang="zh-CN">中文</a><a href="https://github.com/xixi-kitchen/bookmark-atlas">GitHub ↗</a></nav>
+      <a class="site-brand" href="index.html" aria-label="Bookmark Atlas home"><img src="store-assets/icon-128.png" width="38" height="38" alt="">Bookmark Atlas</a>
+      <nav aria-label="Primary"><a href="guide.html">Guide</a><a href="changelog.html">Updates</a><a href="support.html" aria-current="page">Help</a><a class="language-switch" id="zh-cn" href="zh/support.html" lang="zh-CN" hreflang="zh-CN" aria-label="切换此页为简体中文">中文</a><a href="https://github.com/xixi-kitchen/bookmark-atlas">GitHub</a></nav>
     </header>
     <main id="main-content">
-      <article class="document">
-        <span class="eyebrow">Help & support</span><h1>A clear next step.</h1>
-        <p class="lede">Find an answer below, or share a reproducible issue with the project.</p>
-        <p>New here? The <a href="guide.html">getting started guide</a> walks through saving, arranging, and opening your first bookmark. For version availability, check the <a href="changelog.html">release history</a>.</p>
-        <details id="sync" open>
-          <summary>My canvas has not appeared on another device.</summary>
-          <p>Sign in to the same Chrome account on each device and enable Chrome Sync for extensions, settings, and bookmarks. Check that both devices are online and using the expected browser profile.</p>
-          <p>Eligible lightweight canvas data syncs when Chrome Sync is available and quota allows. Chrome does not guarantee a delivery time. Return to the open extension tab to check for newer state; visible tabs also check every 30 seconds as a fallback.</p>
-          <p>Chrome bookmarks and canvas content use distinct browser storage paths. Seeing a bookmark on another device does not mean every canvas change or attachment has arrived. <a href="guide.html#keep">Keep a full backup before switching devices</a>.</p>
-        </details>
-        <details id="attachments">
-          <summary>Images or attachments are missing on another device.</summary>
-          <p>Images and binary attachments stay on the device where they were added. They are excluded from Chrome Sync because of its storage limits.</p>
-          <p>Use the full JSON backup/export flow when you need a complete copy with local attachment data. Keep the original copy until you have checked the imported result.</p>
-        </details>
-        <details id="embeds">
-          <summary>A website or video will not display inside the canvas.</summary>
-          <p>The website must allow iframe embedding. Security headers such as <code>X-Frame-Options</code> or CSP <code>frame-ancestors</code> can block it. Bookmark Atlas cannot override these browser-enforced rules. Use the external-open action to visit the website in a regular tab.</p>
-          <p>Custom iframes are sandboxed to limit top-level navigation and popups. Bilibili video URLs use the official player with autoplay disabled; the embed toolbar can switch to a protected full video page.</p>
-        </details>
-        <details id="capture">
-          <summary>I saved a page, but did not open the canvas.</summary>
-          <p>If <strong>Open canvas after adding</strong> is off, capture keeps you on the current page. The native bookmark is saved under <strong>Other bookmarks / Bookmark Atlas</strong>; its canvas insertion remains queued locally until a canvas is opened and saved successfully.</p>
-        </details>
-        <details id="ai">
-          <summary>Do I need an AI account or API key?</summary>
-          <p>No AI connection is required for bookmarks, search, drawing, or manual organization. Optional AI uses your own compatible endpoint and key. Review the selected metadata before sending and the proposed changes before applying.</p>
-          <p>Saved credentials are encrypted on the current device and excluded from sync and backups, but this is not an OS keychain. Your service provider’s fees and data policies apply. See the <a href="privacy.html">privacy policy</a> before connecting.</p>
-        </details>
-        <details id="browsers">
-          <summary>Which browsers are officially supported?</summary>
-          <p>The public release supports Chrome. Edge and Safari are not officially supported; development builds or compatibility checks do not establish store availability.</p>
-        </details>
-        <section id="contact">
-          <h2>Report a problem</h2>
-          <p>Open a <a href="https://github.com/xixi-kitchen/bookmark-atlas/issues/new/choose">GitHub issue</a> with your extension version, Chrome version, steps to reproduce, and the expected and actual result. A small public example or a screenshot with private details removed helps.</p>
-          <p>Do not include passwords, API keys, tokens, full backups, or private bookmark content. Check the <a href="changelog.html">release history</a> for related changes before reporting.</p>
-        </section>
-      </article>
-      <article id="zh-cn" class="document secondary-document" lang="zh-CN">
-        <span class="eyebrow">简体中文 / 帮助与支持</span><h2>找到下一步。</h2>
-        <p>初次使用可先看 <a href="guide.html#zh-cn">上手指南</a>。版本是否可安装，请以 <a href="changelog.html">更新记录与发布状态</a> 和 Chrome 商店为准。</p>
-        <details open><summary>另一台设备还没看到画布？</summary><p>确认两台设备登录同一个 Chrome 账号，已开启扩展、设置和书签同步，并使用正确的浏览器用户配置。轻量画布仅在同步可用、配额允许时传输，不保证固定到达时间。回到已打开的扩展页面会检查新状态；可见页面也会每 30 秒兜底检查。</p><p>原生书签与画布使用不同的存储路径。书签已到达，并不代表全部画布内容或附件已经同步。</p></details>
-        <details><summary>为什么图片和附件没有同步？</summary><p>图片和二进制附件只保存在添加它们的设备上，不进入 Chrome Sync。需要完整复制时请使用完整 JSON 备份/导出，确认导入结果后再处理原始副本。</p></details>
-        <details><summary>网页或视频为什么不能嵌入？</summary><p>目标网站必须允许 iframe。<code>X-Frame-Options</code> 或 CSP <code>frame-ancestors</code> 可阻止嵌入，扩展不能绕过浏览器强制执行的限制，请从外部打开。自定义 iframe 有 sandbox 限制；Bilibili 视频使用关闭自动播放的官方播放器，也可从工具栏切换到受保护的完整视频页面。</p></details>
-        <details><summary>收藏之后为什么留在原网页？</summary><p>关闭「添加后打开画布」时，网页仍会保存到「其他书签 / Bookmark Atlas」，画布添加任务保留在本机队列，下次打开画布并成功保存时完成。</p></details>
-        <details><summary>必须使用 AI 吗？</summary><p>不需要。书签、搜索、绘图和手动整理不依赖 AI。可选 AI 使用你自配的兼容服务，确认所选元数据并预览后再应用。已保存凭据本机加密，不进入同步或备份，但不等同于操作系统钥匙串；服务商费用和数据政策适用，连接前请查看 <a href="privacy.html#zh-cn">隐私政策</a>。</p></details>
-        <details><summary>支持哪些浏览器？</summary><p>正式公开版本支持 Chrome。Edge 和 Safari 尚非正式支持；开发构建或兼容性检查不等于相应商店已经上架。</p></details>
-        <h3>反馈问题</h3><p>请通过 <a href="https://github.com/xixi-kitchen/bookmark-atlas/issues/new/choose">GitHub Issue</a> 提供扩展版本、Chrome 版本、复现步骤、预期和实际结果。截图请先移除私密内容，不要提交密码、API Key、令牌、完整备份或私密书签。</p>
-      </article>
+<article class="document"><h1>A clear next step.</h1><p class="lede">Find an answer here, or share a reproducible issue with the project.</p><p><a href="guide.html">New here? Read the full guide</a> · <a href="changelog.html">Check versions and updates</a></p>
+<details id="sync" open><summary>My canvas has not appeared on another device.</summary><p>Use the same Chrome account and expected profile on both devices. Enable Chrome Sync for extensions, settings and bookmarks and check both devices are online. Eligible data syncs when Chrome Sync and quota allow; Chrome does not guarantee a delivery time. Returning to an extension page checks for newer state; visible pages also check every 30 seconds as a fallback.</p><p>Native bookmarks and the canvas use different storage paths. A synced bookmark does not mean all canvas changes or attachments have arrived. <a href="guide.html#keep">Keep a full backup first</a>.</p></details>
+<details id="attachments"><summary>Why are images or attachments missing?</summary><p>Images and binary attachments stay on the device where they were added, outside Chrome Sync. Use a full JSON backup/export for a complete copy and keep the original until the imported result is checked.</p></details>
+<details id="embeds"><summary>A webpage or video will not display.</summary><p>Use the Embed tool, not bookmark import. <a href="guide.html#embeds">Follow the step-by-step instructions</a>.</p><p>Bilibili homepages load as webpages. BV / av / player videos use the official player with autoplay off; the active toolbar can also show an original video page. b23.tv short links are not resolved. YouTube supports videos, Shorts, live streams and playlists, not its homepage as a video.</p><p>Sites can prohibit embedding through X-Frame-Options or CSP frame-ancestors. Sign-in, region, age and copyright restrictions still apply and are not bypassed. The iframe sandbox restricts top-level navigation so it cannot directly replace the extension page; provider popups, requests or downloads may still occur.</p><p>Use the embed toolbar to open a regular tab if needed. <a href="https://github.com/xixi-kitchen/bookmark-atlas/issues/new/choose">Request another website adaptation</a> with a public URL, Chrome/extension versions and reproduction steps. Requests need assessment; not every site can be supported or delivered to a fixed date.</p></details>
+<details id="capture"><summary>Why did capture keep me on the current page?</summary><p>Turning off Open canvas after adding keeps you on the current page. The native bookmark is saved under Other bookmarks / Bookmark Atlas. Insertion stays queued locally until a canvas opens and saves successfully.</p></details>
+<details id="ai"><summary>Do I need an AI account or key?</summary><p>No. Bookmarks, search, drawing and manual organization work without AI. The offline example sends nothing; real organization uses your chosen compatible service after explicit approval of selected metadata.</p><p>Configuration and credentials stay encrypted locally, outside sync and backups, and are not an OS keychain. Model tests may also incur charges. See the <a href="guide.html#ai">AI steps</a> and <a href="privacy.html">privacy policy</a>.</p></details>
+<details id="browsers"><summary>Which browsers are officially supported?</summary><p>The public release supports Chrome. Edge and Safari are not officially supported; development builds or compatibility checks do not establish store availability.</p></details>
+<section id="contact"><h2>Report a problem or request a site</h2><p>Open a <a href="https://github.com/xixi-kitchen/bookmark-atlas/issues/new/choose">GitHub Issue</a> with your Chrome and extension versions, a public URL, steps, and expected versus actual behavior. Redact screenshots and never upload credentials, API keys, tokens, full backups or private bookmarks.</p><p><a href="https://github.com/xixi-kitchen/bookmark-atlas">Star the project on GitHub to follow its progress</a></p></section></article>
     </main>
-    <footer class="site-footer"><p>Bookmark Atlas <span>Help, without the guesswork.</span></p><nav aria-label="Footer"><a href="index.html">Home</a><a href="guide.html">Guide</a><a href="changelog.html">Updates</a><a href="privacy.html">Privacy</a></nav></footer>
+    <footer class="site-footer"><p>Bookmark Atlas <span>A freeform home for the things you save.</span></p><nav aria-label="Footer"><a href="index.html">Home</a><a href="guide.html">Guide</a><a href="changelog.html">Updates</a><a href="privacy.html">Privacy</a><a href="support.html">Help</a><a href="https://github.com/xixi-kitchen/bookmark-atlas/issues/new/choose">Issues / site requests</a></nav></footer>
   </div>
 </body>
 </html>

@@ -45,62 +45,77 @@ export function formatReleaseStatus(status, locale) {
     : `${current} Candidate ${candidateVersion} is being prepared for release.`;
 }
 
-/** Replace only the two plain-text status slots; preserve all surrounding homepage bytes. */
-export function updateHomepageReleaseStatus(html, status) {
+/** Replace one locale's plain-text status slot; preserve all surrounding homepage bytes. */
+export function updateHomepageReleaseStatus(html, status, locale = 'en') {
   validateReleaseStatus(status);
-  let result = html;
-  for (const locale of locales) {
-    const attribute = new RegExp(`\\bdata-release-status=(["'])${locale}\\1`, 'g');
-    const slot = new RegExp(`(<([a-z][a-z0-9-]*)\\b[^>]*\\bdata-release-status=(["'])${locale}\\3[^>]*>)([^<]*)(<\\/\\2\\s*>)`, 'gi');
-    if ([...result.matchAll(attribute)].length !== 1 || [...result.matchAll(slot)].length !== 1) {
-      throw new Error(`Homepage status slot ${locale} must occur exactly once and contain plain text`);
-    }
-    result = result.replace(slot, (_match, open, _tag, _quote, _text, close) => `${open}${escapeHtml(formatReleaseStatus(status, locale))}${close}`);
+  validateLocale(locale);
+  const attribute = new RegExp(`\\bdata-release-status\\s*=\\s*(["'])${locale}\\1`, 'g');
+  const slot = new RegExp(`(<([a-z][a-z0-9-]*)\\b[^>]*\\bdata-release-status\\s*=\\s*(["'])${locale}\\3[^>]*>)([^<]*)(<\\/\\2\\s*>)`, 'gi');
+  if ([...html.matchAll(attribute)].length !== 1 || [...html.matchAll(slot)].length !== 1) {
+    throw new Error(`Homepage status slot ${locale} must occur exactly once and contain plain text`);
   }
-  return result;
+  return html.replace(slot, (_match, open, _tag, _quote, _text, close) => `${open}${escapeHtml(formatReleaseStatus(status, locale))}${close}`);
 }
 
-export function renderPublicReleases(entries, status) {
+export function renderPublicReleases(entries, status, locale = 'en') {
+  validateLocale(locale);
   validateReleaseStatus(status);
   validateReleaseNotes(entries, status.candidateVersion);
   if (!entries.some((entry) => entry.version === status.storeVersion)) throw new Error(`Missing public notes for store version ${status.storeVersion}`);
   const history = entries.slice().sort((a, b) => b.date.localeCompare(a.date) || compareVersions(b.version, a.version));
+  const zh = locale === 'zh-CN';
+  const assetBase = zh ? '../' : '';
+  const peerLocale = zh ? 'en' : 'zh-CN';
+  const peerHref = zh ? '../changelog.html' : 'zh/changelog.html';
+  const text = zh ? {
+    description: 'Bookmark Atlas 版本介绍、上手步骤与经过核实的 Chrome 商店发布状态。',
+    title: '更新记录', skip: '跳转到内容', primary: '主导航', guide: '使用指南', support: '帮助',
+    switch: 'English', switchLabel: 'Switch to English', eyebrow: '版本介绍',
+    lede: '了解改进内容、带来的帮助，以及从哪里开始。',
+    dates: '从 v0.9.6 起，版本日期为正式包冻结日期。商店提交和实际上架分别记录；正式包准备完成不代表商店审核通过。',
+    releaseLinks: '发布链接', install: '安装 Chrome 商店当前版本', archive: 'GitHub 发布存档', history: '版本历史',
+    tagline: '为收藏的事物，留一片天地。', footer: '页脚导航', home: '首页', privacy: '隐私政策',
+  } : {
+    description: 'Bookmark Atlas release introductions, practical starting steps, and verified Chrome Web Store channel status.',
+    title: 'Updates', skip: 'Skip to content', primary: 'Primary', guide: 'Guide', support: 'Help',
+    switch: '中文', switchLabel: '切换到简体中文', eyebrow: 'Release introductions',
+    lede: 'What changed, why it helps, and where to begin.',
+    dates: 'From v0.9.6, the version date is the package freeze date. Store submission and publication are separate events; a prepared package does not imply store approval.',
+    releaseLinks: 'Release links', install: 'Install the current Chrome version', archive: 'GitHub release archive', history: 'Release history',
+    tagline: 'Make room for the things you save.', footer: 'Footer', home: 'Home', privacy: 'Privacy',
+  };
   return `<!doctype html>
-<html lang="en">
+<html lang="${locale}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Bookmark Atlas release introductions, practical starting steps, and verified Chrome Web Store channel status in English and Chinese.">
-  <title>Updates · Bookmark Atlas</title>
-  <link rel="stylesheet" href="site.css">
+  <meta name="description" content="${text.description}">
+  <title>${text.title} · Bookmark Atlas</title>
+  <link rel="stylesheet" href="${assetBase}site.css">
+  <link rel="canonical" href="https://xixi-kitchen.github.io/bookmark-atlas/${zh ? 'zh/' : ''}changelog.html">
+  <link rel="alternate" hreflang="en" href="https://xixi-kitchen.github.io/bookmark-atlas/changelog.html">
+  <link rel="alternate" hreflang="zh-CN" href="https://xixi-kitchen.github.io/bookmark-atlas/zh/changelog.html">
 </head>
 <body>
-  <a class="skip-link" href="#main-content">Skip to content</a>
+  <a class="skip-link" href="#main-content">${text.skip}</a>
   <div class="site-shell">
     <header class="site-nav">
-      <a class="site-brand" href="index.html"><img src="store-assets/icon-128.png" width="38" height="38" alt="">Bookmark Atlas</a>
-      <nav aria-label="Primary"><a href="guide.html">Get started</a><a href="changelog.html" aria-current="page">Updates</a><a href="support.html">Support</a><a href="#zh-cn" lang="zh-CN">中文</a><a href="${repository}">GitHub ↗</a></nav>
+      <a class="site-brand" href="index.html"><img src="${assetBase}store-assets/icon-128.png" width="38" height="38" alt="">Bookmark Atlas</a>
+      <nav aria-label="${text.primary}"><a href="guide.html">${text.guide}</a><a href="changelog.html" aria-current="page">${text.title}</a><a href="support.html">${text.support}</a><a class="language-switch" href="${peerHref}" lang="${peerLocale}" hreflang="${peerLocale}" aria-label="${text.switchLabel}">${text.switch}</a><a href="${repository}">GitHub ↗</a></nav>
     </header>
     <main id="main-content" class="release-page">
       <header class="document release-header">
-        <span class="eyebrow">Release introductions</span><h1>Updates</h1>
-        <p class="lede">What changed, why it helps, and where to begin.</p>
-        <p class="release-status">${escapeHtml(formatReleaseStatus(status, 'en'))}</p>
-        <p>From v0.9.6, the version date is the package freeze date. Store submission and publication are separate events; a prepared package does not imply store approval.</p>
-        <nav class="release-links" aria-label="Release links"><a href="${store}">Install the current Chrome version</a> · <a href="${repository}/releases">GitHub release archive</a> · <a href="#zh-cn">简体中文</a></nav>
+        <h1>${text.title}</h1>
+        <p class="lede">${text.lede}</p>
+        <p class="release-status">${escapeHtml(formatReleaseStatus(status, locale))}</p>
+        <p>${text.dates}</p>
+        <nav class="release-links" aria-label="${text.releaseLinks}"><a href="${store}">${text.install}</a><a href="${repository}/releases">${text.archive}</a></nav>
       </header>
-      <section aria-label="English release history">
-${history.map((entry) => renderEntry(entry, status, 'en')).join('\n')}
-      </section>
-      <section id="zh-cn" lang="zh-CN" aria-labelledby="chinese-history">
-        <header class="document release-header"><span class="eyebrow">简体中文 / 版本介绍</span><h2 id="chinese-history">更新记录</h2>
-          <p class="release-status">${escapeHtml(formatReleaseStatus(status, 'zh-CN'))}</p>
-          <p>从 v0.9.6 起，版本日期为正式包冻结日期。商店提交和实际上架分别记录；正式包准备完成不代表商店审核通过。</p>
-        </header>
-${history.map((entry) => renderEntry(entry, status, 'zh-CN')).join('\n')}
+      <section aria-label="${text.history}">
+${history.map((entry) => renderEntry(entry, status, locale)).join('\n')}
       </section>
     </main>
-    <footer class="site-footer"><p>Bookmark Atlas <span>Make room for the things you save.</span></p><nav aria-label="Footer"><a href="index.html">Home</a><a href="guide.html">Guide</a><a href="privacy.html">Privacy</a><a href="support.html">Support</a><a href="${repository}">GitHub</a></nav></footer>
+    <footer class="site-footer"><p>Bookmark Atlas <span>${text.tagline}</span></p><nav aria-label="${text.footer}"><a href="index.html">${text.home}</a><a href="guide.html">${text.guide}</a><a href="privacy.html">${text.privacy}</a><a href="support.html">${text.support}</a><a href="${repository}">GitHub</a></nav></footer>
   </div>
 </body>
 </html>
@@ -129,8 +144,12 @@ ${section.items.map((item) => `            <li><strong>${escapeHtml(item.title[l
           </ul></section>`).join('\n')}
           <section class="release-section"><h3>${zh ? '开始使用' : 'Getting started'}</h3><ol>${entry.gettingStarted.map((item) => `<li>${escapeHtml(item[locale])}</li>`).join('')}</ol></section>
           <section class="release-section"><h3>${zh ? '更新须知' : 'Notices'}</h3><ul>${entry.notices.map((item) => `<li>${escapeHtml(item[locale])}</li>`).join('')}</ul></section>
-          <p class="release-links"><a href="${escapeHtml(href)}">${candidate ? (zh ? '候选版本发布说明（源文件）' : 'Candidate release notes (source)') : (zh ? '正式 GitHub 发布说明' : 'GitHub release notes')}</a> · <a href="guide.html${zh ? '#zh-cn' : ''}">${zh ? '上手指南' : 'Getting started guide'}</a></p>
+          <p class="release-links"><a href="${escapeHtml(href)}">${candidate ? (zh ? '候选版本发布说明（源文件）' : 'Candidate release notes (source)') : (zh ? '正式 GitHub 发布说明' : 'GitHub release notes')}</a><a href="guide.html">${zh ? '上手指南' : 'Getting started guide'}</a></p>
         </article>`;
+}
+
+function validateLocale(locale) {
+  if (!locales.includes(locale)) throw new Error(`Unsupported public release locale: ${locale}`);
 }
 
 function calendarDate(value) {

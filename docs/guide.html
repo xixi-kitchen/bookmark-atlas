@@ -3,65 +3,31 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Get started with Bookmark Atlas: add a bookmark, arrange your canvas, open a saved page, and understand local storage and sync.">
+  <meta name="description" content="Learn to add, arrange and open bookmarks, embed webpages and videos, use optional AI and keep a complete backup.">
   <title>Getting started · Bookmark Atlas</title>
+  <link rel="canonical" href="https://xixi-kitchen.github.io/bookmark-atlas/guide.html">
+  <link rel="alternate" hreflang="en" href="https://xixi-kitchen.github.io/bookmark-atlas/guide.html">
+  <link rel="alternate" hreflang="zh-CN" href="https://xixi-kitchen.github.io/bookmark-atlas/zh/guide.html">
   <link rel="stylesheet" href="site.css">
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to content</a>
   <div class="site-shell">
     <header class="site-nav">
-      <a class="site-brand" href="index.html"><img src="store-assets/icon-128.png" width="38" height="38" alt="">Bookmark Atlas</a>
-      <nav aria-label="Primary"><a href="guide.html" aria-current="page">Get started</a><a href="changelog.html">Updates</a><a href="support.html">Support</a><a href="#zh-cn" lang="zh-CN">中文</a><a href="https://github.com/xixi-kitchen/bookmark-atlas">GitHub ↗</a></nav>
+      <a class="site-brand" href="index.html" aria-label="Bookmark Atlas home"><img src="store-assets/icon-128.png" width="38" height="38" alt="">Bookmark Atlas</a>
+      <nav aria-label="Primary"><a href="guide.html" aria-current="page">Guide</a><a href="changelog.html">Updates</a><a href="support.html">Help</a><a class="language-switch" id="zh-cn" href="zh/guide.html" lang="zh-CN" hreflang="zh-CN" aria-label="切换此页为简体中文">中文</a><a href="https://github.com/xixi-kitchen/bookmark-atlas">GitHub</a></nav>
     </header>
     <main id="main-content">
-      <article class="document">
-        <span class="eyebrow">Getting started</span>
-        <h1>One bookmark.<br>Then make it yours.</h1>
-        <p class="lede">Start with a page you want to return to. You can explore the rest when you need it.</p>
-        <p>Install <a href="https://chromewebstore.google.com/detail/bookmark-atlas/bkdplfepaegfdabniedlkaodllnmnbfl">Bookmark Atlas from the Chrome Web Store</a>, then open a new tab. Pin the extension in Chrome’s extensions menu to reach its capture button more easily.</p>
-        <nav class="document-nav" aria-label="Guide sections"><a href="#add">01 Add</a><a href="#organize">02 Organize</a><a href="#open">03 Open</a><a href="#keep">Keep a copy</a></nav>
-        <section id="add" class="guide-step">
-          <span class="eyebrow">01 / Add</span><h2>Save a page you care about.</h2>
-          <p>Visit an ordinary HTTP or HTTPS page, click the Bookmark Atlas extension icon, then choose <strong>Add to canvas</strong>. The page is saved as a native Chrome bookmark under <strong>Other bookmarks / Bookmark Atlas</strong> and queued locally for the canvas.</p>
-          <p>Keep <strong>Open canvas after adding</strong> enabled to continue on the canvas. Turn it off to stay on the page and collect a few links first; the queued cards appear when you next open and save the canvas.</p>
-          <p>Already have bookmarks? Open the canvas’s import control and choose existing bookmarks. You do not need to recreate your bookmark library.</p>
-        </section>
-        <section id="organize" class="guide-step">
-          <span class="eyebrow">02 / Organize</span><h2>Make the canvas useful to you.</h2>
-          <p>Drag a bookmark card to a useful spot. Select cards to change their presentation to icon, compact, or detailed, add a canvas note, or arrange them together. Use Excalidraw’s drawing and text tools to connect ideas.</p>
-          <p>Canvas placement and notes belong to your workspace. Native bookmark edits, such as changing a title, moving a bookmark to another folder, or deleting it, affect your Chrome bookmarks. Read the confirmation before deleting.</p>
-          <p>Optional AI organization is available with your own compatible service. Select the cards, review the metadata to send, and preview the proposed changes before applying them. You can organize manually without connecting AI.</p>
-        </section>
-        <section id="open" class="guide-step">
-          <span class="eyebrow">03 / Open</span><h2>Return to a saved page.</h2>
-          <p>Click a bookmark’s favicon to open the page. The rest of the card remains available for selection and dragging. You can also use unified search to find bookmarks, open tabs, and browser history.</p>
-          <p>For pages you want alongside your notes, add a web embed. The target website must allow embedding; if it blocks the frame, use the external-open action. <a href="support.html#embeds">Read about embed limits</a>.</p>
-        </section>
-        <section id="keep" class="guide-step">
-          <span class="eyebrow">Before you switch devices</span><h2>Keep a complete copy.</h2>
-          <p>The full canvas is saved locally. Use the full JSON backup/export flow to keep a complete copy that includes local attachment data. Store the file somewhere you control and handle it as private data.</p>
-          <p>Lightweight canvas data can sync when you use the same Chrome account, enable the relevant Chrome Sync settings, and stay within quota. Sync does not guarantee a delivery time. Images and binary attachments remain on the device where they were added.</p>
-          <p>AI settings and saved credentials are excluded from sync and backups. Configure them separately on each device. <a href="privacy.html">Read the data handling details</a>.</p>
-        </section>
-        <p class="small-copy">The Chrome Web Store version is the supported public release. Source code may include features still being prepared. <a href="changelog.html">Check release status</a>.</p>
-      </article>
-      <article id="zh-cn" class="document secondary-document" lang="zh-CN">
-        <span class="eyebrow">简体中文 / 上手指南</span><h2>从一个书签开始。</h2>
-        <p>从 <a href="https://chromewebstore.google.com/detail/bookmark-atlas/bkdplfepaegfdabniedlkaodllnmnbfl">Chrome 应用商店安装</a> 后，打开新标签页。在 Chrome 扩展菜单中固定 Bookmark Atlas，方便随时收藏。</p>
-        <h3>01 / 收藏</h3>
-        <p>在普通 HTTP 或 HTTPS 网页上点击扩展图标，再选择「添加到画布」。网页会保存到「其他书签 / Bookmark Atlas」，并加入本机画布待处理队列。保留「添加后打开画布」可直接继续整理；关闭后可留在当前网页，下次打开画布并成功保存时完成添加。已有书签可从画布导入，不必重新收藏。</p>
-        <h3>02 / 整理</h3>
-        <p>拖动卡片，选择图标、简洁或详细样式，添加画布备注，再使用 Excalidraw 文字和绘图工具连接想法。画布位置和备注属于工作空间；修改、移动或删除原生书签会影响 Chrome 书签，删除前请阅读确认信息。</p>
-        <p>AI 整理完全可选，使用你自配的兼容服务。选中卡片，确认要发送的元数据并预览建议，之后再应用；不连接 AI 也可以正常整理。</p>
-        <h3>03 / 打开</h3>
-        <p>点击卡片的网站图标打开网页，卡片其余位置用于选择和拖动。统一搜索可查找书签、已打开标签页和浏览历史。网页嵌入取决于目标网站是否允许，不允许时请从外部打开。</p>
-        <h3>切换设备前，先备份</h3>
-        <p>完整画布保存在本机。使用完整 JSON 备份/导出功能保留含本地附件的数据副本，并妥善保管。同一 Chrome 账号在启用同步且配额允许时可同步轻量画布数据，但不保证固定到达时间；图片和二进制附件只在添加它们的设备上。AI 配置和凭据不进入同步或备份，需要在每台设备单独配置。</p>
-        <p><a href="support.html#zh-cn">遇到问题？查看帮助</a> · <a href="privacy.html#zh-cn">隐私政策</a> · <a href="changelog.html">更新记录</a></p>
-      </article>
+<article class="document"><h1>One bookmark.<br>Then make it yours.</h1><p class="lede">Save, organize and open at your own pace. Then keep useful webpages beside your notes.</p><p>Install from the <a href="https://chromewebstore.google.com/detail/bookmark-atlas/bkdplfepaegfdabniedlkaodllnmnbfl">Chrome Web Store</a> and open a new tab. Pin Bookmark Atlas in Chrome’s extensions menu for easy capture. Open <strong>Settings → Learning guide</strong> to practice with highlighted real controls.</p><nav class="document-nav" aria-label="Guide sections"><a href="#add">Add</a><a href="#organize">Organize</a><a href="#open">Open</a><a href="#embeds">Embed webpages</a><a href="#ai">AI organization</a><a href="#keep">Backup</a></nav>
+<section id="add" class="guide-step"><h2>1. Save a useful page</h2><p>On an ordinary HTTP or HTTPS page, click the extension icon and choose <strong>Add to canvas</strong>. This saves a native bookmark under <strong>Other bookmarks / Bookmark Atlas</strong> and queues the card locally.</p><p>Keep <strong>Open canvas after adding</strong> on to continue organizing, or turn it off to stay on the page. Queued cards are inserted when a canvas opens and saves successfully. Use <strong>Import bookmarks</strong> on the canvas for bookmarks you already have.</p></section>
+<section id="organize" class="guide-step"><h2>2. Arrange it your way</h2><p>Drag cards into place, select several, and choose icon, compact or detailed presentation. Add canvas notes and connect ideas with Excalidraw’s text, drawings, frames and arrows.</p><p>Preview a layout before applying it. Canvas positions and notes belong to your workspace; editing native bookmark titles, moving folders or deleting bookmarks affects Chrome bookmarks. Read the confirmation before deleting.</p></section>
+<section id="open" class="guide-step"><h2>3. Return to a saved page</h2><p>Click a card’s favicon to open the page. The rest of the card stays available for selection and dragging. Unified search also finds bookmarks, open tabs and browsing history.</p><p>A bookmark card is a link; it does not load the website automatically. Use an embed when you want to browse or play content within the canvas.</p></section>
+<section id="embeds" class="guide-step"><h2>4. Embed a webpage or video</h2><ol><li>In the canvas toolbar, open <strong>More tools → Embed</strong>.</li><li>Draw an area on the canvas, then enter an HTTPS URL.</li><li>Click the center or double-click to interact with the page. The surrounding canvas remains available for drawings and notes.</li><li>Use the embed toolbar to refresh, open a new tab, or exit interaction. Exiting interaction does not pause video or stop website requests.</li></ol><h3>Bilibili</h3><p>The homepage loads at its original URL. BV, av and player URLs resolve to the official player with autoplay disabled by default. With an original video URL, the active toolbar can switch to the full page. b23.tv short links are not resolved automatically; use the original BV / av URL or open a new tab.</p><h3>YouTube</h3><p>Use a specific video, youtu.be URL, Short, live stream, playlist or official embed URL. Recognized start times are retained. Homepages and channel lists are not direct video embeds.</p><p>The provider’s iframe, sign-in, region and copyright rules still apply. Sandboxing restricts direct replacement of the extension page, but does not guarantee every site loads or plays, block every popup, or make browsing anonymous. If a site blocks embedding, open it in a regular tab. <a href="support.html#embeds">Read embed troubleshooting</a>.</p><p>Need another website? <a href="https://github.com/xixi-kitchen/bookmark-atlas/issues/new/choose">Request an adaptation</a> with a public URL and reproduction steps, without private information.</p></section>
+<section id="ai" class="guide-step"><h2>5. Try AI when you want it</h2><p>Start with the offline example in <strong>Settings → Learning guide → AI organization</strong>. It needs no key, sends no model request and leaves your real canvas unchanged. It is not a connectivity test.</p><ol><li>In <strong>Settings → AI settings</strong>, configure a compatible HTTPS endpoint, fetch or enter a model, and provide your API key.</li><li>Optionally test the selected model, then explicitly save on this device. Provider charges may apply; configuration and credentials are not synced or shared.</li><li>Select bookmark cards, open <strong>AI organization</strong>, describe your goal, and approve the selected metadata to send.</li><li>Review the grouping and layout preview before applying. Undo if needed.</li></ol><p>Manual organization never requires AI. Your provider’s fees and privacy policies apply. <a href="privacy.html">Read the data handling details</a>.</p></section>
+<section id="keep" class="guide-step"><h2>6. Keep a complete backup</h2><p>The full canvas is stored locally. Export a full JSON backup to include local attachments, keep it private, and retain the original until you have checked an import.</p><p>Eligible lightweight data can sync through the same Chrome account with sync enabled and quota available; it does not guarantee a delivery time. Images and binary attachments remain on their original device. AI configuration and credentials are excluded from sync and backups and need separate setup on each device.</p><p><a href="support.html">Get help</a> or read the <a href="changelog.html">complete version introductions</a>.</p></section>
+</article>
     </main>
-    <footer class="site-footer"><p>Bookmark Atlas <span>Start small. Make it yours.</span></p><nav aria-label="Footer"><a href="index.html">Home</a><a href="changelog.html">Updates</a><a href="privacy.html">Privacy</a><a href="support.html">Support</a></nav></footer>
+    <footer class="site-footer"><p>Bookmark Atlas <span>A freeform home for the things you save.</span></p><nav aria-label="Footer"><a href="index.html">Home</a><a href="guide.html">Guide</a><a href="changelog.html">Updates</a><a href="privacy.html">Privacy</a><a href="support.html">Help</a><a href="https://github.com/xixi-kitchen/bookmark-atlas/issues/new/choose">Issues / site requests</a></nav></footer>
   </div>
 </body>
 </html>

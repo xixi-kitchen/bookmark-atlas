@@ -37,6 +37,13 @@ includes the matching package, checksum, and release notes; previous releases re
 
 ## What you can do
 
+The new tab is a full Excalidraw workspace, not only a bookmark dashboard.
+Use **More tools → Embed** to place interactive webpages and videos beside your notes.
+Bilibili and YouTube links have dedicated adaptations; provider embedding, sign-in,
+region and playback restrictions still apply. See the [embed guide](https://xixi-kitchen.github.io/bookmark-atlas/guide.html#embeds).
+You can [star the project](https://github.com/xixi-kitchen/bookmark-atlas) or
+[request another website adaptation](https://github.com/xixi-kitchen/bookmark-atlas/issues/new/choose).
+
 - Manage native Chrome bookmarks in a sidebar or on a freeform canvas, including
   folders, search, ordering, and timed undo for bookmark changes.
 - Use Excalidraw's drawing tools, text, images, frames, links, undo/redo,
@@ -123,10 +130,11 @@ Excalidraw 画布，与备注、绘图和网页嵌入一起整理，再通过统
 
 [从 Chrome 应用商店安装](https://chromewebstore.google.com/detail/bookmark-atlas/bkdplfepaegfdabniedlkaodllnmnbfl)
 · [官网](https://xixi-kitchen.github.io/bookmark-atlas/)
-· [使用指南](https://xixi-kitchen.github.io/bookmark-atlas/guide.html)
-· [更新记录](https://xixi-kitchen.github.io/bookmark-atlas/changelog.html)
-· [隐私政策](https://xixi-kitchen.github.io/bookmark-atlas/privacy.html)
-· [支持](https://xixi-kitchen.github.io/bookmark-atlas/support.html)
+· [中文官网](https://xixi-kitchen.github.io/bookmark-atlas/zh/index.html)
+· [使用指南](https://xixi-kitchen.github.io/bookmark-atlas/zh/guide.html)
+· [更新记录](https://xixi-kitchen.github.io/bookmark-atlas/zh/changelog.html)
+· [隐私政策](https://xixi-kitchen.github.io/bookmark-atlas/zh/privacy.html)
+· [支持](https://xixi-kitchen.github.io/bookmark-atlas/zh/support.html)
 
 Chrome 商店当前稳定版为 **v0.9.6**，已于 **2026-10-22** 上架。
 本版提供真实画布上的可选实操引导，以及完整双语版本介绍。
@@ -144,6 +152,12 @@ Chrome 商店当前稳定版为 **v0.9.6**，已于 **2026-10-22** 上架。
    「设置 → 使用指南」提供可选的应用内实操引导。
 
 ### 主要能力
+
+新标签页中是完整的 Excalidraw 工作画布，不只是书签看板。
+通过「更多工具 → 网页嵌入」可以把可交互的网页或视频放在笔记旁边。
+已为 Bilibili 和 YouTube 链接做专门适配；网站的嵌入、登录、地区与播放限制仍然适用。
+详见[网页嵌入指南](https://xixi-kitchen.github.io/bookmark-atlas/zh/guide.html#embeds)。
+欢迎在 GitHub 收藏项目，或通过 [Issue](https://github.com/xixi-kitchen/bookmark-atlas/issues/new/choose)申请其他网站适配。
 
 - 在侧边栏或自由画布中管理 Chrome 原生书签，支持文件夹、查找、排序和书签操作的限时撤销。
 - 使用完整 Excalidraw 绘图能力，包括文字、图片、框架、链接、撤销重做、导入导出和完整备份。
