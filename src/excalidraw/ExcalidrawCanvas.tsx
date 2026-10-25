@@ -814,6 +814,13 @@ export function ExcalidrawCanvas({ roots, onOpenAISettings, onGuideBlockedChange
     if (api && latestSceneRef.current && hasLocalChangesRef.current) scheduleSync();
   }, [api, lastSyncManifest, scheduleSync]);
 
+  const exitWebEmbedInteraction = useCallback(() => {
+    api?.updateScene({
+      appState: { activeEmbeddable: null },
+      captureUpdate: CaptureUpdateAction.NEVER,
+    });
+  }, [api]);
+
   const renderEmbeddable = useCallback<ExcalidrawRenderEmbeddable>((element, appState) => {
     const stored = getBookmarkElementData(element);
     if (!stored) {
@@ -826,10 +833,8 @@ export function ExcalidrawCanvas({ roots, onOpenAISettings, onGuideBlockedChange
           elementId={element.id}
           url={element.link}
           active={active}
-          onExitInteraction={() => api?.updateScene({
-            appState: { activeEmbeddable: null },
-            captureUpdate: CaptureUpdateAction.NEVER,
-          })}
+          uiLanguage={uiLanguage}
+          onExitInteraction={exitWebEmbedInteraction}
         />
       );
     }
@@ -848,7 +853,7 @@ export function ExcalidrawCanvas({ roots, onOpenAISettings, onGuideBlockedChange
         onOpen={() => openBookmark(element)}
       />
     );
-  }, [api, bookmarkIndex, openBookmark, uiLanguage]);
+  }, [bookmarkIndex, exitWebEmbedInteraction, openBookmark, uiLanguage]);
 
   const handleLinkOpen = useCallback<ExcalidrawOnLinkOpen>((element, event) => {
     const stored = getBookmarkElementData(element);

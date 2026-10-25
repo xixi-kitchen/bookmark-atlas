@@ -8,6 +8,11 @@ import { createSceneSyncFingerprint } from './sceneSync';
 import { ExcalidrawCanvas } from './ExcalidrawCanvas';
 import { createBookmarkElement, getBookmarkElementData } from './bookmarkElements';
 import type { OrganizationItem, OrganizationPlan } from '../ai/plan';
+import { isValidElement, type ReactElement } from 'react';
+import { t } from '../i18n';
+import { setLanguagePreference } from '../i18n/languagePreference';
+
+type RenderEmbeddable = NonNullable<import('@excalidraw/excalidraw/types').ExcalidrawProps['renderEmbeddable']>;
 
 const host = vi.hoisted(() => ({
   api: {
@@ -30,6 +35,7 @@ const host = vi.hoisted(() => ({
   saveCloud: vi.fn(async () => ({ status: 'unavailable' })),
   initialData: null as Promise<unknown> | null,
   onChange: null as ((elements: readonly ExcalidrawElement[], state: AppState, files: BinaryFiles) => void) | null,
+  renderEmbeddable: null as RenderEmbeddable | null,
 }));
 
 vi.mock('@excalidraw/excalidraw', async (importOriginal) => {
@@ -43,9 +49,11 @@ vi.mock('@excalidraw/excalidraw', async (importOriginal) => {
       excalidrawAPI: (api: typeof host.api) => void;
       renderTopRightUI: () => unknown;
       onChange: typeof host.onChange;
+      renderEmbeddable: RenderEmbeddable;
     }) => {
       host.initialData = props.initialData;
       host.onChange = props.onChange;
+      host.renderEmbeddable = props.renderEmbeddable;
       // Excalidraw exposes its API before resolving asynchronous initialData.
       useEffect(() => props.excalidrawAPI(host.api), []);
       return props.renderTopRightUI();
@@ -120,6 +128,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   host.initialData = null;
   host.onChange = null;
+  host.renderEmbeddable = null;
   host.api.getSceneElements.mockReturnValue([]);
   host.api.getSceneElementsIncludingDeleted.mockReturnValue([]);
   host.api.getAppState.mockReturnValue({ zoom: { value: 1 } } as AppState);
@@ -128,6 +137,76 @@ beforeEach(() => {
   host.loadCloud.mockReset();
   host.readManifest.mockReset();
   host.readDevice.mockReset();
+});
+
+describe('canvas web embed integration', () => {
+  beforeEach(async () => {
+    await setLanguagePreference('en');
+    host.loadLocal.mockResolvedValue(null);
+    host.loadCloud.mockResolvedValue(null);
+    host.readManifest.mockResolvedValue(null);
+    host.readDevice.mockResolvedValue('this-device');
+  });
+
+  afterEach(async () => { await setLanguagePreference('auto'); });
+
+  const element = {
+    id: 'web-one', type: 'embeddable', link: 'https://example.com/page', isDeleted: false,
+  } as Parameters<RenderEmbeddable>[0];
+  const state = {
+    zoom: { value: 1 }, scrollX: 0, scrollY: 0, selectedElementIds: {},
+    activeEmbeddable: { element, state: 'active' },
+  } as unknown as AppState;
+
+  function webEmbed(appState = state, embedElement = element) {
+    const result = host.renderEmbeddable!(embedElement, appState);
+    expect(isValidElement(result)).toBe(true);
+    return result as ReactElement<{ onExitInteraction: () => void; uiLanguage?: string }>;
+  }
+
+  it('keeps one exit callback across embed renders and parent updates, clearing only active interaction', async () => {
+    const canvas = render(<ExcalidrawCanvas roots={[]} />);
+    await act(async () => { await host.initialData; });
+    const first = webEmbed();
+
+    const movedState = { ...state, scrollX: 100, zoom: { value: 0.8 } } as AppState;
+    expect(webEmbed(movedState).props.onExitInteraction)
+      .toBe(first.props.onExitInteraction);
+    expect(webEmbed(state, { ...element, id: 'web-two' }).props.onExitInteraction)
+      .toBe(first.props.onExitInteraction);
+    canvas.rerender(<ExcalidrawCanvas roots={[]} />);
+    const afterParentUpdate = webEmbed();
+    expect(afterParentUpdate.props.onExitInteraction).toBe(first.props.onExitInteraction);
+
+    render(afterParentUpdate);
+    host.api.updateScene.mockClear();
+    fireEvent.click(screen.getByRole('button', { name: t('webEmbedExit') }));
+    expect(host.api.updateScene).toHaveBeenCalledOnce();
+    expect(host.api.updateScene).toHaveBeenCalledWith({
+      appState: { activeEmbeddable: null }, captureUpdate: 'never',
+    });
+  });
+
+  it('passes language changes through the same embed while retaining its iframe', async () => {
+    const canvas = render(<ExcalidrawCanvas roots={[]} />);
+    await act(async () => { await host.initialData; });
+    const first = webEmbed();
+    expect(first.props.uiLanguage).toBe('en');
+    const embedded = render(first);
+    const frame = embedded.container.querySelector('iframe');
+    expect(frame).toBeInTheDocument();
+    expect(screen.getByRole('toolbar', { name: 'Embedded web page actions' })).toBeInTheDocument();
+
+    await act(async () => { await setLanguagePreference('zh-CN'); });
+    canvas.rerender(<ExcalidrawCanvas roots={[]} />);
+    const translated = webEmbed();
+    expect(translated.props.uiLanguage).toBe('zh-CN');
+    expect(translated.props.onExitInteraction).toBe(first.props.onExitInteraction);
+    embedded.rerender(translated);
+    expect(screen.getByRole('toolbar', { name: t('webEmbedToolbar') })).toBeInTheDocument();
+    expect(screen.queryByRole('toolbar', { name: 'Embedded web page actions' })).not.toBeInTheDocument();
+    expect(embedded.container.querySelector('iframe')).toBe(frame);
+  });
 });
 
 describe('canvas startup sync', () => {

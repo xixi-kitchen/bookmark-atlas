@@ -1,7 +1,9 @@
-import { ExternalLink, Link2, MousePointer2, Play, RefreshCw, ShieldAlert, Youtube } from 'lucide-react';
-import { useEffect, useState, type MouseEvent, type PointerEvent, type WheelEvent } from 'react';
+import { CircleHelp, ExternalLink, Link2, MousePointer2, Play, RefreshCw, ShieldAlert, Youtube } from 'lucide-react';
+import { memo, useId, useRef, useState, type MouseEvent, type PointerEvent, type WheelEvent } from 'react';
 import { isSafeEmbeddableUrl } from './bookmarkElements';
-import { t } from '../i18n';
+import { getUiLanguage, t } from '../i18n';
+import { useWebEmbedLoadState } from './useWebEmbedLoadState';
+import './WebEmbedHelp.css';
 
 const WEB_EMBED_FEATURES = [
   'accelerometer',
@@ -47,18 +49,28 @@ type Props = {
   url: string;
   active: boolean;
   onExitInteraction?: () => void;
+  // Included in the memo identity: translations read the app's current preference.
+  uiLanguage?: ReturnType<typeof getUiLanguage>;
 };
 
-export function WebEmbed({ elementId, url, active, onExitInteraction }: Props) {
+export const WebEmbed = memo(function WebEmbed({ elementId, url, active, onExitInteraction }: Props) {
   const [refreshRevision, setRefreshRevision] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [bilibiliView, setBilibiliView] = useState<'player' | 'page'>('player');
+  const [view, setView] = useState({ url, bilibiliView: 'player' as 'player' | 'page', helpOpen: false });
+  // Avoid committing the new full-page URL before an effect resets the player mode.
+  // Do not key this component by raw URL: equivalent resolved requests must persist.
+  if (view.url !== url) setView({ url, bilibiliView: 'player', helpOpen: false });
+  const bilibiliView = view.url === url ? view.bilibiliView : 'player';
+  const helpOpen = view.url === url && view.helpOpen;
+  const helpId = useId();
+  const helpTriggerRef = useRef<HTMLButtonElement>(null);
   const resolvedSrc = resolveWebEmbedUrl(url);
   const embedIssue = getWebEmbedIssue(url);
   const safeUrl = isSafeEmbeddableUrl(url);
   const bilibiliVideo = isBilibiliVideoEmbedUrl(resolvedSrc);
   const showingBilibiliPage = bilibiliVideo && bilibiliView === 'page';
   const src = showingBilibiliPage ? url : resolvedSrc;
+  const frameKey = `${elementId}:${src}:${refreshRevision}`;
+  const { phase, onLoad } = useWebEmbedLoadState(embedIssue ? null : frameKey);
   const frameAllow = bilibiliVideo ? BILIBILI_VIDEO_ALLOW : WEB_EMBED_ALLOW;
   const IssueIcon = embedIssue?.provider === 'youtube'
     ? Youtube
@@ -66,15 +78,13 @@ export function WebEmbed({ elementId, url, active, onExitInteraction }: Props) {
       ? ShieldAlert
       : Link2;
   const stopPointer = (event: PointerEvent | MouseEvent) => event.stopPropagation();
-
-  useEffect(() => {
-    setBilibiliView('player');
-    setLoading(true);
-  }, [url]);
+  const closeHelp = () => {
+    setView((current) => ({ ...current, helpOpen: false }));
+    helpTriggerRef.current?.focus();
+  };
 
   const refresh = (event: MouseEvent<HTMLButtonElement>) => {
     stopPointer(event);
-    setLoading(true);
     setRefreshRevision((revision) => revision + 1);
   };
 
@@ -91,8 +101,7 @@ export function WebEmbed({ elementId, url, active, onExitInteraction }: Props) {
 
   const toggleBilibiliView = (event: MouseEvent<HTMLButtonElement>) => {
     stopPointer(event);
-    setLoading(true);
-    setBilibiliView((current) => current === 'player' ? 'page' : 'player');
+    setView((current) => ({ ...current, bilibiliView: current.bilibiliView === 'player' ? 'page' : 'player' }));
   };
 
   return (
@@ -102,15 +111,27 @@ export function WebEmbed({ elementId, url, active, onExitInteraction }: Props) {
       data-interactive={active ? 'true' : 'false'}
       onPointerDown={stopPointer}
       onWheel={(event: WheelEvent<HTMLDivElement>) => event.stopPropagation()}
+      onKeyDown={(event) => {
+        if (event.key === 'Escape' && helpOpen) {
+          event.stopPropagation();
+          closeHelp();
+        }
+      }}
     >
       {active && (
         <div className="atlas-web-embed__toolbar" role="toolbar" aria-label={t('webEmbedToolbar')}>
-          <span className="atlas-web-embed__status">
-            {bilibiliVideo ? showingBilibiliPage ? t('webEmbedFullVideoPage') : t('webEmbedOfficialPlayer') : t('webEmbedInteracting')}
-          </span>
+          {!embedIssue ? <button ref={helpTriggerRef} type="button" className="atlas-web-embed__help-trigger" aria-label={t('webEmbedLoadingHelp')}
+            title={t('webEmbedLoadingHelp')} aria-expanded={helpOpen} aria-controls={helpOpen ? helpId : undefined}
+            onPointerDown={stopPointer} onClick={() => setView((current) => ({ ...current, helpOpen: !current.helpOpen }))}>
+            <CircleHelp size={13} aria-hidden="true" />
+            <span>{bilibiliVideo ? showingBilibiliPage ? t('webEmbedFullVideoPage') : t('webEmbedOfficialPlayer') : t('webEmbedInteracting')}</span>
+          </button> : <span className="atlas-web-embed__status">{t('webEmbedInteracting')}</span>}
+          {!embedIssue && phase !== 'loaded' && <span className="atlas-web-embed__load-signal" role="status" aria-live="polite">
+            {phase === 'slow' ? t('webEmbedSlow') : t('webEmbedWaiting')}
+          </span>}
           {!embedIssue && (
             <button type="button" onPointerDown={stopPointer} onClick={refresh} aria-label={t('webEmbedRefresh')} title={t('webEmbedRefresh')}>
-              <RefreshCw size={14} className={loading ? 'is-spinning' : ''} />
+              <RefreshCw size={14} className={phase === 'waiting' ? 'is-spinning' : ''} />
             </button>
           )}
           {safeUrl && (
@@ -134,6 +155,15 @@ export function WebEmbed({ elementId, url, active, onExitInteraction }: Props) {
           </button>
         </div>
       )}
+
+      {active && !embedIssue && helpOpen && <div className="atlas-web-embed__load-help" id={helpId} role="note" aria-label={t('webEmbedHelpTitle')}>
+        <strong>{t('webEmbedHelpTitle')}</strong>
+        {phase === 'slow' && <p>{t('webEmbedSlowDescription')}</p>}
+        <p>{t('webEmbedRestrictionsDescription')}</p>
+        <p>{t('webEmbedLoadSignalDescription')}</p>
+        <p>{t('webEmbedRecoveryDescription')}</p>
+        <button type="button" onClick={closeHelp}>{t('webEmbedCloseHelp')}</button>
+      </div>}
 
       <div className="atlas-web-embed__viewport">
         {embedIssue ? (
@@ -171,7 +201,7 @@ export function WebEmbed({ elementId, url, active, onExitInteraction }: Props) {
         ) : (
           <>
             <iframe
-              key={`${elementId}:${src}:${refreshRevision}`}
+              key={frameKey}
               className="atlas-web-embed__frame"
               src={src}
               title={t('webEmbedIframeTitle', hostname(url) || url)}
@@ -180,7 +210,7 @@ export function WebEmbed({ elementId, url, active, onExitInteraction }: Props) {
               allow={frameAllow}
               sandbox={WEB_EMBED_SANDBOX}
               loading="eager"
-              onLoad={() => setLoading(false)}
+              onLoad={onLoad}
             />
           </>
         )}
@@ -193,7 +223,7 @@ export function WebEmbed({ elementId, url, active, onExitInteraction }: Props) {
       </div>
     </div>
   );
-}
+});
 
 export function resolveWebEmbedUrl(link: string): string {
   try {
