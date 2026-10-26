@@ -60,7 +60,9 @@ describe('Edge public documentation', () => {
     expect(doc.querySelector('[data-edge-availability] a')).toBeNull();
     expect(doc.body.textContent).toMatch(/Chrome.*0\.9\.6/);
     const screenshot = doc.querySelector('figure img');
-    expect(screenshot?.getAttribute('src')).toMatch(/(?:03-canvas-current-en|04-canvas-current-zh)-1280x800\.png$/);
+    expect(screenshot?.getAttribute('src')).toBe(route.startsWith('zh/')
+      ? '../../store-assets/edge/screenshots/01-canvas-zh-CN-1280x800.png'
+      : '../store-assets/edge/screenshots/01-canvas-en-1280x800.png');
     expect(screenshot?.getAttribute('width')).toBe('1280');
     expect(screenshot?.getAttribute('height')).toBe('800');
   });
