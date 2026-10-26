@@ -1,5 +1,84 @@
 [
   {
+    "version": "0.9.7",
+    "date": "2026-10-26",
+    "browsers": ["edge"],
+    "title": { "en": "Your visual workspace in Microsoft Edge", "zh-CN": "在 Microsoft Edge 中使用可视化书签工作空间" },
+    "summary": { "en": "Bring native favorites, search and a full Excalidraw canvas into Edge's new tab, with optional hands-on learning and your own AI provider. New help links and quieter embed loading messages keep common tasks close at hand.", "zh-CN": "将原生收藏夹、搜索与完整 Excalidraw 画布放进 Edge 新标签页，按需使用实操引导和自配 AI。新增帮助入口与更安静的嵌入加载提示，让常用操作更容易找到。" },
+    "sections": [
+      {
+        "type": "added",
+        "items": [
+          {
+            "title": { "en": "An Edge workspace for native favorites", "zh-CN": "围绕 Edge 原生收藏夹的工作空间" },
+            "description": { "en": "Import selected favorites onto a full drawing canvas, switch icon/compact/detailed cards, add notes and open a site from its icon. Use the toolbar popup to save a webpage and choose whether to open the canvas afterward. Existing browser folders remain under your control.", "zh-CN": "把选定收藏夹添加到完整绘图画布，切换图标／简洁／详细卡片、填写备注并点击图标打开网站。工具栏弹窗可收藏网页，并选择添加后是否打开画布；原生收藏夹结构仍由你管理。" },
+            "where": { "en": "Canvas → Import bookmarks; select cards; browser toolbar → Bookmark Atlas", "zh-CN": "画布 → 导入书签；选中卡片；浏览器工具栏 → Bookmark Atlas" }
+          },
+          {
+            "title": { "en": "Find embedding help and request site support", "zh-CN": "查看嵌入教程并申请网站适配" },
+            "description": { "en": "Settings now links to the web-embed guide, the GitHub project and the issue/site-adaptation form. Bilibili and YouTube have dedicated adaptations; other websites may still impose login, region or framing limits.", "zh-CN": "设置新增网页嵌入教程、GitHub 项目和问题／网站适配入口。B站和 YouTube 有专门适配；其他网站仍可能限制登录、地区或嵌入。" },
+            "where": { "en": "Settings → Community and online help", "zh-CN": "设置 → 社区与在线帮助" }
+          }
+        ]
+      },
+      {
+        "type": "changed",
+        "items": [
+          {
+            "title": { "en": "Browser-default search follows your interface language", "zh-CN": "浏览器默认搜索名称跟随界面语言" },
+            "description": { "en": "The default search label is consistent in the switcher, engine manager, placeholder and suggestions, including old saved configurations. It uses the browser's default search API and preserves custom engine names and identifiers.", "zh-CN": "切换器、引擎管理、占位提示和预搜索中统一显示当前语言的默认搜索名称，兼容旧配置；继续调用浏览器默认搜索接口，保留自定义引擎名称和身份。" },
+            "where": { "en": "Search bar; Settings → Manage search engines; Settings → Language", "zh-CN": "搜索栏；设置 → 管理搜索引擎；设置 → 语言" }
+          },
+          {
+            "title": { "en": "Quiet help when a website takes longer", "zh-CN": "网页加载较慢时提供安静帮助" },
+            "description": { "en": "After twenty seconds, a slow-loading embed shows a small status you can open for help. It keeps the page loading and never automatically refreshes, navigates, pauses media or blocks the canvas. A load event does not prove a restricted site is usable.", "zh-CN": "嵌入加载二十秒后显示小型慢提示，可主动展开帮助；页面继续加载，不自动刷新、跳转、暂停播放或阻断画布。收到 load 信号不代表受限制网站一定能使用。" },
+            "where": { "en": "Web embed → loading status → help", "zh-CN": "网页嵌入 → 加载状态 → 帮助" }
+          }
+        ]
+      },
+      {
+        "type": "fixed",
+        "items": [
+          {
+            "title": { "en": "Keep embed sessions stable during ordinary canvas work", "zh-CN": "普通画布操作中保持嵌入会话稳定" },
+            "description": { "en": "Avoid redundant URL work on parent renders and remove an intermediate iframe when changing a Bilibili video from full-page mode. Existing sandbox, activation and playback behavior are retained; third-party media/network performance still depends on the site and connection.", "zh-CN": "减少父页面更新时的重复网址处理，避免 B站完整页模式修改视频网址时出现中间 iframe。保留原有沙箱、交互激活和播放行为；第三方媒体及网络表现仍取决于网站与连接。" },
+            "where": { "en": "Canvas with web embeds; editing a Bilibili video URL", "zh-CN": "含网页嵌入的画布；修改 B站视频网址" }
+          }
+        ]
+      },
+      {
+        "type": "security",
+        "items": [
+          {
+            "title": {
+              "en": "Patched bundled content-processing libraries",
+              "zh-CN": "修补随扩展分发的内容处理库"
+            },
+            "description": {
+              "en": "Pin DOMPurify3.4.17 and lodash-es4.18.1 to compatible upstream security fixes before packaging. Keep the same Excalidraw version and browser permissions; this does not claim that all dependencies or all third-party websites are free of vulnerabilities.",
+              "zh-CN": "打包前将 DOMPurify 固定为3.4.17、lodash-es固定为4.18.1，采用兼容的上游安全修复；保留 Excalidraw 版本和浏览器权限，不宣称所有依赖或第三方网站不存在漏洞。"
+            },
+            "where": {
+              "en": "Automatic when bundled diagram and content processors are used",
+              "zh-CN": "使用打包的图表与内容处理能力时自动生效"
+            }
+          }
+        ]
+      }
+    ],
+    "gettingStarted": [
+      { "en": "Choose Import bookmarks on the canvas, select a favorite or folder, then close the picker. Click its icon to open it, or select cards to change presentation, add notes and preview arrangements.", "zh-CN": "在画布点击「导入书签」，选择收藏夹或单个书签后关闭选择器。点击图标打开，或选中卡片切换展示、填写备注和预览排布。" },
+      { "en": "Use the toolbar icon to capture the current webpage. Open Settings → Learning guide for hands-on practice or the offline AI example; real AI requires your own configured service and explicit data consent.", "zh-CN": "通过工具栏图标收藏当前网页。「设置 → 使用指南」可实操练习或查看离线 AI 示例；真实 AI 需要自配服务并明确同意发送数据。" },
+      { "en": "Use More tools → Embed webpage, draw a region, enter an HTTPS URL and activate its center. Find provider details in Settings → Web embed guide.", "zh-CN": "点击「更多工具 → 嵌入网页」，拖出区域、填写 HTTPS 网址并激活中心；通过设置中的网页嵌入教程查看平台说明。" }
+    ],
+    "notices": [
+      { "en": "Availability is determined by each store listing, separately from this package date. This edition does not add cross-browser synchronization. Eligible lightweight canvas data uses browser-managed sync; a local write is not a remote-device receipt and exact delivery time is not guaranteed. Images and binary attachments remain local.", "zh-CN": "是否可安装以各商店条目为准，与包日期分开记录。本版不增加跨浏览器同步；轻量画布数据使用浏览器管理的同步，本地写入不等于另一设备已收到，也不保证精确送达时间。图片和二进制附件仍在本机。" },
+      { "en": "AI is optional and may incur your provider's fees. Only approved selected card IDs, titles, site hostnames, canvas notes and your instruction enter the prompt; full URLs, folder paths and unrelated data are excluded. Config and encrypted credentials remain on this device, outside sync and backups; the local vault is not an OS keychain.", "zh-CN": "AI 完全可选，可能产生服务商费用。提示仅含经确认的所选卡片 ID、标题、域名、画布备注和整理要求，不含完整网址、文件夹路径或无关数据。配置与密文凭据只在本机，不同步、不备份；本机凭据库不是系统钥匙串。" },
+      { "en": "Existing canvas and preferences are preserved, with no new mandatory permission or automatic data migration. The store extension and a separately loaded test extension have separate storage; export a full backup before choosing a manual transfer. Project-support payments remain disabled.", "zh-CN": "保留已有画布和偏好，不新增必需权限或自动迁移数据。商店扩展与单独侧载测试扩展的存储相互独立；如自行转移，请先导出完整备份。项目自愿支持仍关闭。" }
+    ],
+    "education": { "level": "notes", "chapters": [] }
+  },
+  {
     "version": "0.9.6",
     "date": "2026-10-21",
     "title": { "en": "Learn on the real canvas, at your own pace", "zh-CN": "在真实画布上，按自己的节奏学会使用" },

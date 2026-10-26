@@ -70,3 +70,17 @@ describe('release notes release gate', () => {
     expect(() => validateReleaseNotes([{ ...entry(), education }], '1.2.3')).toThrow(/education/i);
   });
 });
+
+
+describe('release notes browser scope', () => {
+  it('accepts legacy notes and explicitly scoped notes for the selected browser', () => {
+    expect(() => validateReleaseNotes([entry()], '1.2.3', 'chrome')).not.toThrow();
+    expect(() => validateReleaseNotes([{ ...entry(), browsers: ['edge'] }], '1.2.3', 'edge')).not.toThrow();
+    expect(() => validateReleaseNotes([{ ...entry(), browsers: ['chrome', 'edge', 'safari'] }], '1.2.3')).not.toThrow();
+    expect(() => validateReleaseNotes([{ ...entry(), browsers: ['edge'] }], '1.2.3', 'chrome')).toThrow(/1\.2\.3/);
+  });
+
+  it.each([[], ['edge', 'edge'], ['firefox'], 'edge', null, undefined])('rejects malformed explicit browser scope %j', (browsers) => {
+    expect(() => validateReleaseNotes([{ ...entry(), browsers }], '1.2.3')).toThrow(/browsers/);
+  });
+});

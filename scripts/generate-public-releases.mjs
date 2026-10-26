@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
-import { renderPublicReleases, updateHomepageReleaseStatus } from './lib/public-releases.mjs';
+import { renderPublicReleases, updateHomepageReleaseStatus, validateEdgeReleaseStatus, validateReleaseStatus } from './lib/public-releases.mjs';
 import { validateReleaseNotes } from './lib/validate-release-notes.mjs';
 
 const args = process.argv.slice(2);
@@ -16,11 +16,15 @@ const read = (path) => readFile(resolve(root, path), 'utf8');
 const [packageSource, catalogueSource, statusSource, homepage, chineseHomepage] = await Promise.all([
   read('package.json'), read('src/onboarding/releaseNotes.json'), read('docs/release-status.json'), read('docs/index.html'), read('docs/zh/index.html'),
 ]);
-const { version } = JSON.parse(packageSource);
+const { version, releaseBrowser = 'chrome' } = JSON.parse(packageSource);
+if (!['chrome', 'edge'].includes(releaseBrowser)) throw new Error(`Unsupported package releaseBrowser: ${releaseBrowser}`);
 const entries = JSON.parse(catalogueSource);
 const status = JSON.parse(statusSource);
-validateReleaseNotes(entries, version);
-if (status.candidateVersion !== version) throw new Error(`Release status candidate ${status.candidateVersion} does not match package version ${version}`);
+const candidateStatus = releaseBrowser === 'edge' ? JSON.parse(await read('docs/edge-release-status.json')) : status;
+if (releaseBrowser === 'edge') validateEdgeReleaseStatus(candidateStatus);
+else validateReleaseStatus(candidateStatus);
+if (candidateStatus.candidateVersion !== version) throw new Error(`Release status candidate ${candidateStatus.candidateVersion} does not match package version ${version}`);
+validateReleaseNotes(entries, version, releaseBrowser);
 const outputs = [
   ['docs/changelog.html', renderPublicReleases(entries, status)],
   ['docs/index.html', updateHomepageReleaseStatus(homepage, status)],

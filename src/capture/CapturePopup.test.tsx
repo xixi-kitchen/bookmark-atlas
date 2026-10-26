@@ -8,6 +8,9 @@ import { CAPTURE_OPEN_AFTER_SAVE_KEY } from './capturePreferences';
 import { LEARNING_PROGRESS_STORAGE_KEY, readLearningProgress, startLearning } from '../onboarding/learningState';
 import { readReleaseNotice, recordReleaseEducation } from '../onboarding/releaseEducation';
 
+// The feature-notice scenario below explicitly records version 0.9.6.
+vi.mock('../../package.json', () => ({ default: { version: '0.9.6' } }));
+
 vi.mock('./captureQueue', async (original) => ({
   ...await original<typeof import('./captureQueue')>(), captureActiveTab: vi.fn(), openCaptureCanvas: vi.fn(), ackCapture: vi.fn(),
 }));

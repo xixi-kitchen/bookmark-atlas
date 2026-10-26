@@ -3,14 +3,23 @@ import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'nod
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import entries from '../../src/onboarding/releaseNotes.json';
-import { formatReleaseStatus, renderPublicReleases, updateHomepageReleaseStatus, validateReleaseStatus } from '../../scripts/lib/public-releases.mjs';
+import catalogue from '../../src/onboarding/releaseNotes.json';
+
+import { formatReleaseStatus, renderPublicReleases, updateHomepageReleaseStatus, validateEdgeReleaseStatus, validateReleaseStatus } from '../../scripts/lib/public-releases.mjs';
+
+// The Chrome renderer fixture stays pinned to its historical channel releases.
+const entries = catalogue.filter((entry) => ['0.9.6', '0.9.5'].includes(entry.version));
 
 const status = {
   storeVersion: '0.9.5', candidateVersion: '0.9.6', stage: 'preparing' as const,
   preparedAt: '2026-10-21', submittedAt: null, publishedAt: null,
 };
 const submitted = { ...status, stage: 'submitted' as const, submittedAt: '2026-10-22' };
+const edgeStatus = {
+  browser: 'edge' as const, storeVersion: null, candidateVersion: '0.9.7', stage: 'preparing' as const,
+  preparedAt: '2026-10-26', submittedAt: null, publishedAt: null, draftId: null,
+};
+const edgeEntry = { ...structuredClone(entries[0]!), version: '0.9.7', date: '2026-10-26', browsers: ['edge'] };
 const published = { ...submitted, stage: 'published' as const, storeVersion: '0.9.6', publishedAt: '2026-10-23' };
 const homepage = '<main><h1>Keep this page intact</h1><p class="release-status" data-release-status="en">old English</p><a href="guide.html">Go</a></main>';
 const chineseHomepage = '<main><h1>保留页面原文</h1><p class="release-status" data-release-status="zh-CN">旧状态</p><a href="guide.html">指南</a></main>';
@@ -42,6 +51,38 @@ describe('public release channel status', () => {
   it('requires notes for both candidate and current store version', () => {
     expect(() => renderPublicReleases(entries.filter((entry) => entry.version !== '0.9.6'), status)).toThrow(/0\.9\.6/);
     expect(() => renderPublicReleases(entries.filter((entry) => entry.version !== '0.9.5'), status)).toThrow(/0\.9\.5/);
+  });
+});
+
+describe('browser-specific release channels', () => {
+  it('keeps Edge-only notes out of Chrome history and required version matching', () => {
+    expect(renderPublicReleases([edgeEntry, ...entries], published)).toBe(renderPublicReleases(entries, published));
+    expect(() => renderPublicReleases([{ ...entries[0]!, browsers: ['edge'] }, entries[1]!], status)).toThrow(/0\.9\.6/);
+    expect(() => renderPublicReleases([entries[0]!, { ...entries[1]!, browsers: ['edge'] }], status)).toThrow(/0\.9\.5/);
+    expect(() => renderPublicReleases([{ ...edgeEntry, browsers: [] }, ...entries], published)).toThrow(/browsers/);
+    expect(() => renderPublicReleases([{ ...edgeEntry, summary: { en: 'Missing translation' } }, ...entries], published)).toThrow(/summary/);
+  });
+
+  it('accepts the first Edge draft without a published store version', () => {
+    expect(() => validateEdgeReleaseStatus(edgeStatus)).not.toThrow();
+    const submittedEdge = { ...edgeStatus, stage: 'submitted', submittedAt: '2026-10-27', draftId: 'draft-123' };
+    expect(() => validateEdgeReleaseStatus(submittedEdge)).not.toThrow();
+    expect(() => validateEdgeReleaseStatus({ ...submittedEdge, stage: 'published', storeVersion: '0.9.7', publishedAt: '2026-10-28' })).not.toThrow();
+  });
+
+  it.each([
+    { ...edgeStatus, browser: 'chrome' }, { ...edgeStatus, stage: 'approved' },
+    { ...edgeStatus, storeVersion: 'v0.9.6' }, { ...edgeStatus, candidateVersion: '0.9.7-beta' },
+    { ...edgeStatus, storeVersion: '0.9.7' }, { ...edgeStatus, preparedAt: '2026-02-29' },
+    { ...edgeStatus, submittedAt: '2026-10-27' }, { ...edgeStatus, publishedAt: '2026-10-28' },
+    { ...edgeStatus, draftId: 123 }, { ...edgeStatus, draftId: '' }, { ...edgeStatus, draftId: undefined },
+    { ...edgeStatus, stage: 'submitted', submittedAt: null },
+    { ...edgeStatus, stage: 'submitted', submittedAt: '2026-10-25' },
+    { ...edgeStatus, stage: 'published', submittedAt: '2026-10-27', publishedAt: '2026-10-28' },
+    { ...edgeStatus, stage: 'published', storeVersion: '0.9.6', submittedAt: '2026-10-27', publishedAt: '2026-10-28' },
+    { ...edgeStatus, stage: 'published', storeVersion: '0.9.7', submittedAt: '2026-10-27', publishedAt: '2026-10-26' },
+  ])('rejects invalid Edge status before publication claims: %j', (input) => {
+    expect(() => validateEdgeReleaseStatus(input)).toThrow(/release status/i);
   });
 });
 
@@ -171,6 +212,52 @@ describe('public release generation command', () => {
       expect(readFileSync(join(root, 'docs/changelog.html'), 'utf8')).toBe('preserve old changelog');
       expect(readFileSync(join(root, 'docs/index.html'), 'utf8')).toBe(homepage);
       expect(readFileSync(join(root, 'docs/zh/index.html'), 'utf8')).toBe(chineseHomepage);
+    });
+  });
+});
+
+describe('Edge candidate generation command', () => {
+  const paths = ['docs/changelog.html', 'docs/index.html', 'docs/zh/changelog.html', 'docs/zh/index.html'];
+  function prepareEdge(root: string) {
+    writeFileSync(join(root, 'package.json'), JSON.stringify({ version: '0.9.7', releaseBrowser: 'edge' }));
+    writeFileSync(join(root, 'docs/release-status.json'), JSON.stringify(published));
+    writeFileSync(join(root, 'docs/edge-release-status.json'), JSON.stringify(edgeStatus));
+    writeFileSync(join(root, 'src/onboarding/releaseNotes.json'), JSON.stringify([edgeEntry, ...entries]));
+  }
+
+  it('validates the Edge candidate while preserving Chrome 0.9.6 pages byte for byte', () => {
+    withSiteFixture((root) => {
+      writeFileSync(join(root, 'docs/release-status.json'), JSON.stringify(published));
+      execFileSync(process.execPath, [script, '--root', root]);
+      const before = paths.map((path) => readFileSync(join(root, path), 'utf8'));
+      prepareEdge(root);
+      expect(spawnSync(process.execPath, [script, '--root', root, '--check']).status).toBe(0);
+      execFileSync(process.execPath, [script, '--root', root]);
+      expect(paths.map((path) => readFileSync(join(root, path), 'utf8'))).toEqual(before);
+      expect(before[0]).toContain('Chrome Web Store: 0.9.6.');
+      expect(before.join('')).not.toContain('0.9.7');
+    });
+  });
+
+  it.each([
+    ['missing Edge status', (root: string) => rmSync(join(root, 'docs/edge-release-status.json')), /edge-release-status/],
+    ['invalid Edge status', (root: string) => writeFileSync(join(root, 'docs/edge-release-status.json'), JSON.stringify({ ...edgeStatus, submittedAt: '2026-10-27' })), /release status/i],
+    ['mismatched Edge version', (root: string) => writeFileSync(join(root, 'docs/edge-release-status.json'), JSON.stringify({ ...edgeStatus, candidateVersion: '0.9.8' })), /candidate.*package version/i],
+    ['unsupported channel', (root: string) => writeFileSync(join(root, 'package.json'), JSON.stringify({ version: '0.9.7', releaseBrowser: 'firefox' })), /releaseBrowser/],
+    ['missing channel candidate', (root: string) => writeFileSync(join(root, 'src/onboarding/releaseNotes.json'), JSON.stringify([{ ...edgeEntry, browsers: ['chrome'] }, ...entries])), /0\.9\.7/],
+    ['invalid hidden scope', (root: string) => writeFileSync(join(root, 'src/onboarding/releaseNotes.json'), JSON.stringify([{ ...edgeEntry, browsers: ['edge', 'edge'] }, ...entries])), /browsers/],
+  ] as const)('rejects %s before any writes in normal and check modes', (_name, corrupt, error) => {
+    withSiteFixture((root) => {
+      prepareEdge(root);
+      for (const path of paths) writeFileSync(join(root, path), `preserve ${path}`);
+      corrupt(root);
+      const before = paths.map((path) => readFileSync(join(root, path), 'utf8'));
+      for (const options of [[], ['--check']]) {
+        const run = spawnSync(process.execPath, [script, '--root', root, ...options], { encoding: 'utf8' });
+        expect(run.status).not.toBe(0);
+        expect(run.stderr).toMatch(error);
+        expect(paths.map((path) => readFileSync(join(root, path), 'utf8'))).toEqual(before);
+      }
     });
   });
 });

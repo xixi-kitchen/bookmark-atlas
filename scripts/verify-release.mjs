@@ -7,7 +7,7 @@ if (!['chrome', 'edge', 'safari'].includes(browser)) throw new Error(`Unsupporte
 const packageMetadata = JSON.parse(await readFile(new URL('package.json', root), 'utf8'));
 const version = packageMetadata.version;
 const catalogue = JSON.parse(await readFile(new URL('src/onboarding/releaseNotes.json', root), 'utf8'));
-validateReleaseNotes(catalogue, version);
+validateReleaseNotes(catalogue, version, browser);
 const versionHeading = `## v${version}`;
 const changelog = await readFile(new URL('CHANGELOG.md', root), 'utf8');
 const releaseNotesUrl = new URL(`docs/releases/v${version}.md`, root);

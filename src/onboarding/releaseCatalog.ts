@@ -5,6 +5,7 @@ export type Localized = { en: string; 'zh-CN': string };
 export type ReleaseChapter = LearningChapter;
 export type ReleaseNotesEntry = {
   version: string;
+  browsers?: ('chrome' | 'edge' | 'safari')[];
   date: string;
   title: Localized;
   summary: Localized;

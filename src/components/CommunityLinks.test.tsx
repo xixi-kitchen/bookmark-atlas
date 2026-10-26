@@ -20,6 +20,7 @@ afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
+  vi.unstubAllEnvs();
 });
 
 function renderSettings() {
@@ -31,6 +32,16 @@ function renderSettings() {
 }
 
 describe('settings community links', () => {
+  it('uses the Edge-specific guide in each interface language for an Edge build', async () => {
+    vi.stubEnv('BROWSER', 'edge');
+    renderSettings();
+    expect(screen.getByRole('link', { name: 'Web embed guide' }))
+      .toHaveAttribute('href', 'https://xixi-kitchen.github.io/bookmark-atlas/edge/guide.html#embeds');
+    fireEvent.change(screen.getByRole('combobox', { name: 'Language / 语言' }), { target: { value: 'zh-CN' } });
+    await waitFor(() => expect(screen.getByRole('link', { name: '网页嵌入教程' }))
+      .toHaveAttribute('href', 'https://xixi-kitchen.github.io/bookmark-atlas/zh/edge/guide.html#embeds'));
+    expect(screen.getAllByRole('link')).toHaveLength(3);
+  });
   it('keeps three safe external links inside the settings help section', () => {
     const dialog = renderSettings();
     const help = within(dialog).getByRole('region', { name: 'Help' });

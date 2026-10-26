@@ -30,7 +30,7 @@ Key features:
 - Follow an optional hands-on guide, switch English/Simplified Chinese in settings, and read version introductions.
 - Optionally connect your own compatible AI provider for selected-favorite organization: review the metadata and proposed layout, then explicitly apply or undo it.
 
-Synchronization, where available, is limited to Microsoft Edge profiles signed in to the same supported account with the relevant browser sync settings enabled. Image files stay local. A local sync-storage write is not a remote-delivery receipt; real two-device verification is required before advertising this as tested functionality.
+Synchronization, where available, is limited to Microsoft Edge profiles signed in to the same supported account with the relevant browser sync settings enabled. Image files stay local. Delivery also depends on extension identity, browser service availability and quota; a local sync-storage write is not a remote-device receipt.
 
 AI is optional. The selected card IDs, titles, site hostnames, notes and organization instruction are sent to the HTTPS provider configured by the user only after the user confirms the disclosed request. Full URLs and folder paths are not included in this request. Model listing and connectivity tests contact that provider separately; generation may incur provider charges. Connection settings and the API key remain in this device's browser profile and are excluded from sync and extension backups. The key is encrypted locally using a nonextractable IndexedDB key; this is not an OS keychain. Clear saved credentials in AI settings and revoke granted site access through Edge extension permissions when no longer needed.
 
@@ -63,9 +63,9 @@ Bookmark Atlas 将 Microsoft Edge 新标签页变成本地优先的可视化工�
 
 支持图标、简洁、详细三种卡片和备注；点击图标打开网页。通过工具栏弹窗收藏当前网页，可选择添加后是否打开画布。设置可切换中英文，首次使用可跟随实操引导，之后查看完整版本介绍。
 
-完整画布保存在当前设备。图形、文字、收藏夹引用、视口和素材库等轻量数据会在浏览器账号同步可用且配额允许时同步；图片和二进制附件仍保存在添加它们的设备上，可通过完整备份迁移。
+完整画布保存在当前设备。图形、文字、收藏夹引用、文档设置和素材库等轻量数据可在浏览器账号同步可用且配额允许时写入同步存储；视口、缩放和工具偏好仅在本机。图片和二进制附件仍保存在添加它们的设备上，可通过完整备份迁移。
 
-同步仅限登录同一受支持 Microsoft Edge 账号、开启相关浏览器同步设置的 Edge 用户配置；图片仍在本机。写入本地同步存储不等于另一设备已收到，必须完成真实双设备验收后，才能将该能力描述为已验证。
+同步仅限登录同一受支持 Microsoft Edge 账号、开启相关浏览器同步设置的 Edge 用户配置；图片仍在本机。送达还依赖扩展身份、浏览器同步服务和配额，本地写入不等于另一设备已收到。
 
 AI 整理完全可选。用户自行配置兼容服务商，确认披露后才发送所选卡片的 ID、标题、网站域名、备注和整理要求，不发送完整网址或文件夹路径；先预览再应用，并可撤销。拉取模型和连通测试会单独访问该服务商，模型生成可能收费。配置和 Key 仅存当前设备的浏览器用户配置，不同步、不进入插件备份。Key 以本机密文和 IndexedDB 不可导出密钥保存，不是系统钥匙串。可清除本机配置，并在 Edge 扩展权限中撤销该服务商站点访问。
 

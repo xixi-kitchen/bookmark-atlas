@@ -1,6 +1,7 @@
 {
   "name": "bookmark-atlas",
-  "version": "0.9.6",
+  "version": "0.9.7",
+  "releaseBrowser": "edge",
   "private": true,
   "type": "module",
   "scripts": {
@@ -41,6 +42,10 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "zustand": "^5.0.2"
+  },
+  "overrides": {
+    "dompurify": "3.4.17",
+    "lodash-es": "4.18.1"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.3",
