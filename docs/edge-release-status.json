@@ -6,5 +6,16 @@
   "preparedAt": "2026-10-26",
   "submittedAt": null,
   "publishedAt": null,
-  "draftId": "f42b0844-c2e6-49b8-a912-9eb4adeb601c"
+  "draftId": "f42b0844-c2e6-49b8-a912-9eb4adeb601c",
+  "storeId": "0RDCKFQ2N3TS",
+  "crxId": "cjfbcanenjlnfenoajkfhdfnhmclboai",
+  "frozenCommit": "07e44a2eafbd357c0576654583cd38ace37a5b29",
+  "packageName": "bookmark-atlas-0.9.7-edge.zip",
+  "packageBytes": 2898246,
+  "packageSHA256": "434f7712b1ad0e4a97055ca11d560f93fec5d0fb5d6777a5afaef88b81e8f9df",
+  "packageUploadStatus": "verified Complete",
+  "listingStatus": "English and Chinese (China) Complete",
+  "overviewStatus": "In draft",
+  "twoDeviceAcceptance": "pending",
+  "websiteCommit": "728e1edf4978e97d56d762187678e1051f79a43f"
 }

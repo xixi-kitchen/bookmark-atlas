@@ -51,7 +51,7 @@ No ads, trackers, developer analytics, or remotely hosted executable extension c
 
 ### 名称
 
-Bookmark Atlas – Excalidraw 新标签页
+Bookmark Atlas – Excalidraw 书签画布
 
 ### 简短说明
 
@@ -97,3 +97,17 @@ AI 整理完全可选。用户自行配置兼容服务商，确认披露后才�
 - [Developer policies](https://learn.microsoft.com/en-us/legal/microsoft-edge/extensions/developer-policies)
 
 Keep public Edge metadata focused on this edition. Prepare the 128px+ square logo, 440×280 promotional tile and 1280×800 real Edge screenshots; confirm actual Partner Center required fields before upload. Do not reuse a development public test key as a guaranteed store identity. Neither signing into an account, accepting developer terms, creating a listing, nor submitting is part of this local adaptation round.
+
+## Subsequent authenticated draft save — 2026-10-26
+
+The owner subsequently authorized the store-draft operation, confirmed local Edge acceptance and left two-device acceptance pending. The uploaded0.9.7 production package was verified; all five sections and both English/Chinese(China) rows were read back Complete, with overview **In draft**. Public/all241markets/futuremarkets, Productivity, Edge-specific website/privacy and GitHub support were saved. Both locales have complete descriptions, seven search terms, logo, small/large promotional tiles and their corresponding language screenshot. The original sample copy above is background preparation; the saved portal form is the operational record.
+
+Owner explicitly approved Authentication information/Web history/Website content and all three usage certifications. No certification submission or publication occurred. Public store URL remains unavailable until publication.
+
+- ProductGUID: f42b0844-c2e6-49b8-a912-9eb4adeb601c
+- StoreID: 0RDCKFQ2N3TS
+- CRXID: cjfbcanenjlnfenoajkfhdfnhmclboai
+- Frozen source:07e44a2eafbd357c0576654583cd38ace37a5b29
+- ProductionZIP SHA256:434f7712b1ad0e4a97055ca11d560f93fec5d0fb5d6777a5afaef88b81e8f9df
+
+The allocated public key was verified against the CRX ID for a new store-identity acceptance ZIP. This key does not sign a store CRX or prove sync delivery. Finish real A↔B acceptance with the new package before proceeding. Do not rebuild/replace the frozen production ZIP to update this status.
