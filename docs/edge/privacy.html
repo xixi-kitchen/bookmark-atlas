@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="How Bookmark Atlas for Edge handles favorites, canvas data, sync, optional AI and local credentials.">
+  <title>Privacy policy · Bookmark Atlas for Edge</title>
+  <link rel="canonical" href="https://xixi-kitchen.github.io/bookmark-atlas/edge/privacy.html">
+  <link rel="alternate" hreflang="en" href="https://xixi-kitchen.github.io/bookmark-atlas/edge/privacy.html">
+  <link rel="alternate" hreflang="zh-CN" href="https://xixi-kitchen.github.io/bookmark-atlas/zh/edge/privacy.html">
+  <link rel="stylesheet" href="../site.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <div class="site-shell">
+    <header class="site-nav">
+      <a class="site-brand" href="index.html" aria-label="Bookmark Atlas Edge home"><img src="../store-assets/icon-128.png" width="38" height="38" alt="">Bookmark Atlas</a>
+      <nav aria-label="Primary"><a href="index.html">Home</a><a href="guide.html">Guide</a><a href="privacy.html" aria-current="page">Privacy</a><a class="language-switch" href="../zh/edge/privacy.html" lang="zh-CN" hreflang="zh-CN" aria-label="切换此页为简体中文">中文</a><a href="https://github.com/xixi-kitchen/bookmark-atlas">GitHub</a></nav>
+    </header>
+    <main id="main-content">
+<article class="document">
+
+      <h1>Privacy Policy</h1>
+      <p>Last updated: 2026-10-26. This policy applies to the Bookmark Atlas for Microsoft Edge v0.9.7 draft, including optional AI organization and current-page capture. It explains data handling before you enable optional features.</p>
+      <p>Bookmark Atlas is a local-first Microsoft Edge extension. It does not sell your data or send bookmarks, open tabs, browsing history, or canvas content to a developer-operated server by default. Optional AI organization sends only user-approved selected metadata to the model service you choose. It does not include ads, trackers, or remote extension code execution.</p>
+
+      <p>The <code>chrome.storage.local</code> and <code>chrome.storage.sync</code> names below are extension API namespaces supported by Edge; they do not mean data is sent to a Chrome account.</p>
+      <h2>Data handled by the extension</h2>
+      <ul>
+        <li>Edge favorites are read and modified locally through the Bookmarks API supported by Edge for user-requested bookmark features.</li>
+        <li>Clicking the extension icon and explicitly adding the current page reads the active tab's title and URL and saves a native bookmark in Other favorites / Bookmark Atlas. A local pending queue retains the canvas insertion until the canvas is saved successfully. It does not read page bodies or move or rewrite unrelated bookmarks. The native bookmark follows your browser bookmark-sync settings; the pending queue itself is not synced or shared by Bookmark Atlas.</li>
+        <li>Website icons are read from Edge’s local Favicon API cache.</li>
+        <li>Open tabs and browsing history are read locally to produce pre-search results.</li>
+        <li>The full Excalidraw canvas and user-added binary attachments are stored in local IndexedDB, with <code>chrome.storage.local</code> as a fallback.</li>
+        <li>Lightweight shapes, text, bookmark references, document settings, and library items may be compressed and written to <code>chrome.storage.sync</code> when Edge browser sync is available and quota allows.</li>
+        <li>Viewport, zoom, sidebar, and drawing-tool preferences remain local.</li>
+        <li>Interface language and Open canvas after adding preferences remain in local extension storage. Language changes do not reload or reset the canvas or change Edge’s own interface language. When popup navigation is disabled, captured cards remain queued locally until a canvas is opened and successfully saves them.</li>
+        <li>Images and binary attachments are not uploaded to Edge browser sync.</li>
+        <li>Bookmark presentation and canvas notes may sync as lightweight canvas content.</li>
+        <li>AI Base URL and model name are saved locally only after an explicit Save on this device action. The API key uses AES-GCM-256 encryption, a fresh 96-bit IV, and authenticated binding to its normalized endpoint. The credential record in <code>chrome.storage.local</code> holds ciphertext, IV, and endpoint, not the plaintext key. A locally generated non-extractable CryptoKey stays in the extension's dedicated IndexedDB; no encryption key is bundled in the package. AI configuration and encryption keys are not synced, shared, or included in extension backups. This is not an OS keychain or absolute protection: someone controlling the browser profile or extension runtime may still invoke or recover access to the credential. Closing the panel does not remove saved credentials. Existing plaintext development settings migrate only after encryption and replacement succeed; if IndexedDB or encryption is unavailable, an explicit error is shown instead of a plaintext or silent session-only fallback.</li>
+      </ul>
+
+      <h2>Sync behavior</h2>
+      <p>Bookmark Atlas writes eligible lightweight data to browser sync storage (<code>chrome.storage.sync</code>) when sync is available and quota allows, and listens for browser storage change events. A local saved status or updates between pages on one device do not prove remote delivery. Cross-device sync requires the same supported Edge account, extension-data sync enabled, and the same store extension identity on both devices. A development test extension may have a different identity from the final store item. Edge controls delivery and does not guarantee a fixed delivery time.</p>
+      <p>The user has accepted local Edge functionality for the v0.9.7 draft; two-device sync acceptance is still pending and must be completed before store submission. Favorite cards are reconciled by normalized URL, title, and folder path. Edge favorite IDs are local to a browser profile and are not treated as cross-device identifiers.</p>
+
+      <h2>Local learning and update notices</h2>
+      <p>The learning guide stores the current chapter and step, completed steps and chapters, and active, paused, or completed status. Update notices store version metadata, the first-seen timestamp, whether notes have been read, which relevant feature chapters have been used, and whether a learning invitation has been claimed or dismissed. Installation and update flags retain the installed/previous version and whether onboarding or update notes are pending, completed, skipped, or already seen. These records let you resume learning, avoid repeated prompts, and show quiet update markers. Local tab coordination prevents multiple open extension pages from displaying the same guide or invitation simultaneously.</p>
+      <p>These records stay in extension-local storage in the current browser profile and do not participate in Edge browser sync. They are not telemetry and are not sent to the developer or a model provider. Learning signals carry only an action type and, where needed, a count; the learning and update records do not store bookmark content, API keys, prompts, or other business-operation payloads. Uninstalling the extension clears these local records.</p>
+      <p>The offline AI teaching demonstration uses fixed samples bundled with the extension. It makes no model-provider request, sends no user data, incurs no provider charge, and does not change the real canvas or create bookmarks. It does not complete a real AI task. Choosing to configure or use a real AI service instead follows the optional AI data handling described below.</p>
+
+      <h2>Remote requests</h2>
+      <p>When the user selects Baidu, Bing, or Google as the active built-in search engine, input text is sent to that provider's fixed suggestion endpoint. Edge Default and custom engines do not call an extra remote suggestion endpoint. Embedded websites load in sandboxed iframes and may receive normal browser requests, cookies, and account state according to browser rules. Bookmark Atlas does not proxy, inspect, or record those requests.</p>
+      <p>For official YouTube <code>/embed/</code> player requests created by Bookmark Atlas, a scoped declarativeNetRequest rule sets a fixed client referrer. The rule does not read request content and does not apply to YouTube players created by other websites.</p>
+
+      <h2>Optional AI organization</h2>
+      <p>AI is off unless you configure a compatible HTTPS model service and choose to use it. Before generation, select bookmark cards, review the outgoing data, and explicitly agree to send their titles, domains, existing canvas descriptions (notes), selected card IDs, and your organization instruction to that service. Complete bookmark URLs, folder paths, URL parameters or fragments, history, other tabs, images, other canvas elements, and API keys are not included in the model prompt. The API Key is sent only in the authentication header to your configured endpoint.</p>
+      <p>The extension declares optional HTTPS host capability, not installation-time access to every website. Clicking Connect requests permission only for the configured service origin. Requests do not send browser cookies or follow redirects. You can revoke the granted service-origin permission through Edge’s extension settings. Clearing local AI settings does not revoke that browser permission.</p>
+      <p>Model discovery and connectivity tests run only on explicit request. Discovery authenticates <code>GET /models</code>; a successful list does not prove the selected model can generate. Test selected model sends only a fixed minimal prompt through <code>POST /chat/completions</code>, without bookmarks or canvas content, and the provider may charge for it. Neither action automatically saves settings.</p>
+      <p>The provider processes the submitted metadata and authentication under its own fees, privacy, retention, and training policies. Review those terms before connecting. Requests use <code>store: false</code>, but Bookmark Atlas cannot guarantee third-party compliance or zero retention. No developer-funded model account or shared key is provided.</p>
+      <p>AI output is validated as data, not executed as code. Notes are metadata-based suggestions, not verified page summaries. Preview does not alter the saved canvas; applying it is explicit and undoable. Applied groups and notes may sync with canvas content.</p>
+
+      <h2>Data deletion</h2>
+      <p>Uninstalling the extension removes local extension storage from the device, including learning progress, onboarding flags, and update-notice records. Edge account sync data is managed by Edge. Uninstalling Bookmark Atlas does not delete the user's Edge favorites.</p>
+      <p>Clear local AI settings removes the saved endpoint, model, and API credentials from the current browser profile. The non-credential encryption key remains locally to support concurrent operations and contains no provider token. Uninstalling removes extension storage, including that key and the local pending capture queue. Closing the AI panel alone does not delete saved settings. Uninstalling does not delete data already received by a model provider; use that provider's deletion process where applicable. Extension backups contain no AI credentials, configuration, or encryption keys.</p>
+
+      <h2>Limited Use</h2>
+      <p>Where information is received from Google APIs, its use adheres to the applicable Google user data policies, including Limited Use requirements. This Edge version also follows applicable Microsoft Edge Add-ons policies. This does not mean the Edge draft has passed store review or is published.</p>
+    </article>
+    </main>
+    <footer class="site-footer"><p>Bookmark Atlas <span>A freeform home for the things you save.</span></p><nav aria-label="Footer"><a href="index.html">Home</a><a href="guide.html">Guide</a><a href="privacy.html" aria-current="page">Privacy</a><a href="https://github.com/xixi-kitchen/bookmark-atlas/issues/new/choose">Issues / site requests</a></nav></footer>
+  </div>
+</body>
+</html>
