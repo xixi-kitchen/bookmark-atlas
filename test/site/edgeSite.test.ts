@@ -50,11 +50,12 @@ describe('Edge public documentation', () => {
     expect(doc.querySelector('main')!.textContent!.length).toBeGreaterThan(700);
   });
 
-  it.each(['edge/index.html', 'zh/edge/index.html'])('%s presents a draft with an explicit sync gate', (route) => {
+  it.each(['edge/index.html', 'zh/edge/index.html'])('%s distinguishes submission from publication and retains pending sync acceptance', (route) => {
     const doc = load(route);
     const status = doc.querySelector('[data-edge-release-status]')?.textContent;
     expect(status).toContain('0.9.7');
-    expect(status).toMatch(/draft|草稿/i);
+    expect(status).toMatch(/submitted for review|已于.*提交商店审核/i);
+    expect(status).toContain('2026-10-26');
     expect(status).toMatch(/two-device.*pending|两设备.*待验证/i);
     expect(doc.querySelector('[data-edge-availability]')?.textContent).toMatch(/not yet available|尚未提供/);
     expect(doc.querySelector('[data-edge-availability] a')).toBeNull();

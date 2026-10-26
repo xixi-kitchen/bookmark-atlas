@@ -2,9 +2,9 @@
   "browser": "edge",
   "storeVersion": null,
   "candidateVersion": "0.9.7",
-  "stage": "preparing",
+  "stage": "submitted",
   "preparedAt": "2026-10-26",
-  "submittedAt": null,
+  "submittedAt": "2026-10-26",
   "publishedAt": null,
   "draftId": "f42b0844-c2e6-49b8-a912-9eb4adeb601c",
   "storeId": "0RDCKFQ2N3TS",
@@ -15,7 +15,8 @@
   "packageSHA256": "434f7712b1ad0e4a97055ca11d560f93fec5d0fb5d6777a5afaef88b81e8f9df",
   "packageUploadStatus": "verified Complete",
   "listingStatus": "English and Chinese (China) Complete",
-  "overviewStatus": "In draft",
-  "twoDeviceAcceptance": "pending",
-  "websiteCommit": "728e1edf4978e97d56d762187678e1051f79a43f"
+  "overviewStatus": "In review",
+  "twoDeviceAcceptance": "pending; owner deferred until after submission",
+  "websiteCommit": "728e1edf4978e97d56d762187678e1051f79a43f",
+  "submissionAuthorization": "owner explicitly requested submission; two-device test deferred"
 }
