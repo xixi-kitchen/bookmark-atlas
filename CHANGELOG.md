@@ -2,11 +2,11 @@
 
 ## v0.9.7 - 2026-10-26
 
-Edge first-edition candidate preparation; not submitted or published. Chrome Web Store remains0.9.6. Native local Edge acceptance passed; real two-device Edge sync acceptance is pending.
+Edge first public edition. Package frozen and store marked updated on 2026-10-26; Live / Public availability confirmed on 2026-10-28 (exact publication timestamp unavailable). Chrome Web Store remains v0.9.6. Native local Edge acceptance passed; real two-device Edge sync acceptance is pending.
 
 ### English
 
-- Prepare Edge native favorites, full Excalidraw canvas, unified search, toolbar capture, optional AI and hands-on learning for a separate store edition.
+- Release Edge native favorites, full Excalidraw canvas, unified search, toolbar capture, optional AI and hands-on learning for a separate store edition.
 - Add GitHub/community links and browser-specific, independent English/Chinese guides and privacy pages.
 - Localize the default search engine name across old configurations, menus, placeholders and direct-search suggestions while keeping stored IDs.
 - Add quiet slow-embed help, reduce redundant URL work and remove Bilibili's intermediate iframe on URL change; preserve sandbox and playback behavior.
@@ -15,14 +15,14 @@ Edge first-edition candidate preparation; not submitted or published. Chrome Web
 
 ### 中文
 
-- 准备独立 Edge 初版：原生收藏夹、完整 Excalidraw 画布、统一搜索、工具栏收藏、可选 AI 和实操引导。
+- 发布独立 Edge 初版：原生收藏夹、完整 Excalidraw 画布、统一搜索、工具栏收藏、可选 AI 和实操引导。
 - 增加 GitHub／社区入口及各自独立的中英文 Edge 指南和隐私页面。
 - 默认搜索名称在旧配置、菜单、占位提示和直接搜索建议中统一本地化，保留已有存储 ID。
 - 增加安静的慢加载帮助，减少重复网址处理并修复 B站切换网址的中间 iframe；保留沙箱和播放行为。
 - Edge 草稿元数据与 Chrome 已发布渠道分开；正式包不含测试 key，不新增必需权限、依赖、支付或跨浏览器同步。
 - 固定打包 DOMPurify3.4.17 和 lodash-es4.18.1 的兼容上游安全修复，其他依赖告警仍单独评估。
 
-以上为候选准备日期，不代表 Edge 送审／批准／上架；本机功能已验收，双设备同步仍待测试。完整说明见 docs/releases/v0.9.7.md。
+上述版本日期为安装包冻结及商店标注的更新时间；2026-10-28 已核实 Edge 公开上架。本机功能已验收，双设备同步仍待测试。完整说明见 docs/releases/v0.9.7.md。
 
 ## v0.9.6 - 2026-10-21
 

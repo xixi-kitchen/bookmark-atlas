@@ -44,21 +44,22 @@ describe('Edge public documentation', () => {
       const assetPath = asset.getAttribute('src') || asset.getAttribute('href')!;
       expect(existsSync(resolve('docs', dirname(route), assetPath)), `${route} asset ${assetPath}`).toBe(true);
     }
-    expect(doc.querySelector('a[href*="microsoftedge.microsoft.com/addons/detail"],a[href*="chromewebstore"],a[href*="sponsors"],a[href*="buymeacoffee"]')).toBeNull();
+    expect(doc.querySelector('a[href*="chromewebstore"],a[href*="sponsors"],a[href*="buymeacoffee"]')).toBeNull();
     expect(doc.body.textContent).not.toMatch(/chrome-extension:\/\/|[a-p]{32}|donat|赞赏|打赏|收款/i);
     expect(doc.querySelector('a[href="https://github.com/xixi-kitchen/bookmark-atlas/issues/new/choose"]')).not.toBeNull();
     expect(doc.querySelector('main')!.textContent!.length).toBeGreaterThan(700);
   });
 
-  it.each(['edge/index.html', 'zh/edge/index.html'])('%s distinguishes submission from publication and retains pending sync acceptance', (route) => {
+  it.each(['edge/index.html', 'zh/edge/index.html'])('%s shows verified public availability and retains pending sync acceptance', (route) => {
     const doc = load(route);
     const status = doc.querySelector('[data-edge-release-status]')?.textContent;
     expect(status).toContain('0.9.7');
-    expect(status).toMatch(/submitted for review|已于.*提交商店审核/i);
+    expect(status).toMatch(/public|公开/i);
+    expect(status).toContain('2026-10-28');
     expect(status).toContain('2026-10-26');
     expect(status).toMatch(/two-device.*pending|两设备.*待验证/i);
-    expect(doc.querySelector('[data-edge-availability]')?.textContent).toMatch(/not yet available|尚未提供/);
-    expect(doc.querySelector('[data-edge-availability] a')).toBeNull();
+    expect(doc.querySelector('a[href="https://microsoftedge.microsoft.com/addons/detail/cjfbcanenjlnfenoajkfhdfnhmclboai"]')).not.toBeNull();
+    expect(doc.querySelector('[data-edge-availability]')?.textContent).not.toMatch(/not yet available|尚未提供/);
     expect(doc.body.textContent).toMatch(/Chrome.*0\.9\.6/);
     const screenshot = doc.querySelector('figure img');
     expect(screenshot?.getAttribute('src')).toBe(route.startsWith('zh/')

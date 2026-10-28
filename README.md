@@ -1,10 +1,11 @@
 # Bookmark Atlas
 
-A local-first Chrome new tab workspace for your bookmarks, ideas, and everyday
+A local-first Chrome and Microsoft Edge new tab workspace for your bookmarks, ideas, and everyday
 research. Bring native bookmarks onto an Excalidraw canvas, arrange them beside
 notes and drawings, and find your way back with one search box.
 
 [Install for Chrome](https://chromewebstore.google.com/detail/bookmark-atlas/bkdplfepaegfdabniedlkaodllnmnbfl)
+· [Install for Edge](https://microsoftedge.microsoft.com/addons/detail/cjfbcanenjlnfenoajkfhdfnhmclboai)
 · [Website](https://xixi-kitchen.github.io/bookmark-atlas/)
 · [Guide](https://xixi-kitchen.github.io/bookmark-atlas/guide.html)
 · [Updates](https://xixi-kitchen.github.io/bookmark-atlas/changelog.html)
@@ -19,6 +20,12 @@ Practice on the real canvas with the optional learning guide and read complete
 bilingual version introductions. The
 [v0.9.6 release](https://github.com/xixi-kitchen/bookmark-atlas/releases/tag/v0.9.6)
 includes the matching package, checksum, and release notes; previous releases remain available.
+
+Microsoft Edge Add-ons stable: **v0.9.7**, confirmed publicly available on **2026-10-28**.
+Use the [Edge guide](https://xixi-kitchen.github.io/bookmark-atlas/edge/guide.html) and
+[Edge release](https://github.com/xixi-kitchen/bookmark-atlas/releases/tag/edge-v0.9.7).
+Local Edge functionality is accepted; two-device Edge sync acceptance remains pending.
+Choose the matching browser store; profiles, favorites and saved AI settings do not migrate automatically.
 
 ## Quick start
 
@@ -93,7 +100,7 @@ history, or canvas to a developer server by default.
 | Browser | Status |
 | --- | --- |
 | Chrome | Available through the Chrome Web Store. |
-| Microsoft Edge | Compatibility build candidate; real sideload and same-account two-device acceptance remain required. |
+| Microsoft Edge | Available from Microsoft Edge Add-ons (v0.9.7). Local functionality accepted; same-account two-device sync acceptance remains pending. |
 | Safari | WebExtension build feasibility only; Apple packaging, runtime validation, and a separate sync design remain required. |
 
 There is no synchronization between different browser families.
@@ -125,10 +132,11 @@ verification, or the [release process](docs/release-process.md) for publishing.
 
 ## 中文说明
 
-Bookmark Atlas 是本地优先的 Chrome 新标签页工作空间。将原生书签放进
+Bookmark Atlas 是本地优先的 Chrome 与 Microsoft Edge 新标签页工作空间。将原生书签放进
 Excalidraw 画布，与备注、绘图和网页嵌入一起整理，再通过统一搜索找回需要的内容。
 
 [从 Chrome 应用商店安装](https://chromewebstore.google.com/detail/bookmark-atlas/bkdplfepaegfdabniedlkaodllnmnbfl)
+· [从 Edge 加载项安装](https://microsoftedge.microsoft.com/addons/detail/cjfbcanenjlnfenoajkfhdfnhmclboai)
 · [官网](https://xixi-kitchen.github.io/bookmark-atlas/)
 · [中文官网](https://xixi-kitchen.github.io/bookmark-atlas/zh/index.html)
 · [使用指南](https://xixi-kitchen.github.io/bookmark-atlas/zh/guide.html)
@@ -140,6 +148,11 @@ Chrome 商店当前稳定版为 **v0.9.6**，已于 **2026-10-22** 上架。
 本版提供真实画布上的可选实操引导，以及完整双语版本介绍。
 [v0.9.6 正式发布页](https://github.com/xixi-kitchen/bookmark-atlas/releases/tag/v0.9.6)
 提供对应安装包、校验文件和发布说明；历史版本继续保留。
+
+Edge 当前正式版为 **v0.9.7**，已于 **2026-10-28** 核实公开可安装。
+查看 [Edge 中文指南](https://xixi-kitchen.github.io/bookmark-atlas/zh/edge/guide.html)与
+[Edge 正式发布页](https://github.com/xixi-kitchen/bookmark-atlas/releases/tag/edge-v0.9.7)。
+本机功能已验收，双设备同步仍待测试。请选择对应浏览器商店；原生收藏、画布及 AI 配置不会跨浏览器自动迁移。
 
 ### 快速开始
 
@@ -189,7 +202,7 @@ Bookmark Atlas 无广告或追踪器，默认不将书签、标签页、历史�
 
 ### 浏览器与开发
 
-Chrome 已通过应用商店提供。Edge 目前为兼容性构建候选，仍需真实侧载及同账号双设备验收；
+Chrome v0.9.6 和 Edge v0.9.7 已分别通过各自商店提供。Edge 本机功能已验收，同账号双设备同步仍待测试；
 Safari 仅完成 WebExtension 构建可行性验证，仍需 Apple 打包、运行验证与独立同步方案。
 **不同浏览器之间不会同步数据。**
 
