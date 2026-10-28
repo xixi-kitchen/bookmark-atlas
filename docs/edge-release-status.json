@@ -17,11 +17,17 @@
   "listingStatus": "English and Chinese (China) Complete",
   "overviewStatus": "Live / Public",
   "twoDeviceAcceptance": "pending; owner deferred until after submission",
-  "websiteCommit": "6dbc46852e290c0ecffde3b662d884d8aca2a4fd",
+  "websiteCommit": "e28c304fb42eb5744aeadb5ea660c7ef81ff67e7",
   "submissionAuthorization": "owner explicitly requested submission; two-device test deferred",
-  "websiteDeploymentRun": 40341209556,
+  "websiteDeploymentRun": 40618255088,
   "publishedAtBasis": "First confirmed publicly available on 2026-10-28; exact approval/publication timestamp not exposed by observed pages.",
   "storeUpdatedAt": "2026-10-26",
   "storeURL": "https://microsoftedge.microsoft.com/addons/detail/cjfbcanenjlnfenoajkfhdfnhmclboai",
-  "githubTag": "edge-v0.9.7"
+  "githubTag": "edge-v0.9.7",
+  "websiteDeploymentStatus": "success",
+  "websiteVerifiedAt": "2026-10-28",
+  "githubReleaseURL": "https://github.com/xixi-kitchen/bookmark-atlas/releases/tag/edge-v0.9.7",
+  "githubReleaseID": 426182864,
+  "githubReleaseStatus": "published; draft=false; prerelease=false; Chrome v0.9.6 remains Latest",
+  "publicAssetVerification": "downloaded ZIP and checksum match frozen submission; CRC passes; 2026-10-28"
 }
