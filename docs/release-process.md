@@ -8,6 +8,7 @@
 
 - Chrome 商店条目：[Bookmark Atlas](https://chromewebstore.google.com/detail/bookmark-atlas/bkdplfepaegfdabniedlkaodllnmnbfl)，
   item ID：`bkdplfepaegfdabniedlkaodllnmnbfl`。
+- Edge 商店条目：[Bookmark Atlas](https://microsoftedge.microsoft.com/addons/detail/cjfbcanenjlnfenoajkfhdfnhmclboai)，CRX ID：`cjfbcanenjlnfenoajkfhdfnhmclboai`。
 - 正式源码与 Release：[`xixi-kitchen/bookmark-atlas`](https://github.com/xixi-kitchen/bookmark-atlas)。
 - 官网：[xixi-kitchen.github.io/bookmark-atlas](https://xixi-kitchen.github.io/bookmark-atlas/)。
 - 发布状态依次为：候选准备 → 已送审 → 审核通过待发布（如选择延期发布）→ 商店已发布
@@ -24,6 +25,16 @@
 按实际证据更新后运行 `npm run docs:release`，由 `scripts/generate-public-releases.mjs`
 生成 `docs/changelog.html` 并更新首页中英状态。不要只手改生成页或只改 README。
 若后台已经批准但仍延期发布，公开渠道的 `stage` 继续保持 `submitted`，含义是候选尚未公开上架；它不是精确的审核子状态。批准时间与延期原因保留在发布归档，只有实际公开后才改为 `published`。
+
+### 独立浏览器渠道
+
+Chrome 状态使用 `docs/release-status.json`，Edge 使用 `docs/edge-release-status.json`。
+Edge 首个正式版本为 v0.9.7，对应 `edge-v0.9.7` 标签和 Edge ZIP；标签固定在已送审包的构建源码 commit。
+仅发布 Edge 时，不移动 Chrome 的 v0.9.6 标签、不替换 Chrome 资产，也不将 Edge Release 设为仓库全局 Latest。
+在 Edge 首页、指南、隐私页和 README 更新正式安装入口；主站应正确引导各浏览器渠道。
+Edge 状态中的 `publishedAt` 若只能记录首次确认公开可安装日期，必须同时填写 `publishedAtBasis`，
+并将商店标注的更新时间另存 `storeUpdatedAt`，不得宣称已取得准确审批／发布时间。
+两设备同步待验收须如实保留，商店批准不等于产品同步验收通过。
 
 ## 每次发布的证据
 

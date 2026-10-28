@@ -43,7 +43,9 @@ describe('public website', () => {
     expect(home.querySelector('a[hreflang="zh-CN"]')?.getAttribute('href')).toBe('zh/index.html');
     expect(home.body.textContent).toContain('Attachments stay on the device');
     expect(home.body.textContent).toContain('does not guarantee a delivery time');
-    expect(home.body.textContent).toMatch(/Edge and Safari.*not officially supported/);
+    expect(home.querySelector('a[href="edge/index.html"]')).not.toBeNull();
+    expect(home.body.textContent).toContain('two-device Edge sync acceptance remains pending');
+    expect(home.body.textContent).toContain('Safari is not officially supported');
   });
 
   it.each(['index.html', 'guide.html', 'support.html'])('%s keeps navigation and reading accessible with no external runtime', (name) => {

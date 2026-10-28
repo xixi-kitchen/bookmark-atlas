@@ -21,7 +21,7 @@
 <article class="document">
 
       <h1>Privacy Policy</h1>
-      <p>Last updated: 2026-10-26. This policy applies to the Bookmark Atlas for Microsoft Edge v0.9.7 candidate submitted for review, including optional AI organization and current-page capture. It explains data handling before you enable optional features.</p>
+      <p>Last updated: 2026-10-28. This policy applies to the published Bookmark Atlas for Microsoft Edge v0.9.7, including optional AI organization and current-page capture. It explains data handling before you enable optional features.</p>
       <p>Bookmark Atlas is a local-first Microsoft Edge extension. It does not sell your data or send bookmarks, open tabs, browsing history, or canvas content to a developer-operated server by default. Optional AI organization sends only user-approved selected metadata to the model service you choose. It does not include ads, trackers, or remote extension code execution.</p>
 
       <p>The <code>chrome.storage.local</code> and <code>chrome.storage.sync</code> names below are extension API namespaces supported by Edge; they do not mean data is sent to a Chrome account.</p>
@@ -42,7 +42,7 @@
 
       <h2>Sync behavior</h2>
       <p>Bookmark Atlas writes eligible lightweight data to browser sync storage (<code>chrome.storage.sync</code>) when sync is available and quota allows, and listens for browser storage change events. A local saved status or updates between pages on one device do not prove remote delivery. Cross-device sync requires the same supported Edge account, extension-data sync enabled, and the same store extension identity on both devices. A development test extension may have a different identity from the final store item. Edge controls delivery and does not guarantee a fixed delivery time.</p>
-      <p>The user has accepted local Edge functionality for v0.9.7; two-device sync acceptance is still pending and is scheduled after submission. Favorite cards are reconciled by normalized URL, title, and folder path. Edge favorite IDs are local to a browser profile and are not treated as cross-device identifiers.</p>
+      <p>The user has accepted local Edge functionality for v0.9.7; two-device sync acceptance is still pending. Favorite cards are reconciled by normalized URL, title, and folder path. Edge favorite IDs are local to a browser profile and are not treated as cross-device identifiers.</p>
 
       <h2>Local learning and update notices</h2>
       <p>The learning guide stores the current chapter and step, completed steps and chapters, and active, paused, or completed status. Update notices store version metadata, the first-seen timestamp, whether notes have been read, which relevant feature chapters have been used, and whether a learning invitation has been claimed or dismissed. Installation and update flags retain the installed/previous version and whether onboarding or update notes are pending, completed, skipped, or already seen. These records let you resume learning, avoid repeated prompts, and show quiet update markers. Local tab coordination prevents multiple open extension pages from displaying the same guide or invitation simultaneously.</p>
@@ -65,7 +65,7 @@
       <p>Clear local AI settings removes the saved endpoint, model, and API credentials from the current browser profile. The non-credential encryption key remains locally to support concurrent operations and contains no provider token. Uninstalling removes extension storage, including that key and the local pending capture queue. Closing the AI panel alone does not delete saved settings. Uninstalling does not delete data already received by a model provider; use that provider's deletion process where applicable. Extension backups contain no AI credentials, configuration, or encryption keys.</p>
 
       <h2>Limited Use</h2>
-      <p>Where information is received from Google APIs, its use adheres to the applicable Google user data policies, including Limited Use requirements. This Edge version also follows applicable Microsoft Edge Add-ons policies. This does not mean the Edge candidate has passed store review or is published.</p>
+      <p>Where information is received from Google APIs, its use adheres to the applicable Google user data policies, including Limited Use requirements. This Edge version also follows applicable Microsoft Edge Add-ons policies.</p>
     </article>
     </main>
     <footer class="site-footer"><p>Bookmark Atlas <span>A freeform home for the things you save.</span></p><nav aria-label="Footer"><a href="index.html">Home</a><a href="guide.html">Guide</a><a href="privacy.html" aria-current="page">Privacy</a><a href="https://github.com/xixi-kitchen/bookmark-atlas/issues/new/choose">Issues / site requests</a></nav></footer>
