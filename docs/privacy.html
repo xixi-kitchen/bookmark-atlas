@@ -21,13 +21,13 @@
 <article class="document">
 
       <h1>Privacy Policy</h1>
-      <p>Last updated: 2026-10-21. This policy applies to Bookmark Atlas v0.9.6, including the optional AI organization and current-page capture capabilities introduced in v0.9.5. The policy also explains data handling before you enable optional features.</p>
+      <p>Last updated: 2026-11-10. Covers Chrome releases through v0.9.8. Feature availability depends on the installed version.</p>
       <p>Bookmark Atlas is a local-first Chrome extension. It does not sell your data or send bookmarks, open tabs, browsing history, or canvas content to a developer-operated server by default. Optional AI organization sends only user-approved selected metadata to the model service you choose. It does not include ads, trackers, or remote extension code execution.</p>
 
       <h2>Data handled by the extension</h2>
       <ul>
         <li>Chrome bookmarks are read and modified locally through the Chrome Bookmarks API for user-requested bookmark features.</li>
-        <li>Clicking the extension icon and explicitly adding the current page reads the active tab's title and URL and saves a native bookmark in Other bookmarks / Bookmark Atlas. A local pending queue retains the canvas insertion until the canvas is saved successfully. It does not read page bodies or move or rewrite unrelated bookmarks. The native bookmark follows your browser bookmark-sync settings; the pending queue itself is not synced or shared by Bookmark Atlas.</li>
+        <li>When you explicitly add the current page from the extension icon, the extension reads the active tab’s title and URL. Bookmark card mode saves a native bookmark under Other bookmarks / Bookmark Atlas. Webpage embed mode saves an interactive canvas object and creates a native bookmark only if you leave that option selected (on by default). A local pending queue keeps the request until the canvas saves. It does not read page bodies or modify unrelated bookmarks. The native bookmark follows your browser’s bookmark-sync settings and remains if you remove or undo the canvas object. The pending queue stays local. A saved embed’s full URL, including query and fragment, may be included in eligible canvas sync and exports. Embedded pages connect directly to the target website under the browser’s iframe, cookie, and site rules.</li>
         <li>Website icons are read from Chrome's local Favicon API cache.</li>
         <li>Open tabs and browsing history are read locally to produce pre-search results.</li>
         <li>The full Excalidraw canvas and user-added binary attachments are stored in local IndexedDB, with <code>chrome.storage.local</code> as a fallback.</li>
