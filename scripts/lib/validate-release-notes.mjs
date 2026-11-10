@@ -1,10 +1,12 @@
 const stableVersion = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/;
 const sectionTypes = new Set(['added', 'changed', 'fixed', 'security', 'deprecated', 'removed']);
+const browsers = new Set(['chrome', 'edge', 'safari']);
 const chapterTypes = new Set(['basics', 'capture', 'ai']);
 
 /** Validate the bundled catalogue before releasing; never borrow another version's notes. */
-export function validateReleaseNotes(entries, currentVersion) {
+export function validateReleaseNotes(entries, currentVersion, browser) {
   requireValue(typeof currentVersion === 'string' && stableVersion.test(currentVersion), 'package version must be stable semver');
+  requireValue(browser === undefined || browsers.has(browser), 'release browser is unknown');
   requireValue(Array.isArray(entries) && entries.length > 0, 'catalogue must be a non-empty array');
   const versions = new Set();
   for (const [index, entry] of entries.entries()) {
@@ -12,6 +14,11 @@ export function validateReleaseNotes(entries, currentVersion) {
     requireValue(isObject(entry), `${path} must be an object`);
     requireValue(typeof entry.version === 'string' && stableVersion.test(entry.version), `${path}.version must be stable semver`);
     requireValue(!versions.has(entry.version), `${path}.version is duplicate: ${entry.version}`);
+    if ('browsers' in entry) {
+      requireValue(Array.isArray(entry.browsers) && entry.browsers.length > 0
+        && entry.browsers.every((name) => browsers.has(name))
+        && new Set(entry.browsers).size === entry.browsers.length, `${path}.browsers must be non-empty, valid and unique`);
+    }
     versions.add(entry.version);
     const date = typeof entry.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(entry.date)
       ? new Date(`${entry.date}T00:00:00.000Z`) : null;
@@ -44,7 +51,8 @@ export function validateReleaseNotes(entries, currentVersion) {
       && new Set(education.chapters).size === education.chapters.length, `${path}.education.chapters must be valid and unique`);
     requireValue(education.level !== 'feature-tour' || education.chapters.length > 0, `${path}.education feature-tour requires chapters`);
   }
-  requireValue(versions.has(currentVersion), `Missing bundled release notes for package version ${currentVersion}`);
+  requireValue(entries.some((entry) => entry.version === currentVersion
+    && (browser === undefined || !entry.browsers || entry.browsers.includes(browser))), `Missing bundled release notes for package version ${currentVersion}${browser ? ` (${browser})` : ''}`);
 }
 
 function isObject(value) { return value !== null && typeof value === 'object' && !Array.isArray(value); }

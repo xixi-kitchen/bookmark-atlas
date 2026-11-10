@@ -8,6 +8,9 @@ import { CAPTURE_OPEN_AFTER_SAVE_KEY } from './capturePreferences';
 import { LEARNING_PROGRESS_STORAGE_KEY, readLearningProgress, startLearning } from '../onboarding/learningState';
 import { readReleaseNotice, recordReleaseEducation } from '../onboarding/releaseEducation';
 
+// The feature-notice scenario below explicitly records version 0.9.6.
+vi.mock('../../package.json', () => ({ default: { version: '0.9.6' } }));
+
 vi.mock('./captureQueue', async (original) => ({
   ...await original<typeof import('./captureQueue')>(), captureActiveTab: vi.fn(), openCaptureCanvas: vi.fn(), ackCapture: vi.fn(),
 }));
@@ -30,6 +33,17 @@ beforeEach(() => {
 afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.clearAllMocks(); vi.unstubAllGlobals(); });
 
 describe('toolbar capture popup', () => {
+  it('offers two labeled native radio modes and optional independent bookmark saving', async () => {
+    render(<CapturePopup />);
+    const bookmarkMode = await screen.findByRole('radio', { name: 'Bookmark card' });
+    await waitFor(() => expect(bookmarkMode).toBeEnabled());
+    expect(bookmarkMode).toBeChecked();
+    expect(screen.queryByRole('checkbox', { name: 'Also save a browser bookmark' })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('radio', { name: 'Webpage embed' }));
+    expect(screen.getByRole('checkbox', { name: 'Also save a browser bookmark' })).toBeChecked();
+    expect(screen.getByRole('button', { name: 'Embed in canvas' })).toBeEnabled();
+  });
+
   it('waits for local learning completion before navigating away and closing the popup', async () => {
     await startLearning('capture');
     let finish!: () => void;

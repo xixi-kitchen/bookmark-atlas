@@ -4,6 +4,7 @@ import { DEFAULT_SEARCH_ENGINES } from '../search';
 import { SearchBar } from './SearchBar';
 import { setLanguagePreference } from '../i18n/languagePreference';
 import { t } from '../i18n';
+import { EngineManager } from './EngineManager';
 
 describe('SearchBar', () => {
   afterEach(async () => {
@@ -32,6 +33,35 @@ describe('SearchBar', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Switch search engine' }));
     fireEvent.click(screen.getByRole('button', { name: 'Manage search engines' }));
     expect(onManage).toHaveBeenCalledTimes(1);
+  });
+
+  it('localizes an old saved default-engine name in both search and management without changing its identity', async () => {
+    const engines = [
+      { ...DEFAULT_SEARCH_ENGINES[0]!, name: 'Chrome Default' },
+      { id: 'custom', name: 'My Edge Docs', queryUrlTemplate: 'https://example.com/?q={query}', enabled: true },
+    ];
+    const onEngineChange = vi.fn();
+    const props = { engines, activeEngineId: 'chrome-default', onEngineChange, onManage: vi.fn() };
+    const { rerender } = render(<SearchBar {...props} />);
+    expect(screen.queryByText('Chrome Default')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Switch search engine' })).toHaveTextContent('Browser default');
+    fireEvent.click(screen.getByRole('button', { name: 'Switch search engine' }));
+    fireEvent.click(screen.getByRole('option', { name: /Browser default/ }));
+    expect(onEngineChange).toHaveBeenCalledWith('chrome-default');
+    await setLanguagePreference('zh-CN');
+    rerender(<SearchBar {...props} />);
+    expect(screen.getByRole('button', { name: t('switchSearchEngine') })).toHaveTextContent('浏览器默认');
+    expect(screen.getByRole('combobox', { name: t('searchContent') })).toHaveAttribute('placeholder', expect.stringContaining('浏览器默认'));
+    fireEvent.focus(screen.getByRole('combobox', { name: t('searchContent') }));
+    fireEvent.change(screen.getByRole('combobox', { name: t('searchContent') }), { target: { value: 'Edge label probe' } });
+    expect(await screen.findByText('直接使用 浏览器默认 搜索')).toBeInTheDocument();
+    cleanup();
+    render(<EngineManager engines={engines} onChange={vi.fn()} onClose={vi.fn()} />);
+    expect(screen.queryByText('Chrome Default')).not.toBeInTheDocument();
+    expect(screen.getByText('浏览器默认')).toBeInTheDocument();
+    expect(screen.getByRole('checkbox', { name: t('enableEngine', '浏览器默认') })).toBeChecked();
+    expect(screen.getByText('My Edge Docs')).toBeInTheDocument();
+    expect(engines[0]).toMatchObject({ id: 'chrome-default', kind: 'chrome-default', name: 'Chrome Default' });
   });
 
   it('shows remote suggestions together with open tabs, history, and bookmarks', async () => {

@@ -1,0 +1,35 @@
+.atlas-web-embed__toolbar .atlas-web-embed__help-trigger {
+  display: flex;
+  flex: 1 1 auto;
+  gap: 5px;
+  justify-content: flex-start;
+  min-width: 0;
+  width: auto;
+  padding-inline: 5px;
+  color: #4f4d5c;
+  font-size: 10px;
+  font-weight: 650;
+  text-align: start;
+}
+.atlas-web-embed__help-trigger svg { flex-shrink: 0; }
+.atlas-web-embed__help-trigger span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.atlas-web-embed__load-signal { flex: 0 1 auto; min-width: 0; overflow: hidden; color: #66500b; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.atlas-web-embed__load-help {
+  position: absolute;
+  top: 38px;
+  inset-inline: 0;
+  z-index: 3;
+  max-height: calc(100% - 38px);
+  padding: 12px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  border-bottom: 1px solid #d6d6df;
+  color: #373441;
+  background: #f8f8fb;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.atlas-web-embed__load-help p { margin: 7px 0; }
+.atlas-web-embed__load-help > button { min-height: 32px; padding: 4px 10px; border: 1px solid #aaa5bf; border-radius: 5px; color: #4d49bd; background: #fff; cursor: pointer; }
+.atlas-web-embed__help-trigger:focus-visible, .atlas-web-embed__load-help > button:focus-visible { outline: 2px solid #6965db; outline-offset: -2px; }
+@media (prefers-reduced-motion: reduce) { .atlas-web-embed__toolbar .is-spinning { animation: none; } }

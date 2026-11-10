@@ -353,6 +353,9 @@
   "chromeDefaultSearchEngine": {
     "message": "Browser default search engine"
   },
+  "browserDefaultEngine": {
+    "message": "Browser default"
+  },
   "switchSearchEngine": {
     "message": "Switch search engine"
   },
@@ -931,6 +934,33 @@
   "webEmbedInteracting": {
     "message": "Interacting with page"
   },
+  "webEmbedLoadingHelp": {
+    "message": "Embedded page loading help"
+  },
+  "webEmbedHelpTitle": {
+    "message": "About embedded page loading"
+  },
+  "webEmbedWaiting": {
+    "message": "Loading"
+  },
+  "webEmbedSlow": {
+    "message": "Taking longer"
+  },
+  "webEmbedSlowDescription": {
+    "message": "This page is taking longer to load. It is still loading; no automatic retry is performed."
+  },
+  "webEmbedRestrictionsDescription": {
+    "message": "Blank page, refused connection, or player error? The website may restrict embedding, require sign-in, or limit playback."
+  },
+  "webEmbedLoadSignalDescription": {
+    "message": "A load signal does not confirm that embedding or playback succeeded."
+  },
+  "webEmbedRecoveryDescription": {
+    "message": "Use the Refresh or Open in new tab controls above if needed. The page stays loaded unless you choose to refresh or change its URL."
+  },
+  "webEmbedCloseHelp": {
+    "message": "Close loading help"
+  },
   "webEmbedRefresh": {
     "message": "Refresh this embedded page"
   },
@@ -1164,7 +1194,85 @@
     "message": "Changes are not saved yet."
   },
   "captureCurrentPage": {
-    "message": "Save current page"
+    "message": "Add current page"
+  },
+  "captureMode": {
+    "message": "Add as"
+  },
+  "captureModeBookmark": {
+    "message": "Bookmark card"
+  },
+  "captureModeEmbed": {
+    "message": "Webpage embed"
+  },
+  "captureEmbedDescription": {
+    "message": "Add an interactive webpage to your Excalidraw canvas."
+  },
+  "captureEmbedSaveBookmark": {
+    "message": "Also save a browser bookmark"
+  },
+  "captureEmbedBookmarkIndependent": {
+    "message": "Saved independently: canvas undo or deletion does not remove the browser bookmark."
+  },
+  "captureEmbedPrivacy": {
+    "message": "The full address is included in canvas sync and exports. Avoid private links or one-time tokens."
+  },
+  "captureEmbedSubmit": {
+    "message": "Embed in canvas"
+  },
+  "captureEmbedQueued": {
+    "message": "Webpage request saved. It will be added when your canvas is ready; the webpage has not been loaded here."
+  },
+  "captureEmbedOpening": {
+    "message": "Webpage request saved. Opening the canvas to finish adding it."
+  },
+  "captureEmbedOpenFailed": {
+    "message": "Webpage request saved, but the canvas could not be opened. Retry only opens the canvas."
+  },
+  "captureEmbedUnsupported": {
+    "message": "Webpage embedding supports HTTPS and local development HTTP pages only. Browser-internal, extension and private pages are not supported."
+  },
+  "captureEmbedFailed": {
+    "message": "Could not finish the webpage request. Retry this request; it will not create another capture."
+  },
+  "captureEmbedPartial": {
+    "message": "Browser bookmark saved; the webpage request is not ready yet. Retry to finish this request."
+  },
+  "captureEmbedRequestEnded": {
+    "message": "This request has ended or expired. Check the canvas, then explicitly re-add if needed."
+  },
+  "captureEmbedReadd": {
+    "message": "Re-add to canvas"
+  },
+  "captureEmbedPreparing": {
+    "message": "A previous addition is unfinished. Continue it, or change the bookmark choice to cancel that request first."
+  },
+  "captureEmbedResume": {
+    "message": "Continue previous addition"
+  },
+  "captureEmbedBookmarkRetained": {
+    "message": "The browser bookmark already saved will be kept."
+  },
+  "capturePageChanged": {
+    "message": "The active page changed. Review the updated preview and click again to add it."
+  },
+  "captureOptionsSaveFailed": {
+    "message": "Your capture succeeded, but these choices could not be remembered for next time."
+  },
+  "captureEmbedCanvasAdded": {
+    "message": "Webpage added to the canvas. Website loading and sync may still be pending."
+  },
+  "captureEmbedCanvasExisting": {
+    "message": "Located the existing webpage on the canvas."
+  },
+  "captureEmbedCanvasPending": {
+    "message": "Webpage request saved; its canvas addition is still pending. Keep the canvas open or reopen it to retry."
+  },
+  "captureEmbedNeedsReview": {
+    "message": "A previous webpage addition needs review. Check the canvas; Re-add ends the uncertain request and starts a new one."
+  },
+  "captureEmbedCancelled": {
+    "message": "This webpage request was ended. A deleted or undone object will not be restored by retrying it."
   },
   "captureDescription": {
     "message": "Save this page as a browser bookmark and add it to your Excalidraw canvas."

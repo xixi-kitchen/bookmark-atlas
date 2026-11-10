@@ -1,8 +1,8 @@
 {
   "storeVersion": "0.9.6",
-  "candidateVersion": "0.9.6",
-  "stage": "published",
-  "preparedAt": "2026-10-21",
-  "submittedAt": "2026-10-21",
-  "publishedAt": "2026-10-22"
+  "candidateVersion": "0.9.8",
+  "stage": "preparing",
+  "preparedAt": "2026-11-10",
+  "submittedAt": null,
+  "publishedAt": null
 }

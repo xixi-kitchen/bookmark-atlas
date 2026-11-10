@@ -27,7 +27,13 @@ describe('bundled release notes catalogue', () => {
 
   it('does not substitute current release content for an unknown or older release', () => {
     for (const version of ['0.9.4', '1.0.0', 'unknown', '']) expect(getReleaseNotes(version)).toBeUndefined();
-    expect(getReleaseHistory().map(({ version }) => version)).toEqual(['0.9.6', '0.9.5']);
+  });
+
+  it('finds the Edge preparation introduction independently of the published Chrome release', () => {
+    const release = getReleaseNotes('0.9.7');
+    expect(release).toMatchObject({ version: '0.9.7', date: '2026-10-26', browsers: ['edge'], education: { level: 'notes' } });
+    expect(release?.sections.flatMap((section) => section.items).length).toBeGreaterThanOrEqual(3);
+    expect(getReleaseNotes('0.9.6')).toMatchObject({ version: '0.9.6', date: '2026-10-21' });
   });
 
   it('orders history by release date, then numeric semver rather than lexical version order', async () => {

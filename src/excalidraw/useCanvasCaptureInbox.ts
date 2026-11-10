@@ -10,12 +10,12 @@ import { createStoredScene, loadStoredScene } from './sceneStorage';
 import { createSceneSyncFingerprint } from './sceneSync';
 import { isCapturableUrl } from '../capture/captureQueue';
 
-type CaptureCanvasApi = {
+export type CaptureCanvasApi = {
   getSceneElementsIncludingDeleted: () => readonly ExcalidrawElement[];
   getAppState: () => AppState;
   getFiles: () => BinaryFiles;
   updateScene: (scene: { elements?: readonly ExcalidrawElement[]; appState?: Partial<AppState>; captureUpdate?: (typeof CaptureUpdateAction)[keyof typeof CaptureUpdateAction] }) => void;
-  scrollToContent: (element: ExcalidrawElement, options?: { animate?: boolean; duration?: number }) => void;
+  scrollToContent: (element: ExcalidrawElement, options?: { animate?: boolean; duration?: number; fitToContent?: boolean; maxZoom?: number; viewportZoomFactor?: number }) => void;
   setToast: (toast: { message: string }) => void;
 };
 

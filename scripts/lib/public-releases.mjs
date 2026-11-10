@@ -6,10 +6,15 @@ const stableVersion = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/;
 const locales = ['en', 'zh-CN'];
 
 export function validateReleaseStatus(status) {
+  validateChannelStatus(status);
+}
+
+function validateChannelStatus(status, allowFirstStoreVersion = false) {
   const fail = (condition, message) => { if (!condition) throw new Error(`Invalid release status: ${message}`); };
   fail(status && typeof status === 'object' && !Array.isArray(status), 'expected an object');
   for (const key of ['storeVersion', 'candidateVersion']) {
-    fail(typeof status[key] === 'string' && stableVersion.test(status[key]), `${key} must be stable semver`);
+    fail((allowFirstStoreVersion && key === 'storeVersion' && status[key] === null)
+      || (typeof status[key] === 'string' && stableVersion.test(status[key])), `${key} must be stable semver`);
   }
   fail(['preparing', 'submitted', 'published'].includes(status.stage), 'unknown stage');
   fail(calendarDate(status.preparedAt), 'preparedAt must be a real ISO calendar date');
@@ -25,6 +30,15 @@ export function validateReleaseStatus(status) {
     fail(status.storeVersion !== status.candidateVersion, 'unpublished candidate must differ from the store version');
     fail(status.publishedAt === null, 'unpublished candidate cannot have publishedAt');
   }
+}
+
+/** Edge can prepare its first store release before a public store version exists. */
+export function validateEdgeReleaseStatus(status) {
+  const fail = (condition, message) => { if (!condition) throw new Error(`Invalid Edge release status: ${message}`); };
+  fail(status && typeof status === 'object' && !Array.isArray(status), 'expected an object');
+  fail(status.browser === 'edge', 'browser must be edge');
+  fail(status.draftId === null || (typeof status.draftId === 'string' && status.draftId.trim().length > 0), 'draftId must be a non-empty string or null');
+  validateChannelStatus(status, true);
 }
 
 export function formatReleaseStatus(status, locale) {
@@ -60,7 +74,9 @@ export function updateHomepageReleaseStatus(html, status, locale = 'en') {
 export function renderPublicReleases(entries, status, locale = 'en') {
   validateLocale(locale);
   validateReleaseStatus(status);
-  validateReleaseNotes(entries, status.candidateVersion);
+  // Validate every record, including hidden channels, before applying Chrome scope.
+  validateReleaseNotes(entries, status.candidateVersion, 'chrome');
+  entries = entries.filter((entry) => !entry.browsers || entry.browsers.includes('chrome'));
   if (!entries.some((entry) => entry.version === status.storeVersion)) throw new Error(`Missing public notes for store version ${status.storeVersion}`);
   const history = entries.slice().sort((a, b) => b.date.localeCompare(a.date) || compareVersions(b.version, a.version));
   const zh = locale === 'zh-CN';

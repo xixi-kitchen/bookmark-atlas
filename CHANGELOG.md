@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.9.8 - 2026-11-10
+
+Add an interactive webpage beside your notes straight from the Chrome extension popup. Keep the same page as a browser bookmark if you choose.
+
+用 Chrome 扩展弹窗把可交互的网页直接放到笔记旁边，并可选择同时保存为浏览器书签。
+
+[Full release notes / 完整更新说明](docs/releases/v0.9.8.md)
+
 ## v0.9.7 - 2026-10-26
 
 Edge first public edition. Package frozen and store marked updated on 2026-10-26; Live / Public availability confirmed on 2026-10-28 (exact publication timestamp unavailable). Chrome Web Store remains v0.9.6. Native local Edge acceptance passed; real two-device Edge sync acceptance is pending.

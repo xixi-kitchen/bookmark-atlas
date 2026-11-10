@@ -1,3 +1,5 @@
+import { createEmbedCaptureMessageHandler } from './embedCaptureBackground';
+import { EMBED_CAPTURE_MESSAGE_CHANNEL, EMBED_CAPTURE_STORAGE_KEY } from './embedCaptureQueue';
 import {
   CAPTURE_FOLDER_NAME,
   CAPTURE_MESSAGE_CHANNEL,
@@ -15,7 +17,7 @@ import {
 
 type Bookmark = { id: string; parentId?: string; title: string; url?: string; children?: Bookmark[]; folderType?: string; unmodifiable?: string };
 type Tab = { id?: number; windowId: number; url?: string; title?: string; active?: boolean; incognito?: boolean };
-type Sender = { id?: string; url?: string; tab?: { id?: number } };
+export type CaptureSender = { id?: string; url?: string; tab?: { id?: number } };
 
 export type CaptureRuntime = {
   extensionId: string;
@@ -30,7 +32,7 @@ export type CaptureRuntime = {
   now(): number;
 };
 
-function surfaceForSender(sender: Sender, runtime: CaptureRuntime): 'popup' | 'canvas' | null {
+export function surfaceForSender(sender: CaptureSender, runtime: CaptureRuntime): 'popup' | 'canvas' | null {
   if (sender.id !== runtime.extensionId || !sender.url) return null;
   try {
     const url = new URL(sender.url);
@@ -44,7 +46,7 @@ function surfaceForSender(sender: Sender, runtime: CaptureRuntime): 'popup' | 'c
   return null;
 }
 
-function assertMessage(message: unknown, sender: Sender, runtime: CaptureRuntime): { action: string; id?: string; tabId?: number } {
+function assertMessage(message: unknown, sender: CaptureSender, runtime: CaptureRuntime): { action: string; id?: string; tabId?: number } {
   if (!message || typeof message !== 'object') throw new CaptureError('invalid_request');
   const input = message as Record<string, unknown>;
   const surface = surfaceForSender(sender, runtime);
@@ -58,7 +60,7 @@ function assertMessage(message: unknown, sender: Sender, runtime: CaptureRuntime
   throw new CaptureError('invalid_request');
 }
 
-async function ensureCaptureBookmark(runtime: CaptureRuntime, url: string, title: string) {
+export async function ensureCaptureBookmark(runtime: CaptureRuntime, url: string, title: string) {
   const tree = await runtime.getBookmarkTree();
   const roots = tree.flatMap((root) => root.children ?? []);
   const other = roots.find((node) => node.folderType === 'other') ?? roots.find((node) => node.id === '2');
@@ -71,11 +73,20 @@ async function ensureCaptureBookmark(runtime: CaptureRuntime, url: string, title
   return { bookmark, folderPath: `${other.title} / ${CAPTURE_FOLDER_NAME}`.slice(0, 2_048) };
 }
 
-/** One service-worker owner serializes append and ack. Queue data survives worker restarts. */
-export function createCaptureMessageHandler(runtime: CaptureRuntime) {
+export type CaptureSerialOwner = <T>(action: () => Promise<T>) => Promise<T>;
+export function createCaptureSerialOwner(): CaptureSerialOwner {
   let pending: Promise<unknown> = Promise.resolve();
-  return (message: unknown, sender: Sender): Promise<unknown> => {
-    const operation = pending.then(async () => {
+  return <T>(action: () => Promise<T>) => {
+    const operation = pending.then(action);
+    pending = operation.catch(() => {});
+    return operation;
+  };
+}
+
+/** One service-worker owner serializes append and ack. Queue data survives worker restarts. */
+export function createCaptureMessageHandler(runtime: CaptureRuntime, serialize = createCaptureSerialOwner()) {
+  return (message: unknown, sender: CaptureSender): Promise<unknown> => {
+    const operation = serialize(async () => {
       const request = assertMessage(message, sender, runtime);
       const record = parseCaptureQueueRecord(await runtime.readStorage());
       const intents = record.intents;
@@ -108,13 +119,12 @@ export function createCaptureMessageHandler(runtime: CaptureRuntime) {
       await runtime.writeStorage([...intents, intent], acknowledged);
       return { ok: true, intent };
     });
-    pending = operation.catch(() => {});
     return operation.catch((error) => ({ ok: false, error: error instanceof CaptureError ? error.code : 'failed' }));
   };
 }
 
 export function installCaptureMessageListener() {
-  const handle = createCaptureMessageHandler({
+  const runtime = {
     extensionId: chrome.runtime.id,
     getURL: (path) => chrome.runtime.getURL(path),
     getTab: (id) => chrome.tabs.get(id),
@@ -125,10 +135,17 @@ export function installCaptureMessageListener() {
     createTab: (input) => chrome.tabs.create(input),
     randomId: () => crypto.randomUUID(),
     now: () => Date.now(),
-  });
+  } satisfies CaptureRuntime;
+  const serialize = createCaptureSerialOwner();
+  const handle = createCaptureMessageHandler(runtime, serialize);
+  const handleEmbed = createEmbedCaptureMessageHandler({
+    ...runtime,
+    readEmbedStorage: async () => (await chrome.storage.local.get(EMBED_CAPTURE_STORAGE_KEY))[EMBED_CAPTURE_STORAGE_KEY],
+    writeEmbedStorage: (intents, receipts) => chrome.storage.local.set({ [EMBED_CAPTURE_STORAGE_KEY]: { version: 2, intents, receipts } }),
+  }, serialize);
   chrome.runtime.onMessage.addListener((message, sender, respond) => {
-    if (!message || message.channel !== CAPTURE_MESSAGE_CHANNEL) return false;
-    void handle(message, sender).then(respond);
+    if (!message || ![CAPTURE_MESSAGE_CHANNEL, EMBED_CAPTURE_MESSAGE_CHANNEL].includes(message.channel)) return false;
+    void (message.channel === EMBED_CAPTURE_MESSAGE_CHANNEL ? handleEmbed : handle)(message, sender).then(respond);
     return true;
   });
 }

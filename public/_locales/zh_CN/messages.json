@@ -353,6 +353,9 @@
   "chromeDefaultSearchEngine": {
     "message": "浏览器默认搜索引擎"
   },
+  "browserDefaultEngine": {
+    "message": "浏览器默认"
+  },
   "switchSearchEngine": {
     "message": "切换搜索引擎"
   },
@@ -931,6 +934,33 @@
   "webEmbedInteracting": {
     "message": "网页交互中"
   },
+  "webEmbedLoadingHelp": {
+    "message": "网页加载帮助"
+  },
+  "webEmbedHelpTitle": {
+    "message": "关于网页加载"
+  },
+  "webEmbedWaiting": {
+    "message": "加载中"
+  },
+  "webEmbedSlow": {
+    "message": "加载较慢"
+  },
+  "webEmbedSlowDescription": {
+    "message": "页面等待时间较长，但仍在继续加载，不会自动重试。"
+  },
+  "webEmbedRestrictionsDescription": {
+    "message": "页面空白、拒绝连接或播放器报错？目标网站可能限制嵌入、要求登录，或限制播放。"
+  },
+  "webEmbedLoadSignalDescription": {
+    "message": "收到加载信号，不代表网站允许嵌入或视频已能播放。"
+  },
+  "webEmbedRecoveryDescription": {
+    "message": "需要时使用上方的刷新或在新标签页打开。除非你主动刷新或修改网址，否则不会因此重新加载网页。"
+  },
+  "webEmbedCloseHelp": {
+    "message": "关闭加载说明"
+  },
   "webEmbedRefresh": {
     "message": "刷新这个嵌入网页"
   },
@@ -1164,7 +1194,85 @@
     "message": "修改尚未保存。"
   },
   "captureCurrentPage": {
-    "message": "收藏当前网页"
+    "message": "添加当前网页"
+  },
+  "captureMode": {
+    "message": "添加方式"
+  },
+  "captureModeBookmark": {
+    "message": "书签卡片"
+  },
+  "captureModeEmbed": {
+    "message": "网页嵌入"
+  },
+  "captureEmbedDescription": {
+    "message": "在 Excalidraw 画布中添加可交互的网页。"
+  },
+  "captureEmbedSaveBookmark": {
+    "message": "同时保存到浏览器书签"
+  },
+  "captureEmbedBookmarkIndependent": {
+    "message": "书签独立保存：撤销或删除画布对象不会删除浏览器书签。"
+  },
+  "captureEmbedPrivacy": {
+    "message": "完整网址会进入画布同步和导出，请避免含私密分享参数或一次性令牌的链接。"
+  },
+  "captureEmbedSubmit": {
+    "message": "嵌入到画布"
+  },
+  "captureEmbedQueued": {
+    "message": "网页请求已保存，画布就绪后会添加；此处尚未加载网页。"
+  },
+  "captureEmbedOpening": {
+    "message": "网页请求已保存，正在打开画布以完成添加。"
+  },
+  "captureEmbedOpenFailed": {
+    "message": "网页请求已保存，但未能打开画布。重试只会再次打开画布。"
+  },
+  "captureEmbedUnsupported": {
+    "message": "网页嵌入仅支持 HTTPS 和本机开发 HTTP 页面，不支持浏览器内部页、扩展页或隐身页面。"
+  },
+  "captureEmbedFailed": {
+    "message": "未能完成网页请求，请重试当前请求，不会重复捕获。"
+  },
+  "captureEmbedPartial": {
+    "message": "浏览器书签已保存，网页请求尚未就绪。请重试以完成当前请求。"
+  },
+  "captureEmbedRequestEnded": {
+    "message": "此请求已结束或过期。请检查画布，需要时主动重新添加。"
+  },
+  "captureEmbedReadd": {
+    "message": "重新添加到画布"
+  },
+  "captureEmbedPreparing": {
+    "message": "上次添加尚未完成，可继续；修改书签选项会先取消原请求。"
+  },
+  "captureEmbedResume": {
+    "message": "继续上次添加"
+  },
+  "captureEmbedBookmarkRetained": {
+    "message": "已经保存的浏览器书签会保留。"
+  },
+  "capturePageChanged": {
+    "message": "当前网页已变化，请检查更新后的预览，再次点击添加。"
+  },
+  "captureOptionsSaveFailed": {
+    "message": "本次添加已成功，但无法记住这些选项供下次使用。"
+  },
+  "captureEmbedCanvasAdded": {
+    "message": "网页已加入画布，网站加载和同步可能仍未完成。"
+  },
+  "captureEmbedCanvasExisting": {
+    "message": "已定位画布中已有的网页。"
+  },
+  "captureEmbedCanvasPending": {
+    "message": "网页请求已保存，画布仍待添加。请保持画布打开，或重新打开后重试。"
+  },
+  "captureEmbedNeedsReview": {
+    "message": "上次网页添加的结果待确认，请先检查画布。“重新添加”会结束该不确定请求并发起新请求。"
+  },
+  "captureEmbedCancelled": {
+    "message": "此网页请求已结束，重试不会恢复已删除或撤销的对象。"
   },
   "captureDescription": {
     "message": "把当前网页保存为浏览器书签，并添加到 Excalidraw 画布。"

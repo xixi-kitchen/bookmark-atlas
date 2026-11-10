@@ -5,6 +5,7 @@ import { usePreferencesStore } from '../store/preferencesStore';
 import { DEFAULT_THEME_ID, THEMES, type ThemeId } from '../themes';
 import type { CardSize } from '../types/ui';
 import { ToolbarSelectMenu } from './ToolbarSelectMenu';
+import { CommunityLinks } from './CommunityLinks';
 import type { BookmarkPresentation } from '../excalidraw/bookmarkDisplay';
 import { useLanguagePreference } from '../i18n/useLanguagePreference';
 import { setLanguagePreference, type LanguagePreference } from '../i18n/languagePreference';
@@ -127,6 +128,7 @@ export function SettingsMenu({ version, onManageEngines, onOpenGuide, onWhatsNew
             <h2>{t('helpMenu')}</h2>
             <button className="settings-menu__action" type="button" onClick={() => run(onOpenGuide)}><BookOpen size={16} /><span>{t('helpOpenGuide')}</span></button>
             <button className="settings-menu__action" type="button" onClick={() => run(onWhatsNew)}><Sparkles size={16} /><span>{t('helpWhatsNew')}</span>{updateUnread && <small className="atlas-update-label" aria-hidden="true">{getUiLanguage() === 'zh-CN' ? '新内容' : 'NEW'}</small>}</button>
+            <CommunityLinks />
           </section>
         </aside>
       )}

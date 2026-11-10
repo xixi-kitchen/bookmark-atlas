@@ -9,6 +9,9 @@ import { setLanguagePreference } from './i18n/languagePreference';
 import { advanceLearning, pauseLearning, readLearningProgress, startLearning } from './onboarding/learningState';
 import { recordReleaseEducation } from './onboarding/releaseEducation';
 
+// Exercise the recorded 0.9.6 install/update scenarios independently of the next candidate version.
+vi.mock('../package.json', () => ({ default: { version: '0.9.6' } }));
+
 const languageHost = vi.hoisted(() => ({ canvasMounted: vi.fn() }));
 vi.mock('./excalidraw/ExcalidrawCanvas', async () => {
   const { useEffect } = await import('react');
