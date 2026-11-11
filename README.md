@@ -15,10 +15,9 @@ notes and drawings, and find your way back with one search box.
 
 ![Bookmark Atlas canvas with bookmarks, notes, and drawings](docs/store-assets/screenshots/01-canvas-en-1280x800.png)
 
-Chrome Web Store stable: **v0.9.6**, published on **2026-10-22**.
-Practice on the real canvas with the optional learning guide and read complete
-bilingual version introductions. The
-[v0.9.6 release](https://github.com/xixi-kitchen/bookmark-atlas/releases/tag/v0.9.6)
+Chrome Web Store stable is **v0.9.8**. The store lists **2026-11-10** as its update date.
+Add the current webpage directly to the Excalidraw canvas from the extension popup.
+The [v0.9.8 release](https://github.com/xixi-kitchen/bookmark-atlas/releases/tag/v0.9.8)
 includes the matching package, checksum, and release notes; previous releases remain available.
 
 Microsoft Edge Add-ons stable: **v0.9.7**, confirmed publicly available on **2026-10-28**.
@@ -144,9 +143,9 @@ Excalidraw 画布，与备注、绘图和网页嵌入一起整理，再通过统
 · [隐私政策](https://xixi-kitchen.github.io/bookmark-atlas/zh/privacy.html)
 · [支持](https://xixi-kitchen.github.io/bookmark-atlas/zh/support.html)
 
-Chrome 商店当前稳定版为 **v0.9.6**，已于 **2026-10-22** 上架。
-本版提供真实画布上的可选实操引导，以及完整双语版本介绍。
-[v0.9.6 正式发布页](https://github.com/xixi-kitchen/bookmark-atlas/releases/tag/v0.9.6)
+Chrome 商店当前稳定版为 **v0.9.8**，商店显示更新日期为 **2026-11-10**。
+可以从扩展弹窗把当前网页直接嵌入 Excalidraw 画布。
+[v0.9.8 正式发布页](https://github.com/xixi-kitchen/bookmark-atlas/releases/tag/v0.9.8)
 提供对应安装包、校验文件和发布说明；历史版本继续保留。
 
 Edge 当前正式版为 **v0.9.7**，已于 **2026-10-28** 核实公开可安装。
@@ -202,7 +201,7 @@ Bookmark Atlas 无广告或追踪器，默认不将书签、标签页、历史�
 
 ### 浏览器与开发
 
-Chrome v0.9.6 和 Edge v0.9.7 已分别通过各自商店提供。Edge 本机功能已验收，同账号双设备同步仍待测试；
+Chrome v0.9.8 和 Edge v0.9.7 已分别通过各自商店提供。Edge 本机功能已验收，同账号双设备同步仍待测试；
 Safari 仅完成 WebExtension 构建可行性验证，仍需 Apple 打包、运行验证与独立同步方案。
 **不同浏览器之间不会同步数据。**
 
