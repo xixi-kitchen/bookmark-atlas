@@ -1,0 +1,63 @@
+.atlas-ai-intro {
+  box-sizing: border-box;
+  width: min(630px, calc(100% - 32px));
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  color: var(--ink, #262336);
+  background: var(--surface, #fff);
+  border: 1px solid var(--line, #d6d6df);
+  border-radius: 18px 15px 20px 16px;
+  box-shadow: 0 18px 64px #17132933;
+  font: 14px/1.6 var(--font-body, system-ui, sans-serif);
+  text-align: start;
+}
+
+.atlas-ai-intro::backdrop { background: #17132955; }
+.atlas-ai-intro__header, .atlas-ai-intro__body, .atlas-ai-intro__footer { padding-inline: clamp(16px, 4vw, 30px); }
+.atlas-ai-intro__header {
+  position: relative;
+  padding-block: 24px 20px;
+  background: color-mix(in srgb, var(--accent, #6965db) 8%, var(--surface, #fff));
+}
+.atlas-ai-intro__header .icon-button { position: absolute; inset: 14px 14px auto auto; }
+.atlas-ai-intro__mark, .atlas-ai-intro__workflow > svg { color: var(--accent, #6965db); }
+.atlas-ai-intro h2 {
+  margin: 6px 0 8px;
+  font-size: clamp(22px, 4vw, 30px);
+  line-height: 1.25;
+  letter-spacing: -.015em;
+  text-wrap: balance;
+}
+.atlas-ai-intro h2:focus { outline: none; }
+.atlas-ai-intro p { margin: 0; color: var(--muted, #686477); overflow-wrap: anywhere; }
+.atlas-ai-intro__workflow {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  align-items: start;
+  gap: 14px;
+  padding-block: 19px;
+}
+.atlas-ai-intro__workflow + .atlas-ai-intro__workflow { border-top: 1px solid var(--line, #d6d6df); }
+.atlas-ai-intro__workflow h3 { margin: 0 0 5px; font-size: 16px; line-height: 1.4; }
+.atlas-ai-intro__workflow button { margin-top: 10px; }
+.atlas-ai-intro__footer { padding-block: 14px 18px; border-top: 1px solid var(--line, #d6d6df); }
+.atlas-ai-intro__footer p { font-size: 12px; }
+.atlas-ai-intro__actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.atlas-ai-intro :is(.primary-button, .secondary-button) {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 36px;
+  white-space: normal;
+  text-align: start;
+}
+.atlas-ai-intro button:focus-visible { outline: 2px solid var(--accent, #6965db); outline-offset: 2px; }

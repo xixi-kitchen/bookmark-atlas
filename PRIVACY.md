@@ -1,6 +1,6 @@
 # Bookmark Atlas Privacy Policy
 
-Last updated: 2026-11-10. Covers Chrome releases through v0.9.8. Feature availability depends on the installed version.
+Last updated: 2026-11-25. Feature availability depends on the installed version.
 
 Bookmark Atlas is a local-first Chrome extension. It does not sell your data or
 send bookmarks, open tabs, browsing history, or canvas content to a
@@ -15,7 +15,7 @@ extension code execution.
 
 - Chrome bookmarks are read and modified locally through the Chrome Bookmarks
   API so the extension can display and manage bookmarks at the user's request.
-- When you explicitly add the current page from the extension icon, the extension reads the active tab’s title and URL. Bookmark card mode saves a native bookmark under Other bookmarks / Bookmark Atlas. Webpage embed mode saves an interactive canvas object and creates a native bookmark only if you leave that option selected (on by default). A local pending queue keeps the request until the canvas saves. It does not read page bodies or modify unrelated bookmarks. The native bookmark follows your browser’s bookmark-sync settings and remains if you remove or undo the canvas object. The pending queue stays local. A saved embed’s full URL, including query and fragment, may be included in eligible canvas sync and exports. Embedded pages connect directly to the target website under the browser’s iframe, cookie, and site rules.
+- When you explicitly add the current page from the extension icon, the extension reads the active tab’s title and URL. Bookmark card mode saves a native bookmark in the folder you choose, or in Other bookmarks / Bookmark Atlas by default. Webpage embed mode saves an interactive canvas object and creates a native bookmark only if you leave that option selected (on by default). A local pending queue keeps the request until the canvas saves. It does not read page bodies or modify unrelated bookmarks. The native bookmark follows your browser’s bookmark-sync settings and remains if you remove or undo the canvas object. The pending queue stays local. A saved embed’s full URL, including query and fragment, may be included in eligible canvas sync and exports. Embedded pages connect directly to the target website under the browser’s iframe, cookie, and site rules.
 - Website icons are read from Chrome's local Favicon API cache.
 - Open tabs and browsing history are read locally to produce the search box's
   pre-search results. These local results are not uploaded to the developer or
@@ -109,7 +109,11 @@ instead follows the optional AI data handling described below.
   client identifier. The rule does not read request content and does not apply to
   YouTube players created by other websites.
 
-## Optional AI Organization
+## Native Bookmark Organization
+
+In Chrome v0.9.9 and later, AI sorting in the bookmark list sends the titles and domains of bookmarks in the displayed scope, candidate folder names and paths, and your instructions to your configured model provider only after you approve the data shown. When you explicitly request an AI destination recommendation from the toolbar, it sends the active page title and domain and candidate folder names and paths. Complete bookmark URLs from browser records stay in the local execution mapping. Applied native changes may sync through Chrome. Capture origin markers, draft plans and recovery records stay on this device. Recovery records can include a snapshot of the whole bookmark tree with full URLs. Exporting a recovery record creates a local JSON file that may contain this data. The latest ten completed records are kept, with unresolved work retained separately. Clearing a history record removes its recovery entry.
+
+## Optional AI Organization on the Canvas
 
 AI is off unless you configure a compatible HTTPS model endpoint and choose to
 use it. Before generation, you select the bookmark cards, review the outgoing
@@ -184,7 +188,7 @@ Store User Data Policy, including the Limited Use requirements.
 
 ## 中文隐私说明
 
-最后更新：2026-11-10。涵盖 Chrome 至 v0.9.8。实际可用功能取决于已安装版本。
+最后更新：2026-11-25。实际可用功能取决于已安装版本。
 
 Bookmark Atlas 是本地优先的 Chrome 扩展。默认不把你的书签、标签页、
 浏览历史或画布内容发送到开发者服务器，也不出售数据、不包含广告、追踪器或远程扩展代码。可选 AI 整理仅在你明确同意后，把选中范围的指定信息发送给你配置的模型服务。
@@ -192,7 +196,7 @@ Bookmark Atlas 是本地优先的 Chrome 扩展。默认不把你的书签、标
 处理的数据：
 
 - 使用 Chrome Bookmarks API 在本地读取和修改用户主动管理的书签。
-- 从扩展图标主动添加当前网页时，扩展读取活动标签页的标题和网址。书签卡片模式将原生书签保存到「其他书签 / Bookmark Atlas」；网页嵌入模式添加可交互的画布对象，仅在勾选相应选项时同时保存原生书签（默认勾选）。添加请求保留在本机待处理队列，直到画布成功保存。此操作不读取网页正文，也不修改无关书签。原生书签按浏览器自己的书签设置同步，删除或撤销画布对象后仍保留。待处理队列只保留在本机。嵌入对象的完整网址（含查询参数及片段）可能随符合条件的画布内容同步及导出。嵌入页按浏览器的 iframe、Cookie 及目标网站规则直接连接该网站。
+- 从扩展图标主动添加当前网页时，扩展读取活动标签页的标题和网址。书签卡片模式将网页保存为原生书签，可选择目标文件夹，默认在「其他书签 / Bookmark Atlas」；网页嵌入模式添加可交互的画布对象，仅在勾选相应选项时同时保存原生书签（默认勾选）。添加请求保留在本机待处理队列，直到画布成功保存。此操作不读取网页正文，也不修改无关书签。原生书签按浏览器自己的书签设置同步，删除或撤销画布对象后仍保留。待处理队列只保留在本机。嵌入对象的完整网址（含查询参数及片段）可能随符合条件的画布内容同步及导出。嵌入页按浏览器的 iframe、Cookie 及目标网站规则直接连接该网站。
 - 使用 Chrome Favicon API 从浏览器本地图标缓存显示网站图标。
 - 在本地读取已打开标签页和浏览历史，用于搜索框预搜索结果；这些结果不会上传。
 - 完整 Excalidraw 画布和用户添加的附件保存在当前设备的 IndexedDB。
@@ -241,3 +245,8 @@ AI 离线教学演示使用扩展内置的固定示例，不请求模型服务�
 - AI 返回的是经过校验的数据建议，不执行远程代码；根据标题、域名和备注生成的简介不是已访问网页后的事实摘要。预览不改变已保存画布，确认应用后可撤销；应用后的分组和备注可随画布同步。
 
 卸载扩展会删除当前设备上的扩展本地数据（含学习进度、新手引导标记、更新提示记录、已保存 AI 配置、加密密钥及待处理收藏队列），但不会删除用户的 Chrome 书签。Chrome 账号同步数据由 Chrome 自身管理。清除本机 AI 配置会删除当前用户配置内已保存的接口、模型和 API 凭据；为支持并发操作，本机保留不含服务商 token 的加密密钥。关闭面板本身不会删除已保存配置；扩展备份不含 AI 配置、凭据或加密密钥。已发送给服务商的数据不随卸载自动删除，需要按该服务商的流程处理。
+
+
+### 原生书签整理
+
+从 Chrome v0.9.9 起，书签列表中的 AI 整理会在你核对并确认后，才将当前范围内的书签标题、域名、候选文件夹名称和路径，以及整理要求发送给你配置的模型服务。在工具栏主动请求 AI 推荐收藏位置时，会发送当前网页的标题、域名和候选目录名称及路径。浏览器书签记录里的完整网址保留在本机执行映射中。已应用的原生书签变更可能随 Chrome 同步。收藏来源标记、草稿计划和恢复记录留在本机。恢复记录可以包含整个书签树及完整网址，主动导出的本机 JSON 文件也可能包含这些信息。保留最近十次已完成记录，未解决的工作另行保留。清理整理记录会移除对应的恢复入口。

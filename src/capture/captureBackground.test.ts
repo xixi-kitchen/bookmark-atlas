@@ -39,6 +39,44 @@ function fixture(initial?: unknown) {
 }
 
 describe('capture background owner', () => {
+  it('recreates the default inbox on explicit recapture after its old pending bookmark was deleted', async () => {
+    const f = fixture();
+    const first = await f.handle(message('capture', { tabId: 5 }), popup) as { ok: boolean; intent: CaptureIntent };
+    const other = f.tree[0]!.children!.find(node => node.id === '2')!;
+    other.children = [];
+    const result = await f.handle(message('capture', { tabId: 5 }), popup) as { ok: boolean; intent: CaptureIntent };
+    expect(result.ok).toBe(true);
+    expect(result.intent.bookmarkId).not.toBe(first.intent.bookmarkId);
+    expect(other.children).toHaveLength(1);
+    expect(other.children![0]!.title).toBe('Bookmark Atlas');
+    expect(other.children![0]!.children![0]!.id).toBe(result.intent.bookmarkId);
+    expect(parseCaptureQueue(f.stored()).map(item => item.id)).toEqual([result.intent.id]);
+  });
+
+  it('starts a new explicit capture when the pending bookmark ID now has another URL', async () => {
+    const f = fixture();
+    const first = await f.handle(message('capture', { tabId: 5 }), popup) as { ok: boolean; intent: CaptureIntent };
+    const other = f.tree[0]!.children!.find(node => node.id === '2')!;
+    const edited = other.children![0]!.children![0]!;
+    edited.url = 'https://edited.example/article';
+    const result = await f.handle(message('capture', { tabId: 5 }), popup) as { ok: boolean; intent: CaptureIntent };
+    expect(result.ok).toBe(true);
+    expect(result.intent.bookmarkId).not.toBe(first.intent.bookmarkId);
+    expect(result.intent.url).toBe(first.intent.url);
+    expect(edited.url).toBe('https://edited.example/article');
+    expect(parseCaptureQueue(f.stored()).map(item => item.id)).toEqual([result.intent.id]);
+  });
+
+  it('preserves pending intent when checking its native bookmark fails', async () => {
+    const f = fixture();
+    await f.handle(message('capture', { tabId: 5 }), popup);
+    const before = structuredClone(f.stored());
+    vi.mocked(f.runtime.getBookmarkTree).mockRejectedValueOnce(new Error('temporary read failure'));
+    expect(await f.handle(message('capture', { tabId: 5 }), popup)).toMatchObject({ ok: false });
+    expect(f.stored()).toEqual(before);
+    expect(f.runtime.createBookmark).toHaveBeenCalledTimes(2);
+  });
+
   it('creates only its own folder and preserves the exact captured URL including parameters and hash', async () => {
     const f = fixture();
     const result = await f.handle(message('capture', { tabId: 5 }), popup) as { ok: boolean; intent: CaptureIntent };
@@ -58,6 +96,40 @@ describe('capture background owner', () => {
     expect(result.intent.bookmarkId).toBe('existing');
     expect(result.intent.url).toContain('#saved');
     expect(f.runtime.createBookmark).not.toHaveBeenCalled();
+  });
+
+  it('saves in an explicit writable folder and reuses only a duplicate inside that folder', async () => {
+    const f = fixture();
+    f.tree[0]!.children![0]!.children!.push({ id: 'work', title: 'Work', children: [
+      { id: 'saved', title: 'Saved work page', url: 'https://example.com/current?a=1&b=2' },
+    ] });
+    const result = await f.handle(message('capture', { tabId: 5, parentId: 'work' }), popup);
+    expect(result).toMatchObject({ ok: true, intent: { bookmarkId: 'saved', parentId: 'work', folderPath: 'Bookmarks bar / Work' } });
+    expect(f.runtime.createBookmark).not.toHaveBeenCalled();
+    expect(await f.handle(message('capture', { tabId: 5, parentId: '1' }), popup)).toMatchObject({ ok: true, intent: { parentId: '1' } });
+    expect(f.runtime.createBookmark).toHaveBeenCalledTimes(1);
+    expect(parseCaptureQueue(f.stored())).toHaveLength(2);
+  });
+
+  it('rejects a missing, root or managed destination before creating a bookmark', async () => {
+    const f = fixture();
+    f.tree[0]!.children!.push({ id: 'managed', title: 'Managed', children: [], unmodifiable: 'managed' } as any);
+    for (const parentId of ['missing', '0', 'managed']) {
+      expect(await f.handle(message('capture', { tabId: 5, parentId }), popup)).toMatchObject({ ok: false });
+    }
+    expect(f.runtime.createBookmark).not.toHaveBeenCalled();
+  });
+
+  it('retains the chosen target and creation provenance through a provenance-write retry', async () => {
+    const f = fixture();
+    f.tree[0]!.children![0]!.children!.push({ id: 'work', title: 'Work', children: [] });
+    const recordCapture = vi.fn().mockRejectedValueOnce(new Error('disk')).mockResolvedValue(undefined);
+    f.runtime.recordCapture = recordCapture;
+    expect(await f.handle(message('capture', { tabId: 5, parentId: 'work' }), popup)).toMatchObject({ ok: false });
+    expect(parseCaptureQueue(f.stored())).toHaveLength(1);
+    expect(await f.handle(message('capture', { tabId: 5, parentId: 'work' }), popup)).toMatchObject({ ok: true, intent: { parentId: 'work' } });
+    expect(f.runtime.createBookmark).toHaveBeenCalledTimes(1);
+    expect(recordCapture).toHaveBeenLastCalledWith(expect.objectContaining({ created: true, organized: true, parentId: 'work' }));
   });
 
   it('serializes simultaneous repeated clicks and returns the same pending intent', async () => {
@@ -113,8 +185,44 @@ describe('capture background owner', () => {
     expect(await restarted(message('load'), canvas)).toEqual({ ok: true, intents: parseCaptureQueue(f.stored()) });
   });
 
+  it('reclaims a full queue of confirmed deleted bookmarks before an explicit new save', async () => {
+    const intents = Array.from({ length: MAX_PENDING_CAPTURES }, (_, i) => makeIntent(`removed${i}`));
+    const f = fixture({ version: 1, intents });
+    const result = await f.handle(message('capture', { tabId: 5 }), popup) as { ok: boolean; intent: CaptureIntent };
+    expect(result.ok).toBe(true);
+    expect(parseCaptureQueue(f.stored()).map(item => item.id)).toEqual([result.intent.id]);
+    expect(f.runtime.getBookmarkTree).toHaveBeenCalledTimes(2);
+    expect(f.runtime.createBookmark).toHaveBeenNthCalledWith(1, { parentId: '2', title: 'Bookmark Atlas' });
+    expect(f.runtime.createBookmark).toHaveBeenCalledTimes(2);
+  });
+
+  it('preserves a full queue when authoritative stale-entry verification fails', async () => {
+    const initial = { version: 1, intents: Array.from({ length: MAX_PENDING_CAPTURES }, (_, i) => makeIntent(`removed${i}`)) };
+    const f = fixture(initial);
+    vi.mocked(f.runtime.getBookmarkTree).mockRejectedValueOnce(new Error('temporary read failure'));
+    expect(await f.handle(message('capture', { tabId: 5 }), popup)).toEqual({ ok: false, error: 'failed' });
+    expect(f.stored()).toEqual(initial);
+    expect(f.runtime.writeStorage).not.toHaveBeenCalled();
+    expect(f.runtime.createBookmark).not.toHaveBeenCalled();
+  });
+
+  it('reclaims only a changed-URL entry while retaining other valid full-queue intents', async () => {
+    const intents = Array.from({ length: MAX_PENDING_CAPTURES }, (_, i) => makeIntent(`item${i}`));
+    const f = fixture({ version: 1, intents });
+    const existing = intents.map(item => ({ id: item.bookmarkId, parentId: '2', title: item.title, url: item.url }));
+    existing[0]!.url = 'https://edited.example/keep-this-bookmark';
+    f.tree[0]!.children![1]!.children = existing;
+    const result = await f.handle(message('capture', { tabId: 5 }), popup) as { ok: boolean; intent: CaptureIntent };
+    expect(result.ok).toBe(true);
+    const queuedIds = parseCaptureQueue(f.stored()).map(item => item.id);
+    expect(queuedIds).toEqual([...intents.slice(1).map(item => item.id), result.intent.id]);
+    expect(existing[0]!.url).toBe('https://edited.example/keep-this-bookmark');
+  });
+
   it('refuses captures when full without creating any native bookmark', async () => {
-    const f = fixture({ version: 1, intents: Array.from({ length: MAX_PENDING_CAPTURES }, (_, i) => makeIntent(`item${i}`)) });
+    const intents = Array.from({ length: MAX_PENDING_CAPTURES }, (_, i) => makeIntent(`item${i}`));
+    const f = fixture({ version: 1, intents });
+    f.tree[0]!.children![1]!.children = intents.map(item => ({ id: item.bookmarkId, parentId: '2', title: item.title, url: item.url }));
     expect(await f.handle(message('capture', { tabId: 5 }), popup)).toEqual({ ok: false, error: 'queue_full' });
     expect(f.runtime.createBookmark).not.toHaveBeenCalled();
   });

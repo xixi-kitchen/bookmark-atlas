@@ -1,5 +1,5 @@
 import { createCaptureSerialOwner, ensureCaptureBookmark, surfaceForSender, type CaptureRuntime, type CaptureSender, type CaptureSerialOwner } from './captureBackground';
-import { isCaptureId } from './captureQueue';
+import { isCapturableUrl, isCaptureId, normalizeCaptureUrl } from './captureQueue';
 import {
   EMBED_CAPTURE_MESSAGE_CHANNEL, EMBED_CAPTURE_RECEIPT_TTL, MAX_PENDING_EMBED_CAPTURES,
   EmbedCaptureError, isEmbeddableCaptureUrl, isEmbedCaptureTarget, isEmbedElementId, normalizeEmbedCaptureUrl, parseEmbedCaptureQueueRecord,
@@ -10,7 +10,7 @@ export type EmbedCaptureRuntime = CaptureRuntime & {
   readEmbedStorage(): Promise<unknown>;
   writeEmbedStorage(intents: EmbedCaptureIntent[], receipts: EmbedCaptureReceipt[]): Promise<void>;
 };
-type Request = { action: 'capture'; id: string; tabId: number; expectedUrl: string; saveBookmark: boolean }
+type Request = { action: 'capture'; id: string; tabId: number; expectedUrl: string; saveBookmark: boolean; parentId?: string }
   | { action: 'load' }
   | { action: 'plan'; id: string; target: EmbedCaptureTarget }
   | { action: 'ack'; id: string; result: EmbedCaptureReceipt['result']; targetId: string | null }
@@ -24,8 +24,8 @@ function assertMessage(message: unknown, sender: CaptureSender, runtime: EmbedCa
   const action = input.action;
   if (action === 'load' && only()) return { action };
   if (action === 'capture' && surface === 'popup' && isCaptureId(input.id) && Number.isSafeInteger(input.tabId) && (input.tabId as number) >= 0
-    && isEmbeddableCaptureUrl(input.expectedUrl) && typeof input.saveBookmark === 'boolean' && only('id', 'tabId', 'expectedUrl', 'saveBookmark')) {
-    return { action, id: input.id, tabId: input.tabId as number, expectedUrl: input.expectedUrl, saveBookmark: input.saveBookmark };
+    && isEmbeddableCaptureUrl(input.expectedUrl) && typeof input.saveBookmark === 'boolean' && (input.parentId === undefined || isCaptureId(input.parentId)) && only('id', 'tabId', 'expectedUrl', 'saveBookmark', 'parentId')) {
+    return { action, id: input.id, tabId: input.tabId as number, expectedUrl: input.expectedUrl, saveBookmark: input.saveBookmark, ...(typeof input.parentId === 'string' ? { parentId: input.parentId } : {}) };
   }
   if (!isCaptureId(input.id)) throw new EmbedCaptureError('invalid_request');
   if (action === 'plan' && surface === 'canvas' && isEmbedCaptureTarget(input.target) && only('id', 'target')) return { action, id: input.id, target: input.target };
@@ -35,6 +35,14 @@ function assertMessage(message: unknown, sender: CaptureSender, runtime: EmbedCa
   }
   if (only('id') && (action === 'status' || (surface === 'popup' && ['retry', 'open', 'cancel'].includes(action as string)) || (surface === 'canvas' && action === 'mark-review'))) return { action, id: input.id } as Request;
   throw new EmbedCaptureError('invalid_request');
+}
+
+
+async function recordEmbedCaptureOrigin(runtime: EmbedCaptureRuntime, intent: EmbedCaptureIntent): Promise<void> {
+  if (!runtime.recordCapture || !intent.saveBookmark || !intent.bookmarkId || !intent.bookmarkParentId || intent.bookmarkCreated === undefined) return;
+  await runtime.recordCapture({ bookmarkId: intent.bookmarkId, url: intent.bookmarkUrl ?? intent.url,
+    title: intent.bookmarkTitle ?? intent.title, parentId: intent.bookmarkParentId, folderPath: intent.folderPath ?? '',
+    created: intent.bookmarkCreated, organized: intent.organized === true, requestId: intent.id });
 }
 
 /** v2 journal is separate from v1; installation supplies one serial owner for both protocols. */
@@ -55,18 +63,52 @@ export function createEmbedCaptureMessageHandler(runtime: EmbedCaptureRuntime, s
     const prepare = async (intent: EmbedCaptureIntent) => {
       if (intent.phase === 'needs-review') throw new EmbedCaptureError('needs_review', Boolean(intent.bookmarkId));
       if (intent.phase !== 'preparing') return intent;
+      let prepared = intent;
       let bookmarkId = intent.bookmarkId;
-      if (intent.saveBookmark && !bookmarkId) {
-        try { bookmarkId = (await ensureCaptureBookmark(runtime, intent.url, intent.title)).bookmark.id; }
-        catch { throw new EmbedCaptureError('bookmark_failed'); }
+      if (intent.saveBookmark && bookmarkId) {
+        let tree: Awaited<ReturnType<EmbedCaptureRuntime['getBookmarkTree']>>;
+        try { tree = await runtime.getBookmarkTree(); }
+        catch { throw new EmbedCaptureError('failed', true); }
+        const nodes = [...tree];
+        let exists = false;
+        while (nodes.length) {
+          const node = nodes.pop()!;
+          if (node.id === bookmarkId) { exists = isCapturableUrl(node.url) && normalizeCaptureUrl(node.url) === normalizeCaptureUrl(intent.url); break; }
+          nodes.push(...(node.children ?? []));
+        }
+        if (!exists) {
+          replace({ ...intent, phase: 'needs-review' });
+          await persist();
+          throw new EmbedCaptureError('needs_review');
+        }
       }
-      const ready: EmbedCaptureIntent = { ...intent, phase: 'ready', ...(bookmarkId ? { bookmarkId } : {}) };
+      if (intent.saveBookmark && !bookmarkId) {
+        try {
+          const result = await ensureCaptureBookmark(runtime, intent.url, intent.title, intent.parentId);
+          bookmarkId = result.bookmark.id;
+          if (runtime.recordCapture || intent.parentId) {
+            prepared = { ...intent, bookmarkId, bookmarkParentId: result.parentId, bookmarkCreated: result.created,
+              folderPath: result.folderPath, organized: result.organized, bookmarkUrl: result.bookmark.url ?? intent.url, bookmarkTitle: result.bookmark.title };
+            replace(prepared);
+            await persist();
+          }
+        } catch (error) {
+          if (bookmarkId) throw new EmbedCaptureError('failed', true);
+          throw new EmbedCaptureError('bookmark_failed');
+        }
+      }
+      try { await recordEmbedCaptureOrigin(runtime, prepared); }
+      catch { throw new EmbedCaptureError('failed', Boolean(bookmarkId)); }
+      const ready: EmbedCaptureIntent = { ...prepared, phase: 'ready', ...(bookmarkId ? { bookmarkId } : {}) };
       replace(ready);
       try { await persist(); }
       catch { throw new EmbedCaptureError('failed', Boolean(bookmarkId)); }
       return ready;
     };
-    if (request.action === 'load') return { ok: true, intents };
+    if (request.action === 'load') {
+      for (const intent of intents) if (intent.phase !== 'preparing') await recordEmbedCaptureOrigin(runtime, intent);
+      return { ok: true, intents };
+    }
     const existing = intents.find((item) => item.id === request.id);
     const receipt = receipts.find((item) => item.id === request.id);
     if (request.action === 'status') return { ok: true, status: existing ?? receipt ?? null };
@@ -76,11 +118,11 @@ export function createEmbedCaptureMessageHandler(runtime: EmbedCaptureRuntime, s
       if (normalizeEmbedCaptureUrl(tab.url) !== normalizeEmbedCaptureUrl(request.expectedUrl)) throw new EmbedCaptureError('page_changed');
       if (receipt) throw new EmbedCaptureError('request_ended');
       if (existing) {
-        if (normalizeEmbedCaptureUrl(existing.url) !== normalizeEmbedCaptureUrl(tab.url) || existing.saveBookmark !== request.saveBookmark) throw new EmbedCaptureError('invalid_request');
+        if (normalizeEmbedCaptureUrl(existing.url) !== normalizeEmbedCaptureUrl(tab.url) || existing.saveBookmark !== request.saveBookmark || existing.parentId !== request.parentId) throw new EmbedCaptureError('invalid_request');
         return { ok: true, intent: await prepare(existing) };
       }
       if (intents.length >= MAX_PENDING_EMBED_CAPTURES) throw new EmbedCaptureError('queue_full');
-      const intent: EmbedCaptureIntent = { id: request.id, kind: 'embed', url: tab.url, title: (tab.title?.trim() || new URL(tab.url).hostname).slice(0, 2_048), createdAt: runtime.now(), saveBookmark: request.saveBookmark, phase: 'preparing' };
+      const intent: EmbedCaptureIntent = { id: request.id, kind: 'embed', url: tab.url, title: (tab.title?.trim() || new URL(tab.url).hostname).slice(0, 2_048), createdAt: runtime.now(), saveBookmark: request.saveBookmark, ...(request.parentId ? { parentId: request.parentId } : {}), phase: 'preparing' };
       intents = [...intents, intent];
       // Never perform bookmark side effects before this request is durable and non-consumable.
       await persist();
@@ -120,6 +162,7 @@ export function createEmbedCaptureMessageHandler(runtime: EmbedCaptureRuntime, s
     }
     if (request.action !== 'ack') throw new EmbedCaptureError('invalid_request');
     if (existing.phase !== 'planned' || existing.target?.elementId !== request.targetId) throw new EmbedCaptureError('invalid_request');
+    await recordEmbedCaptureOrigin(runtime, existing);
     await finish(existing.id, request.result, request.targetId);
     return { ok: true };
   }).catch((error) => ({ ok: false, error: error instanceof EmbedCaptureError ? error.code : 'failed', bookmarkSaved: error instanceof EmbedCaptureError && error.bookmarkSaved }));

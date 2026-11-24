@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.9.9 - 2026-11-25
+
+AI organization now reaches your browser’s bookmark list. Sort saved links into existing folders or plan a new structure, and review the changes before applying them. Canvas AI still helps you arrange selected cards.
+
+AI 整理扩展到了浏览器书签列表。你可以把收藏归入已有文件夹或规划新目录，先预览，再确认应用。画布里的 AI 整理仍可用来排布选中的卡片。
+
+[Full release notes / 完整更新说明](docs/releases/v0.9.9.md)
+
 ## v0.9.8 - 2026-11-10
 
 Add an interactive webpage beside your notes straight from the Chrome extension popup. Keep the same page as a browser bookmark if you choose.

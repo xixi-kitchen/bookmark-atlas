@@ -1,6 +1,8 @@
 import React from 'react';
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { loadLocalAISettings, requestAIOriginPermission } from '../ai/client';
+import { recommendNativeFolders } from '../bookmarks/organization/ai';
 import { CapturePopup } from './CapturePopup';
 import { CaptureError, ackCapture, captureActiveTab, openCaptureCanvas } from './captureQueue';
 import { t } from '../i18n';
@@ -14,6 +16,8 @@ vi.mock('../../package.json', () => ({ default: { version: '0.9.6' } }));
 vi.mock('./captureQueue', async (original) => ({
   ...await original<typeof import('./captureQueue')>(), captureActiveTab: vi.fn(), openCaptureCanvas: vi.fn(), ackCapture: vi.fn(),
 }));
+vi.mock('../ai/client', async (original) => ({ ...await original<typeof import('../ai/client')>(), loadLocalAISettings: vi.fn(), requestAIOriginPermission: vi.fn() }));
+vi.mock('../bookmarks/organization/ai', async (original) => ({ ...await original<typeof import('../bookmarks/organization/ai')>(), recommendNativeFolders: vi.fn() }));
 const intent = { id: 'capture1', bookmarkId: 'bookmark1', title: 'Example', url: 'https://example.com/?private=1', folderPath: 'Other bookmarks / Bookmark Atlas', createdAt: 1_000 };
 let localValues: Record<string, unknown>;
 
@@ -29,6 +33,9 @@ beforeEach(() => {
   vi.spyOn(window, 'close').mockImplementation(() => {});
   vi.mocked(captureActiveTab).mockResolvedValue(intent);
   vi.mocked(openCaptureCanvas).mockResolvedValue();
+  vi.mocked(loadLocalAISettings).mockResolvedValue({ baseUrl: 'https://model.example/v1', model: 'test', apiKey: 'local-key' });
+  vi.mocked(requestAIOriginPermission).mockResolvedValue(true);
+  vi.mocked(recommendNativeFolders).mockResolvedValue([{ folderId: 'work', reason: 'Related to work', confidence: 'high' }]);
 });
 afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.clearAllMocks(); vi.unstubAllGlobals(); });
 
@@ -79,6 +86,91 @@ describe('toolbar capture popup', () => {
     expect(captureActiveTab).toHaveBeenCalledTimes(1);
     expect(captureActiveTab).toHaveBeenCalledWith(7);
     expect(window.close).toHaveBeenCalledTimes(1);
+  });
+
+  it('allows choosing a real bookmark folder and forwards that destination on capture', async () => {
+    Object.assign(chrome, { bookmarks: { getTree: vi.fn(async () => [{ id: '0', title: '', children: [
+      { id: '1', parentId: '0', title: 'Bookmarks bar', children: [{ id: 'work', parentId: '1', title: 'Work', children: [] }] },
+      { id: '2', parentId: '0', title: 'Other bookmarks', children: [] },
+    ] }]) } });
+    render(<CapturePopup />);
+    const destination = await screen.findByRole('combobox', { name: 'Save to' });
+    await waitFor(() => expect(screen.getByRole('option', { name: 'Bookmarks bar / Work' })).toBeInTheDocument());
+    fireEvent.change(destination, { target: { value: 'work' } });
+    fireEvent.click(screen.getByRole('button', { name: t('captureAddToCanvas') }));
+    await waitFor(() => expect(captureActiveTab).toHaveBeenCalledWith(7, 'work'));
+  });
+
+  it('keeps the default inbox automatic when its existing native folder is deleted', async () => {
+    let removed: (() => void) | undefined;
+    const rawTree = [{ id: '0', title: '', children: [
+      { id: '2', parentId: '0', title: 'Other bookmarks', children: [{ id: 'inbox', parentId: '2', title: 'Bookmark Atlas', children: [] }] },
+    ] }];
+    Object.assign(chrome, { bookmarks: {
+      getTree: vi.fn(async () => structuredClone(rawTree)),
+      onRemoved: { addListener: (listener: () => void) => { removed = listener; }, removeListener: vi.fn() },
+    } });
+    render(<CapturePopup />);
+    const destination = await screen.findByRole('combobox', { name: 'Save to' });
+    await waitFor(() => expect(screen.getByRole('option', { name: 'Other bookmarks / Bookmark Atlas' })).toBeInTheDocument());
+    expect(destination).toHaveValue('');
+    expect(captureActiveTab).not.toHaveBeenCalled();
+    rawTree[0]!.children[0]!.children = [];
+    await act(async () => { removed?.(); });
+    const save = screen.getByRole('button', { name: t('captureAddToCanvas') });
+    await waitFor(() => expect(save).toBeEnabled());
+    fireEvent.click(save);
+    await waitFor(() => expect(captureActiveTab).toHaveBeenCalledWith(7));
+  });
+
+  it('requires a new choice when a selected custom folder disappears, while default inbox remains usable', async () => {
+    let removed: (() => void) | undefined;
+    const rawTree = [{ id: '0', title: '', children: [
+      { id: '1', parentId: '0', title: 'Bookmarks bar', children: [{ id: 'work', parentId: '1', title: 'Work', children: [] }] },
+      { id: '2', parentId: '0', title: 'Other bookmarks', children: [] },
+    ] }];
+    Object.assign(chrome, { bookmarks: {
+      getTree: vi.fn(async () => structuredClone(rawTree)),
+      onRemoved: { addListener: (listener: () => void) => { removed = listener; }, removeListener: vi.fn() },
+    } });
+    render(<CapturePopup />);
+    const destination = await screen.findByRole('combobox', { name: 'Save to' });
+    await screen.findByRole('option', { name: 'Bookmarks bar / Work' });
+    fireEvent.change(destination, { target: { value: 'work' } });
+    rawTree[0]!.children[0]!.children = [];
+    await act(async () => { removed?.(); });
+    await waitFor(() => expect(screen.getByRole('button', { name: t('captureAddToCanvas') })).toBeDisabled());
+    expect(screen.getByRole('alert')).toHaveTextContent('Choose another folder or the default inbox');
+    expect(captureActiveTab).not.toHaveBeenCalled();
+    fireEvent.change(destination, { target: { value: '' } });
+    await waitFor(() => expect(screen.getByRole('button', { name: t('captureAddToCanvas') })).toBeEnabled());
+    fireEvent.click(screen.getByRole('button', { name: t('captureAddToCanvas') }));
+    await waitFor(() => expect(captureActiveTab).toHaveBeenCalledWith(7));
+  });
+
+  it('requires consent for displayed folder metadata and applies a chosen AI recommendation', async () => {
+    Object.assign(chrome, { bookmarks: { getTree: vi.fn(async () => [{ id: '0', title: '', children: [
+      { id: '1', parentId: '0', title: 'Bookmarks bar', children: [{ id: 'work', parentId: '1', title: 'Work', children: [] }] },
+      { id: '2', parentId: '0', title: 'Other bookmarks', children: [] },
+    ] }]) } });
+    render(<CapturePopup />);
+    const recommendations = await screen.findByRole('button', { name: 'AI recommendations' });
+    await waitFor(() => expect(recommendations).toBeEnabled());
+    fireEvent.click(recommendations);
+    const generate = await screen.findByRole('button', { name: 'Get folder suggestions' });
+    await waitFor(() => expect(loadLocalAISettings).toHaveBeenCalledOnce());
+    expect(generate).toBeDisabled();
+    expect(recommendNativeFolders).not.toHaveBeenCalled();
+    expect(document.body.textContent).not.toContain('private=1');
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Allow sending the listed data' }));
+    fireEvent.click(generate);
+    await waitFor(() => expect(recommendNativeFolders).toHaveBeenCalledOnce());
+    const sent = vi.mocked(recommendNativeFolders).mock.calls[0]![1];
+    expect(sent).toMatchObject({ title: 'Example page', domain: 'example.com', folders: expect.arrayContaining([{ id: 'work', title: 'Work', path: 'Bookmarks bar / Work' }]) });
+    expect(JSON.stringify(sent)).not.toContain('private=1');
+    fireEvent.click(await screen.findByRole('button', { name: 'Bookmarks bar / Work Related to work' }));
+    expect(screen.getByRole('combobox', { name: 'Save to' })).toHaveValue('work');
+    expect(screen.queryByRole('checkbox', { name: 'Allow sending the listed data' })).not.toBeInTheDocument();
   });
 
   it('disables internal browser pages and provides an explanation', async () => {

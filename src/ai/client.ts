@@ -228,14 +228,26 @@ function completionContent(result: unknown): string {
   return choice.message.content;
 }
 
+/** Reuses the same bounded HTTPS transport for explicitly approved metadata tasks. */
+export async function requestAICompletion(
+  config: AIConfig,
+  key: string,
+  request: { system: string; payload: unknown },
+  signal?: AbortSignal,
+): Promise<string> {
+  const normalized = normalizeAIConfig(config);
+  const result = await requestJSON(normalized, key, '/chat/completions', {
+    model: normalized.model, store: false, stream: false,
+    messages: [{ role: 'system', content: request.system }, { role: 'user', content: JSON.stringify(request.payload) }],
+  }, signal);
+  return completionContent(result);
+}
+
 export async function requestOrganization(config: AIConfig, key: string, request: OrganizationRequest, signal?: AbortSignal): Promise<OrganizationPlan> {
   const normalized = normalizeAIConfig(config);
   const selected = prepareOrganizationRequest(request);
-  const result = await requestJSON(normalized, key, '/chat/completions', {
-    model: normalized.model, store: false, stream: false,
-    messages: [{ role: 'system', content: ORGANIZATION_INSTRUCTIONS }, { role: 'user', content: JSON.stringify(selected) }],
-  }, signal);
-  return parseOrganizationPlan(completionContent(result), selected.items.map((item) => item.id));
+  const content = await requestAICompletion(normalized, key, { system: ORGANIZATION_INSTRUCTIONS, payload: selected }, signal);
+  return parseOrganizationPlan(content, selected.items.map((item) => item.id));
 }
 
 export async function listAIModels(config: Pick<AIConfig, 'baseUrl'>, key: string, signal?: AbortSignal): Promise<string[]> {

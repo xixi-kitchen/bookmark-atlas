@@ -31,6 +31,7 @@ import {
   X,
 } from 'lucide-react';
 import type { BookmarkNode } from '../bookmarks/types';
+import { useNativeBookmarkAssociations } from '../bookmarks/organization/useNativeBookmarkAssociations';
 import { BookmarkFavicon } from '../components/BookmarkFavicon';
 import { getExcalidrawLanguage, getUiLanguage, t } from '../i18n';
 import {
@@ -635,6 +636,10 @@ export function ExcalidrawCanvas({ roots, onOpenAISettings, onGuideBlockedChange
     await queueOrApplyIncomingScene({ source: 'local-tab', scene: stored });
     return canConsumeCapture() && sceneSyncFingerprint(stored) === sceneSyncFingerprint(readLive());
   }, [api, canConsumeCapture, queueOrApplyIncomingScene]);
+
+  useNativeBookmarkAssociations({ api, ready: canvasInitialized, blocked: Boolean(remoteUpdate || changePreview || aiScope),
+    canConsume: canConsumeCapture, ensureBaseline: ensureCaptureBaseline, runSceneMutation,
+    persist: persistLatest, onChanged: handleChange });
 
   useCanvasCaptureInbox({ api, ready: canvasInitialized, blocked: Boolean(remoteUpdate || changePreview || aiScope),
     presentation: defaultPresentation, onSceneChanged: handleChange, persist: persistLatest,

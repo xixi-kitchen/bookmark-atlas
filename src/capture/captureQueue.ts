@@ -5,6 +5,10 @@ export type CaptureIntent = {
   url: string;
   folderPath: string;
   createdAt: number;
+  parentId?: string;
+  requestedParentId?: string;
+  bookmarkCreated?: boolean;
+  organized?: boolean;
 };
 
 export const CAPTURE_STORAGE_KEY = 'bookmark-atlas:capture-queue:v1';
@@ -55,6 +59,10 @@ export function isCaptureIntent(value: unknown): value is CaptureIntent {
   return isCaptureId(item.id) && typeof item.bookmarkId === 'string' && /^[a-zA-Z0-9_-]{1,128}$/.test(item.bookmarkId)
     && typeof item.title === 'string' && item.title.length <= 2_048 && isCapturableUrl(item.url)
     && typeof item.folderPath === 'string' && item.folderPath.length <= 2_048
+    && (item.parentId === undefined || isCaptureId(item.parentId))
+    && (item.requestedParentId === undefined || isCaptureId(item.requestedParentId))
+    && (item.bookmarkCreated === undefined || typeof item.bookmarkCreated === 'boolean')
+    && (item.organized === undefined || typeof item.organized === 'boolean')
     && typeof item.createdAt === 'number' && Number.isFinite(item.createdAt) && item.createdAt > 0;
 }
 
@@ -101,8 +109,9 @@ export async function loadPendingCaptures(): Promise<CaptureIntent[]> {
   return parseCaptureQueue({ version: 1, intents: response.intents });
 }
 
-export async function captureActiveTab(tabId: number): Promise<CaptureIntent> {
-  const response = await sendCaptureMessage('capture', { tabId });
+export async function captureActiveTab(tabId: number, parentId?: string): Promise<CaptureIntent> {
+  if (parentId !== undefined && !isCaptureId(parentId)) throw new CaptureError('invalid_request');
+  const response = await sendCaptureMessage('capture', { tabId, ...(parentId ? { parentId } : {}) });
   if (!isCaptureIntent(response.intent)) throw new CaptureError('failed');
   return response.intent;
 }

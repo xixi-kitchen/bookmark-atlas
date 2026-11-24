@@ -1,5 +1,139 @@
 [
   {
+    "version": "0.9.9",
+    "date": "2026-11-25",
+    "browsers": [
+      "chrome"
+    ],
+    "title": {
+      "en": "Organize your Chrome bookmarks with AI",
+      "zh-CN": "用 AI 整理 Chrome 书签"
+    },
+    "summary": {
+      "en": "AI organization now reaches your browser’s bookmark list. Sort saved links into existing folders or plan a new structure, and review the changes before applying them. Canvas AI still helps you arrange selected cards.",
+      "zh-CN": "AI 整理扩展到了浏览器书签列表。你可以把收藏归入已有文件夹或规划新目录，先预览，再确认应用。画布里的 AI 整理仍可用来排布选中的卡片。"
+    },
+    "sections": [
+      {
+        "type": "added",
+        "items": [
+          {
+            "title": {
+              "en": "Organize native bookmarks in batches",
+              "zh-CN": "批量整理浏览器原生书签"
+            },
+            "description": {
+              "en": "Choose recent extension captures, a folder, selected bookmarks or the whole library. Move items manually, or request an AI plan for existing folders or a new folder structure. Review before applying and restore from history when needed.",
+              "zh-CN": "可选插件收藏、指定文件夹、当前选中项或全部书签。手动移动，或让 AI 建议归入已有文件夹和规划新目录。应用前可预览，应用后可从整理记录发起恢复。"
+            },
+            "where": {
+              "en": "Bookmark list → Organize bookmarks",
+              "zh-CN": "书签列表 → 整理书签"
+            }
+          },
+          {
+            "title": {
+              "en": "Choose a destination when saving",
+              "zh-CN": "收藏时选择目录"
+            },
+            "description": {
+              "en": "Choose a folder in the toolbar popup, or request an optional AI folder recommendation.",
+              "zh-CN": "从工具栏弹窗选择目标文件夹，也可以按需请求 AI 推荐。"
+            },
+            "where": {
+              "en": "Chrome toolbar → Bookmark Atlas",
+              "zh-CN": "Chrome 工具栏 → Bookmark Atlas"
+            }
+          },
+          {
+            "title": {
+              "en": "Learn both AI workflows",
+              "zh-CN": "了解两种 AI 整理方式"
+            },
+            "description": {
+              "en": "The upgrade introduction explains both AI workflows. The offline guide lets you preview, apply and restore sample bookmark moves without a model service.",
+              "zh-CN": "升级介绍会说明画布和列表两种 AI 用法。离线引导可练习预览、应用和恢复示例书签，无需连接模型。"
+            },
+            "where": {
+              "en": "Settings → Help → Explore AI organization / Bookmark organization guide",
+              "zh-CN": "设置 → 帮助 → 了解 AI 整理／书签整理引导"
+            }
+          }
+        ]
+      },
+      {
+        "type": "changed",
+        "items": [
+          {
+            "title": {
+              "en": "Clearer organizer and feedback controls",
+              "zh-CN": "更清楚的整理流程和反馈入口"
+            },
+            "description": {
+              "en": "The organizer follows three stages and closes after a successful apply. Folder counts fit on one line, and the Help section offers email feedback alongside GitHub.",
+              "zh-CN": "整理按三个阶段展示，全部成功应用后自动关闭。目录计数横排显示，帮助区新增邮件反馈入口。"
+            },
+            "where": {
+              "en": "Bookmark list and Settings → Help",
+              "zh-CN": "书签列表及设置 → 帮助"
+            }
+          }
+        ]
+      },
+      {
+        "type": "fixed",
+        "items": [
+          {
+            "title": {
+              "en": "Recover a deleted default capture folder",
+              "zh-CN": "修复默认收藏目录被删除后的收藏"
+            },
+            "description": {
+              "en": "When the default Bookmark Atlas folder is missing, the next default capture recreates it as needed.",
+              "zh-CN": "默认 Bookmark Atlas 收藏文件夹丢失时，下次按默认方式收藏会按需重建该文件夹。"
+            },
+            "where": {
+              "en": "Chrome toolbar → Bookmark Atlas → save to default folder",
+              "zh-CN": "Chrome 工具栏 → Bookmark Atlas → 收藏到默认文件夹"
+            }
+          }
+        ]
+      }
+    ],
+    "gettingStarted": [
+      {
+        "en": "Open the bookmark list, choose Organize bookmarks and select a scope. Start with one folder to make the preview easier to review.",
+        "zh-CN": "打开书签列表，点击「整理书签」并选择范围。可以先从一个文件夹开始，方便核对预览。"
+      },
+      {
+        "en": "Choose manual moves or configure your own compatible AI service in AI settings. Review any data sent to the service, then review and apply the changes you want.",
+        "zh-CN": "选择手动移动，或在「AI 设置」配置自己的兼容服务。确认待发送的数据后，检查建议并应用需要的改动。"
+      },
+      {
+        "en": "Use Organization history to review or restore a batch. To practice first, open Settings → Help → Bookmark organization guide.",
+        "zh-CN": "在「整理记录」查看或恢复一批操作。想先练习时，从「设置 → 帮助 → 书签整理引导」打开离线演练。"
+      }
+    ],
+    "notices": [
+      {
+        "en": "No new required Chrome permissions and no bookmark reimport. Applied native changes follow Chrome bookmark sync settings. Canvas layout changes apply to canvas cards.",
+        "zh-CN": "无需新增必需的 Chrome 权限或重新导入书签。已应用的原生书签变更遵循 Chrome 书签同步设置，画布排布调整作用于画布卡片。"
+      },
+      {
+        "en": "AI is optional and uses a compatible HTTPS provider, model and API key you configure. Preview and approve the data before requesting a suggestion. The provider may charge for requests.",
+        "zh-CN": "AI 为可选能力，使用你配置的兼容 HTTPS 服务、模型和 API Key。生成建议前会显示待发送的数据并要求确认，服务商可能收取费用。"
+      },
+      {
+        "en": "Recovery records remain local. An optional JSON export can contain your complete bookmark tree, including full URLs.",
+        "zh-CN": "恢复记录保存在本机。主动导出的 JSON 可能包含完整书签树及其中的完整网址。"
+      }
+    ],
+    "education": {
+      "level": "notes",
+      "chapters": []
+    }
+  },
+  {
     "version": "0.9.8",
     "date": "2026-11-10",
     "browsers": [

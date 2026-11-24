@@ -1,11 +1,11 @@
-import { ArrowLeft, Home } from 'lucide-react';
+import { ArrowLeft, Home, Sparkles } from 'lucide-react';
 import type { BookmarkNode } from '../../bookmarks/types';
 import {
   buildBreadcrumbPath,
   countFolderItems,
   countNodeMapTopItems,
 } from './navigationUtils';
-import { t } from '../../i18n';
+import { getUiLanguage, t } from '../../i18n';
 
 export type ViewBreadcrumbProps = {
   nodes: Record<string, BookmarkNode>;
@@ -13,6 +13,7 @@ export type ViewBreadcrumbProps = {
   rootLabel?: string;
   className?: string;
   onNavigate?: (folder?: BookmarkNode) => void;
+  onOrganize?: () => void;
 };
 
 export function ViewBreadcrumb({
@@ -21,12 +22,16 @@ export function ViewBreadcrumb({
   rootLabel = t('allBookmarks'),
   className = '',
   onNavigate,
+  onOrganize,
 }: ViewBreadcrumbProps) {
   const path = buildBreadcrumbPath(nodes, currentFolderId);
   const currentFolder = path.at(-1);
   const parentFolder = path.at(-2);
   const count = currentFolder ? countFolderItems(currentFolder) : countNodeMapTopItems(nodes);
   const title = currentFolder?.title || rootLabel;
+  const directCount = t('directItemCount', String(count.direct));
+  const totalCount = t('totalItemCount', String(count.total));
+  const organizeLabel = getUiLanguage() === 'zh-CN' ? '整理书签' : 'Organize bookmarks';
   const classes = ['view-breadcrumb', className].filter(Boolean).join(' ');
 
   return (
@@ -77,10 +82,29 @@ export function ViewBreadcrumb({
         })}
       </nav>
 
-      <div className="view-breadcrumb__summary" aria-live="polite">
-        <strong>{title}</strong>
-        <span>{t('directItemCount', String(count.direct))}</span>
-        <span>{t('totalItemCount', String(count.total))}</span>
+      <div className="view-breadcrumb__context">
+        <div className="view-breadcrumb__summary" aria-live="polite">
+          <strong title={title}>{title}</strong>
+          <span className="view-breadcrumb__counts">
+            <span>{directCount}</span><span aria-hidden="true"> · </span><span>{totalCount}</span>
+          </span>
+          <span className="view-breadcrumb__compact-counts" title={`${directCount} · ${totalCount}`}>
+            <span aria-hidden="true">{count.direct} / {count.total}</span>
+            <span className="sr-only">{directCount} · {totalCount}</span>
+          </span>
+        </div>
+        {onOrganize && (
+          <button
+            type="button"
+            className="secondary-button view-breadcrumb__organize"
+            aria-label={organizeLabel}
+            title={organizeLabel}
+            onClick={onOrganize}
+          >
+            <Sparkles size={15} aria-hidden="true" />
+            <span>{organizeLabel}</span>
+          </button>
+        )}
       </div>
     </header>
   );

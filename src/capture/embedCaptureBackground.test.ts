@@ -34,6 +34,40 @@ function fixture(initial?: unknown) {
 }
 
 describe('isolated durable embed request owner', () => {
+  it('keeps a deleted explicit destination recoverable until the popup chooses a new request', async () => {
+    const f = fixture();
+    const request = msg('capture', { id: 'deleted-target', tabId: 5, expectedUrl: url, saveBookmark: true, parentId: 'gone' });
+    expect(await f.handle(request, popup)).toMatchObject({ ok: false, error: 'bookmark_failed' });
+    expect(parseEmbedCaptureQueueRecord(f.stored()).intents[0]).toMatchObject({ id: 'deleted-target', phase: 'preparing', parentId: 'gone' });
+    expect(f.runtime.createBookmark).not.toHaveBeenCalled();
+    expect(await f.handle(msg('cancel', { id: 'deleted-target' }), popup)).toMatchObject({ ok: true });
+    expect(await f.handle(capture('new-default', true), popup)).toMatchObject({ ok: true, intent: { phase: 'ready' } });
+    expect(f.runtime.createBookmark).toHaveBeenCalledTimes(2);
+  });
+
+  it('requires review when a saved preparing bookmark ID now points at another URL', async () => {
+    const old: EmbedCaptureIntent = { id: 'edited-saved', kind: 'embed', url, title: 'Old page', createdAt: 10000,
+      saveBookmark: true, phase: 'preparing', bookmarkId: 'edited-bookmark' };
+    const f = fixture({ version: 2, intents: [old], receipts: [] });
+    const edited = { id: 'edited-bookmark', title: 'Edited page', parentId: '2', url: 'https://edited.example/article' };
+    f.tree[0]!.children![0]!.children!.push(edited);
+    expect(await f.handle(msg('retry', { id: old.id }), popup)).toMatchObject({ ok: false, error: 'needs_review' });
+    expect(parseEmbedCaptureQueueRecord(f.stored()).intents[0]?.phase).toBe('needs-review');
+    expect(edited.url).toBe('https://edited.example/article');
+    expect(f.runtime.createBookmark).not.toHaveBeenCalled();
+  });
+
+  it('requires a fresh explicit request when a saved bookmark disappeared during interrupted preparation', async () => {
+    const old: EmbedCaptureIntent = { id: 'deleted-saved', kind: 'embed', url, title: 'Old page', createdAt: 10000,
+      saveBookmark: true, phase: 'preparing', bookmarkId: 'removed-bookmark' };
+    const f = fixture({ version: 2, intents: [old], receipts: [] });
+    expect(await f.handle(msg('retry', { id: old.id }), popup)).toMatchObject({ ok: false, error: 'needs_review' });
+    expect(parseEmbedCaptureQueueRecord(f.stored()).intents[0]?.phase).toBe('needs-review');
+    expect(f.runtime.createBookmark).not.toHaveBeenCalled();
+    expect(await f.handle(msg('cancel', { id: old.id }), popup)).toMatchObject({ ok: true });
+    expect(await f.handle(capture('fresh-default', true), popup)).toMatchObject({ ok: true, intent: { phase: 'ready' } });
+  });
+
   it('records preparation before bookmarks and keeps current raw URL when a normalized old bookmark exists', async () => {
     const f = fixture();
     f.tree[0]!.children![0]!.children!.push({ id: 'folder', title: 'Bookmark Atlas', children: [{ id: 'old', title: 'Old', url: 'https://example.com/current?a=1&b=2#old' }] });
@@ -61,6 +95,28 @@ describe('isolated durable embed request owner', () => {
     expect(await f.handle(capture('one', true), popup)).toEqual({ ok: false, error: 'invalid_request', bookmarkSaved: false });
     f.tab.url = 'https://example.com/different';
     expect(await f.handle(msg('capture', { id: 'one', tabId: 5, expectedUrl: f.tab.url, saveBookmark: false }), popup)).toMatchObject({ ok: false, error: 'invalid_request' });
+  });
+  it('freezes the chosen bookmark folder, rejects retargeting, and resumes it after failure', async () => {
+    const f = fixture();
+    f.tree[0]!.children![0]!.children!.push({ id: 'work', title: 'Work', children: [] });
+    const input = msg('capture', { id: 'folder-choice', tabId: 5, expectedUrl: url, saveBookmark: true, parentId: 'work' });
+    vi.mocked(f.runtime.createBookmark).mockRejectedValueOnce(new Error('temporarily unavailable'));
+    expect(await f.handle(input, popup)).toMatchObject({ ok: false, error: 'bookmark_failed' });
+    expect(parseEmbedCaptureQueueRecord(f.stored()).intents[0]).toMatchObject({ parentId: 'work', phase: 'preparing' });
+    expect(await f.handle({ ...input, parentId: '2' }, popup)).toMatchObject({ ok: false, error: 'invalid_request' });
+    expect(await f.handle(msg('retry', { id: 'folder-choice' }), popup)).toMatchObject({ ok: true, intent: { parentId: 'work', bookmarkId: 'bookmark1' } });
+    expect(f.runtime.createBookmark).toHaveBeenLastCalledWith({ parentId: 'work', title: 'Current page', url });
+  });
+  it('retries persisted creation provenance before making an embed consumable', async () => {
+    const f = fixture();
+    f.tree[0]!.children![0]!.children!.push({ id: 'work', title: 'Work', children: [] });
+    f.runtime.recordCapture = vi.fn().mockRejectedValueOnce(new Error('origin disk')).mockResolvedValue(undefined);
+    const input = msg('capture', { id: 'with-origin', tabId: 5, expectedUrl: url, saveBookmark: true, parentId: 'work' });
+    expect(await f.handle(input, popup)).toMatchObject({ ok: false, error: 'failed', bookmarkSaved: true });
+    expect(parseEmbedCaptureQueueRecord(f.stored()).intents[0]).toMatchObject({ phase: 'preparing', bookmarkId: 'bookmark1', bookmarkCreated: true });
+    expect(await f.handle(msg('retry', { id: 'with-origin' }), popup)).toMatchObject({ ok: true, intent: { phase: 'ready', parentId: 'work' } });
+    expect(f.runtime.createBookmark).toHaveBeenCalledOnce();
+    expect(f.runtime.recordCapture).toHaveBeenLastCalledWith(expect.objectContaining({ bookmarkId: 'bookmark1', parentId: 'work', created: true, organized: true }));
   });
   it('rejects stale preview before storing or creating bookmarks', async () => {
     const f = fixture(); f.tab.url += '-changed';

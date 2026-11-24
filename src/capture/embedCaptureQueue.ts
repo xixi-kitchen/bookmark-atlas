@@ -8,6 +8,7 @@ export const EMBED_CAPTURE_RECEIPT_TTL = 30 * 60_000;
 export type EmbedCaptureTarget = { elementId: string; mode: 'create' | 'reuse' };
 export type EmbedCaptureIntent = {
   id: string; kind: 'embed'; url: string; title: string; createdAt: number; saveBookmark: boolean;
+  parentId?: string; bookmarkParentId?: string; bookmarkCreated?: boolean; organized?: boolean; folderPath?: string; bookmarkUrl?: string; bookmarkTitle?: string;
   bookmarkId?: string; phase: 'preparing' | 'ready' | 'planned' | 'needs-review'; target?: EmbedCaptureTarget;
 };
 export type EmbedCaptureReceipt = { id: string; at: number; result: 'added' | 'existing' | 'cancelled'; targetId: string | null };
@@ -39,10 +40,17 @@ export function isEmbedCaptureTarget(value: unknown): value is EmbedCaptureTarge
   return isRecord(value) && hasOnly(value, ['elementId', 'mode']) && isEmbedElementId(value.elementId) && (value.mode === 'create' || value.mode === 'reuse');
 }
 export function isEmbedCaptureIntent(value: unknown): value is EmbedCaptureIntent {
-  if (!isRecord(value) || !hasOnly(value, ['id', 'kind', 'url', 'title', 'createdAt', 'saveBookmark', 'bookmarkId', 'phase', 'target'])) return false;
+  if (!isRecord(value) || !hasOnly(value, ['id', 'kind', 'url', 'title', 'createdAt', 'saveBookmark', 'bookmarkId', 'phase', 'target', 'parentId', 'bookmarkParentId', 'bookmarkCreated', 'organized', 'folderPath', 'bookmarkUrl', 'bookmarkTitle'])) return false;
   return isCaptureId(value.id) && value.kind === 'embed' && isEmbeddableCaptureUrl(value.url)
     && typeof value.title === 'string' && value.title.length <= 2_048 && isTime(value.createdAt)
     && typeof value.saveBookmark === 'boolean'
+    && (value.parentId === undefined || isCaptureId(value.parentId))
+    && (value.bookmarkParentId === undefined || isCaptureId(value.bookmarkParentId))
+    && (value.bookmarkCreated === undefined || typeof value.bookmarkCreated === 'boolean')
+    && (value.organized === undefined || typeof value.organized === 'boolean')
+    && (value.folderPath === undefined || typeof value.folderPath === 'string' && value.folderPath.length <= 2_048)
+    && (value.bookmarkUrl === undefined || isEmbeddableCaptureUrl(value.bookmarkUrl))
+    && (value.bookmarkTitle === undefined || typeof value.bookmarkTitle === 'string' && value.bookmarkTitle.length <= 2_048)
     && (value.bookmarkId === undefined || (value.saveBookmark && typeof value.bookmarkId === 'string' && /^[a-zA-Z0-9_-]{1,128}$/.test(value.bookmarkId)))
     && ['preparing', 'ready', 'planned', 'needs-review'].includes(value.phase as string)
     && (value.target === undefined || isEmbedCaptureTarget(value.target))
@@ -81,9 +89,9 @@ function readIntent(response: Record<string, unknown>): EmbedCaptureIntent {
   if (!isEmbedCaptureIntent(response.intent)) throw new EmbedCaptureError('failed');
   return response.intent;
 }
-export async function captureEmbedActiveTab(input: { id: string; tabId: number; expectedUrl: string; saveBookmark: boolean }): Promise<EmbedCaptureIntent> {
+export async function captureEmbedActiveTab(input: { id: string; tabId: number; expectedUrl: string; saveBookmark: boolean; parentId?: string }): Promise<EmbedCaptureIntent> {
   assertId(input.id);
-  if (!Number.isSafeInteger(input.tabId) || input.tabId < 0 || !isEmbeddableCaptureUrl(input.expectedUrl) || typeof input.saveBookmark !== 'boolean') throw new EmbedCaptureError('invalid_request');
+  if (!Number.isSafeInteger(input.tabId) || input.tabId < 0 || !isEmbeddableCaptureUrl(input.expectedUrl) || typeof input.saveBookmark !== 'boolean' || (input.parentId !== undefined && !isCaptureId(input.parentId))) throw new EmbedCaptureError('invalid_request');
   return readIntent(await send('capture', input));
 }
 export async function retryEmbedCapture(id: string): Promise<EmbedCaptureIntent> { assertId(id); return readIntent(await send('retry', { id })); }

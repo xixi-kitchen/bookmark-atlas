@@ -1,6 +1,6 @@
 {
   "name": "bookmark-atlas",
-  "version": "0.9.8",
+  "version": "0.9.9",
   "releaseBrowser": "chrome",
   "private": true,
   "type": "module",
@@ -24,14 +24,16 @@
     "zip": "npm run zip:chrome",
     "zip:chrome": "node scripts/generate-locales.mjs && wxt zip -b chrome --mv3",
     "zip:edge": "node scripts/generate-locales.mjs && wxt zip -b edge --mv3",
-    "package:sync-test": "npm run build:chrome && node scripts/create-sync-test-package.mjs",
-    "package:edge-test": "npm run build:edge && npm run verify:manifest:edge && node scripts/create-sync-test-package.mjs edge",
+    "package:sync-test": "node scripts/create-sync-test-package.mjs chrome --channel sync",
+    "package:edge-test": "node scripts/create-sync-test-package.mjs edge --channel sync",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "check": "npm run typecheck && npm run test && npm run build:chrome && npm run verify:manifest && npm run verify:release",
     "check:edge": "npm run typecheck && npm run test && npm run build:edge && npm run verify:manifest:edge && npm run verify:release:edge",
-    "check:safari": "npm run typecheck && npm run test && npm run build:safari && npm run verify:manifest:safari"
+    "check:safari": "npm run typecheck && npm run test && npm run build:safari && npm run verify:manifest:safari",
+    "package:test:chrome": "node scripts/create-sync-test-package.mjs chrome --channel test",
+    "package:test:edge": "node scripts/create-sync-test-package.mjs edge --channel test"
   },
   "dependencies": {
     "@dagrejs/dagre": "^1.1.5",

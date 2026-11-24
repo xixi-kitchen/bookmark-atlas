@@ -15,6 +15,7 @@ type OnboardingStorage = {
   seenWhatsNewVersion?: string;
   installedVersion?: string;
   updatedFromVersion?: string;
+  aiOrganizationIntro?: 'pending' | 'seen';
 };
 
 export const ONBOARDING_STORAGE_KEY = 'bookmark-atlas:onboarding:v1';
@@ -24,6 +25,7 @@ export async function recordInstallationEvent(details: {
   reason: InstallReason;
   version: string;
   previousVersion?: string;
+  announceAIOrganization?: boolean;
 }) {
   const current = await readOnboardingState();
   if (details.reason === 'install') {
@@ -31,19 +33,32 @@ export async function recordInstallationEvent(details: {
       ...current,
       installedVersion: details.version,
       pendingOnboarding: !current.onboardingCompleted && !current.onboardingSkipped,
+      aiOrganizationIntro: details.announceAIOrganization ? 'seen' : current.aiOrganizationIntro,
     });
     return;
   }
 
-  if (details.reason === 'update' && details.previousVersion !== details.version) {
-    await writeOnboardingState({
-      ...current,
+  if (details.reason === 'update') {
+    const versionChanged = details.previousVersion !== details.version;
+    const firstIntro = details.announceAIOrganization && !current.aiOrganizationIntro;
+    if (!versionChanged && !firstIntro) return;
+    const update = versionChanged ? {
       installedVersion: current.installedVersion ?? details.version,
       updatedFromVersion: details.previousVersion,
       pendingWhatsNewVersion: details.version,
       pendingOnboarding: false,
+    } : {};
+    await writeOnboardingState({
+      ...current,
+      ...update,
+      aiOrganizationIntro: firstIntro ? 'pending' : current.aiOrganizationIntro,
     });
   }
+}
+
+export async function markAIOrganizationIntroSeen() {
+  const current = await readOnboardingState();
+  if (current.aiOrganizationIntro !== 'seen') await writeOnboardingState({ ...current, aiOrganizationIntro: 'seen' });
 }
 
 export async function getGuideStartup(version: string): Promise<GuideStartup | null> {
@@ -135,5 +150,6 @@ function normalizeState(value: unknown): OnboardingStorage {
     seenWhatsNewVersion: typeof state.seenWhatsNewVersion === 'string' ? state.seenWhatsNewVersion : undefined,
     installedVersion: typeof state.installedVersion === 'string' ? state.installedVersion : undefined,
     updatedFromVersion: typeof state.updatedFromVersion === 'string' ? state.updatedFromVersion : undefined,
+    aiOrganizationIntro: state.aiOrganizationIntro === 'pending' || state.aiOrganizationIntro === 'seen' ? state.aiOrganizationIntro : undefined,
   };
 }

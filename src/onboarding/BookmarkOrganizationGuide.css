@@ -1,0 +1,57 @@
+.atlas-organization-guide {
+  width: min(700px, calc(100% - 32px));
+  height: auto;
+  max-height: calc(100dvh - 32px);
+  padding: 0;
+  margin: auto;
+}
+
+.atlas-organization-guide:not([open]) { display: none; }
+.atlas-organization-guide::backdrop { background: #17132955; }
+
+.atlas-organization-guide__steps {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  padding: 12px 26px;
+  margin: 0;
+  list-style: none;
+  color: var(--muted);
+  font-size: 12px;
+  border-bottom: 1px solid var(--organizer-divider);
+}
+
+.atlas-organization-guide__steps [aria-current] { color: var(--accent); font-weight: 750; }
+.atlas-organization-guide__modes { margin: 20px 0 0; padding: 0; border: 0; min-width: 0; }
+.atlas-organization-guide__modes legend { margin-bottom: 8px; font-size: 13px; }
+.atlas-organization-guide__modes label, .atlas-organization-guide__bookmarks label { flex-direction: row; align-items: flex-start; }
+.atlas-organization-guide__modes label { padding: 10px 0; }
+.atlas-organization-guide__modes small, .atlas-organization-guide__bookmarks small { display: block; }
+
+.atlas-organization-guide__bookmarks {
+  margin: 16px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.atlas-organization-guide__bookmarks li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--organizer-divider);
+  font-size: 14px;
+}
+
+.atlas-native-organizer .atlas-organization-guide__footer {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+@media (max-width: 650px) {
+  .atlas-organization-guide__steps { padding-inline: 16px; gap: 8px 12px; }
+}

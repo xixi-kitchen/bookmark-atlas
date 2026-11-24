@@ -49,3 +49,16 @@ body { width: 344px; margin: 0; }
   .capture-popup__option { min-height: 32px; margin-top: 8px; }
   .capture-popup__status { margin: 8px 0 6px; }
 }
+
+.capture-popup__folders { display: grid; gap: 6px; min-width: 0; margin-top: 14px; }
+.capture-popup__folders > label { font-size: 12px; color: oklch(40% 0.025 283); }
+.capture-popup__folders input[type="search"], .capture-popup__folders select { width: 100%; min-width: 0; max-width: 100%; padding: 8px; border: 1px solid oklch(82% 0.025 283); border-radius: 8px; font: inherit; color: inherit; background: white; }
+.capture-popup__secondary { width: 100%; padding: 8px; border: 1px solid oklch(79% 0.035 283); border-radius: 8px; color: oklch(42% 0.1 285); background: oklch(97% 0.01 283); font: inherit; cursor: pointer; }
+.capture-popup__secondary:disabled, .capture-popup__recommendation:disabled { opacity: .6; cursor: default; }
+.capture-popup__recommendations { display: grid; gap: 8px; min-width: 0; padding: 10px; border: 1px solid oklch(83% 0.03 283); border-radius: 10px; }
+.capture-popup__recommendations p { margin: 0; overflow-wrap: anywhere; }
+.capture-popup__recommendations summary { cursor: pointer; }
+.capture-popup__recommendations ul { max-height: 110px; padding-left: 20px; overflow: auto; overflow-wrap: anywhere; }
+.capture-popup__recommendation { display: grid; gap: 3px; width: 100%; padding: 9px; min-width: 0; text-align: left; border: 1px solid oklch(83% 0.03 283); border-radius: 8px; background: white; font: inherit; color: inherit; cursor: pointer; overflow-wrap: anywhere; }
+.capture-popup__recommendation span { font-size: 12px; color: oklch(48% 0.02 283); }
+.capture-popup__folders input:focus-visible, .capture-popup__folders select:focus-visible, .capture-popup__folders button:focus-visible { outline: 3px solid oklch(75% 0.1 285); outline-offset: 2px; }

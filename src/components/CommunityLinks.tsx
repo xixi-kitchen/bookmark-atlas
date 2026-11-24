@@ -1,4 +1,4 @@
-import { BookOpen, Github, Heart, MessageSquare } from 'lucide-react';
+import { BookOpen, Github, Heart, Mail, MessageSquare } from 'lucide-react';
 import { getUiLanguage } from '../i18n';
 import supportConfig from '../support/support.config.json';
 import { getProjectSupportUrl } from '../support/config.mjs';
@@ -26,6 +26,13 @@ export function CommunityLinks() {
         href="https://github.com/xixi-kitchen/bookmark-atlas/issues/new/choose" target="_blank" rel="noopener noreferrer">
         <MessageSquare size={16} aria-hidden="true" />
         <span>{chinese ? '反馈问题 / 申请网站适配' : 'Report an issue / request site support'}</span>
+      </a>
+      <a className="settings-menu__action community-links__link" href="mailto:xixikitchen@gmail.com">
+        <Mail size={16} aria-hidden="true" />
+        <span>
+          {chinese ? '通过邮件反馈 / 申请网站适配' : 'Email feedback / request site support'}
+          <small className="community-links__email-address">xixikitchen@gmail.com</small>
+        </span>
       </a>
       {supportUrl && <a className="settings-menu__action community-links__link"
         href={supportUrl} target="_blank" rel="noopener noreferrer">

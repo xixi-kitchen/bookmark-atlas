@@ -22,6 +22,12 @@
   outline-offset: -2px;
 }
 
+.community-links__email-address {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+}
+
 .community-links__hint {
   margin: 6px 8px 0;
   color: var(--muted);

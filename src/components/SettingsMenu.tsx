@@ -16,12 +16,15 @@ type Props = {
   onOpenGuide: () => void;
   onWhatsNew: () => void;
   onAISettings?: () => void;
+  onOrganizeBookmarks?: () => void;
+  onOpenBookmarkGuide?: () => void;
+  onOpenAIIntro?: () => void;
   updateUnread?: boolean;
   newAI?: boolean;
   onOpenChange?: (open: boolean) => void;
 };
 
-export function SettingsMenu({ version, onManageEngines, onOpenGuide, onWhatsNew, onAISettings, updateUnread = false, newAI = false, onOpenChange }: Props) {
+export function SettingsMenu({ version, onManageEngines, onOpenGuide, onWhatsNew, onAISettings, onOrganizeBookmarks, onOpenBookmarkGuide, onOpenAIIntro, updateUnread = false, newAI = false, onOpenChange }: Props) {
   const preferences = usePreferencesStore();
   const { preference: languagePreference } = useLanguagePreference();
   const [languageSaving, setLanguageSaving] = useState(false);
@@ -120,6 +123,7 @@ export function SettingsMenu({ version, onManageEngines, onOpenGuide, onWhatsNew
             <h2>{t('settingsSearch')}</h2>
             <button className="settings-menu__action" type="button" onClick={() => run(onManageEngines)}><Search size={16} /><span>{t('manageSearchEngines')}</span></button>
           </section>
+          {onOrganizeBookmarks && <section aria-label={getUiLanguage() === 'zh-CN' ? '书签整理' : 'Bookmark organization'}><button className="settings-menu__action" type="button" onClick={() => run(onOrganizeBookmarks)}><Sparkles size={16} /><span>{getUiLanguage() === 'zh-CN' ? '整理 Chrome 书签' : 'Organize Chrome bookmarks'}</span></button></section>}
           {onAISettings && <section aria-label={t('aiSettings')}>
             <h2>{t('aiSettings')}</h2>
             <button className="settings-menu__action" type="button" aria-describedby={newAI ? 'atlas-ai-new' : undefined} onClick={() => run(onAISettings)}><Sparkles size={16} /><span>{t('aiSettings')}</span>{newAI && <><small className="atlas-update-label" aria-hidden="true">{getUiLanguage() === 'zh-CN' ? '新功能' : 'NEW'}</small><span className="sr-only" id="atlas-ai-new">{getUiLanguage() === 'zh-CN' ? '本次更新的新功能' : 'New in this update'}</span></>}</button>
@@ -128,6 +132,12 @@ export function SettingsMenu({ version, onManageEngines, onOpenGuide, onWhatsNew
             <h2>{t('helpMenu')}</h2>
             <button className="settings-menu__action" type="button" onClick={() => run(onOpenGuide)}><BookOpen size={16} /><span>{t('helpOpenGuide')}</span></button>
             <button className="settings-menu__action" type="button" onClick={() => run(onWhatsNew)}><Sparkles size={16} /><span>{t('helpWhatsNew')}</span>{updateUnread && <small className="atlas-update-label" aria-hidden="true">{getUiLanguage() === 'zh-CN' ? '新内容' : 'NEW'}</small>}</button>
+            {onOpenAIIntro && <button className="settings-menu__action" type="button" onClick={() => run(onOpenAIIntro)}>
+              <Sparkles size={16} aria-hidden="true" /><span>{getUiLanguage() === 'zh-CN' ? '了解 AI 整理' : 'Explore AI organization'}</span>
+            </button>}
+            {onOpenBookmarkGuide && <button className="settings-menu__action" type="button" onClick={() => run(onOpenBookmarkGuide)}>
+              <BookOpen size={16} aria-hidden="true" /><span>{getUiLanguage() === 'zh-CN' ? '书签整理引导' : 'Bookmark organization guide'}</span>
+            </button>}
             <CommunityLinks />
           </section>
         </aside>

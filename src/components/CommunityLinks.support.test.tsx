@@ -42,7 +42,7 @@ function renderHelp() {
 describe('optional project support in Settings Help', () => {
   it('adds a safe ordinary external link only after maintainer configuration', () => {
     const help = renderHelp();
-    expect(within(help).getAllByRole('link')).toHaveLength(4);
+    expect(within(help).getAllByRole('link')).toHaveLength(5);
     const link = within(help).getByRole('link', { name: 'Support this project' });
     expect(link).toHaveAttribute('href', 'https://support.example/project/support-project.html');
     expect(link).toHaveAttribute('target', '_blank');
@@ -68,7 +68,7 @@ describe('optional project support in Settings Help', () => {
   it('hides retained channel URLs when disabled and preserves the existing three links', () => {
     fixture.enabled = false;
     const help = renderHelp();
-    expect(within(help).getAllByRole('link')).toHaveLength(3);
+    expect(within(help).getAllByRole('link')).toHaveLength(4);
     expect(within(help).queryByRole('link', { name: /Support this project/ })).not.toBeInTheDocument();
     expect(screen.queryByRole('img')).not.toBeInTheDocument();
   });
@@ -83,7 +83,7 @@ describe('optional project support in Settings Help', () => {
   ])('keeps Settings usable and hides invalid support configuration %#', (change) => {
     Object.assign(fixture, change);
     const help = renderHelp();
-    expect(within(help).getAllByRole('link')).toHaveLength(3);
+    expect(within(help).getAllByRole('link')).toHaveLength(4);
     expect(within(help).queryByRole('link', { name: /Support this project/ })).not.toBeInTheDocument();
   });
 
@@ -93,7 +93,7 @@ describe('optional project support in Settings Help', () => {
     const xhrOpen = vi.spyOn(XMLHttpRequest.prototype, 'open');
     vi.stubGlobal('fetch', fetch);
     renderHelp();
-    expect(screen.getAllByRole('link')).toHaveLength(4);
+    expect(screen.getAllByRole('link')).toHaveLength(5);
     await act(() => setLanguagePreference('zh-CN'));
     fireEvent.keyDown(screen.getByRole('dialog', { name: '设置' }), { key: 'Escape' });
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();

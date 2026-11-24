@@ -51,6 +51,55 @@ describe('toolbar webpage embed', () => {
     expect(button).toBeDisabled();
   });
 
+  it('forwards the selected folder only for a requested native bookmark and hides it for embed-only mode', async () => {
+    Object.assign(chrome, { bookmarks: { getTree: vi.fn(async () => [{ id: '0', title: '', children: [
+      { id: '1', parentId: '0', title: 'Bookmarks bar', children: [{ id: 'work', parentId: '1', title: 'Work', children: [] }] },
+      { id: '2', parentId: '0', title: 'Other bookmarks', children: [] },
+    ] }]) } });
+    render(<CapturePopup />);
+    const mode = screen.getByRole('radio', { name: 'Webpage embed' });
+    await waitFor(() => expect(mode).toBeEnabled());
+    fireEvent.click(mode);
+    await waitFor(() => expect(screen.getByRole('option', { name: 'Bookmarks bar / Work' })).toBeInTheDocument());
+    fireEvent.change(screen.getByRole('combobox', { name: 'Save to' }), { target: { value: 'work' } });
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Also save a browser bookmark' }));
+    expect(screen.queryByRole('combobox', { name: 'Save to' })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Also save a browser bookmark' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Embed in canvas' }));
+    await waitFor(() => expect(captureEmbedActiveTab).toHaveBeenCalledWith(expect.objectContaining({ saveBookmark: true, parentId: 'work' })));
+  });
+
+  it('lets a preparing request with a deleted custom folder end before saving to the default inbox', async () => {
+    values[CAPTURE_OPTIONS_KEY] = { mode: 'embed', saveBookmark: true };
+    const original = { ...intent, parentId: 'work', phase: 'preparing' as const };
+    let pendingIntents: typeof original[] = [original];
+    let removed: (() => void) | undefined;
+    const rawTree = [{ id: '0', title: '', children: [
+      { id: '1', parentId: '0', title: 'Bookmarks bar', children: [{ id: 'work', parentId: '1', title: 'Work', children: [] }] },
+      { id: '2', parentId: '0', title: 'Other bookmarks', children: [] },
+    ] }];
+    Object.assign(chrome, { bookmarks: {
+      getTree: vi.fn(async () => structuredClone(rawTree)),
+      onRemoved: { addListener: (listener: () => void) => { removed = listener; }, removeListener: vi.fn() },
+    } });
+    vi.mocked(loadPendingEmbedCaptures).mockImplementation(async () => pendingIntents);
+    vi.mocked(getEmbedCaptureStatus).mockResolvedValue(original);
+    vi.mocked(cancelEmbedCapture).mockImplementation(async () => { pendingIntents = []; });
+    render(<CapturePopup />);
+    const destination = await screen.findByRole('combobox', { name: 'Save to' });
+    await waitFor(() => expect(destination).toHaveValue('work'));
+    rawTree[0]!.children[0]!.children = [];
+    await act(async () => { removed?.(); });
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Continue previous addition' })).toBeDisabled());
+    fireEvent.change(destination, { target: { value: '' } });
+    await waitFor(() => expect(cancelEmbedCapture).toHaveBeenCalledWith(original.id));
+    const add = screen.getByRole('button', { name: 'Embed in canvas' });
+    await waitFor(() => expect(add).toBeEnabled());
+    fireEvent.click(add);
+    await waitFor(() => expect(captureEmbedActiveTab).toHaveBeenCalledWith({ id: expect.any(String), tabId: 7, expectedUrl: intent.url, saveBookmark: true }));
+    expect(retryEmbedCapture).not.toHaveBeenCalled();
+  });
+
   it('remembers mode and checkbox only after success across popup mounts', async () => {
     const button = await embedMode();
     fireEvent.click(screen.getByRole('checkbox', { name: 'Also save a browser bookmark' }));

@@ -8,11 +8,14 @@ import { EngineManager } from './components/EngineManager';
 import { FolderNavigator, ViewBreadcrumb } from './components/navigation';
 import { LearningGuide } from './onboarding/LearningGuide';
 import { AIWalkthroughDemo } from './onboarding/AIWalkthroughDemo';
+import { AIOrganizationIntro } from './onboarding/AIOrganizationIntro';
+import { BookmarkOrganizationGuide } from './onboarding/BookmarkOrganizationGuide';
 import { ReleaseInvitation, ReleaseNotes } from './onboarding/ReleaseNotes';
 import { useLearningController } from './onboarding/useLearningController';
 import type { LearningChapter } from './onboarding/learningState';
 import { SearchBar } from './components/SearchBar';
 import { SettingsMenu } from './components/SettingsMenu';
+import { BookmarkOrganizer } from './bookmarks/organization/BookmarkOrganizer';
 import { useLanguagePreference } from './i18n/useLanguagePreference';
 import { AISettings } from './ai/AISettings';
 import { GridView } from './components/views/GridView';
@@ -39,16 +42,19 @@ export function App() {
   const [editorNode, setEditorNode] = useState<BookmarkNode | 'create' | null>(null);
   const [deleteNode, setDeleteNode] = useState<BookmarkNode | null>(null);
   const [enginesOpen, setEnginesOpen] = useState(false);
-  const [aiSettingsOpen, setAISettingsOpen] = useState(false);
+  const [aiSettingsOpen, setAISettingsOpen] = useState(() => new URLSearchParams(window.location.search).get('settings') === 'ai');
+  const [bookmarkOrganizerOpen, setBookmarkOrganizerOpen] = useState(false);
+  const [bookmarkGuideOpen, setBookmarkGuideOpen] = useState(false);
   const [createParentId, setCreateParentId] = useState<string>();
   const [undoVisible, setUndoVisible] = useState(false);
   const [activeFolderId, setActiveFolderId] = useState<string>();
   const [embedIdentityReady, setEmbedIdentityReady] = useState(false);
   const [aiDemoOpen, setAIDemoOpen] = useState(false);
+  const [aiIntroPreview, setAIIntroPreview] = useState(false);
   const [canvasGuideBlocked, setCanvasGuideBlocked] = useState(false);
   const [settingsMenuOpen, setSettingsMenuOpen] = useState(false);
   const [learningAction, setLearningAction] = useState<'import' | 'ai' | 'layout' | 'locate' | null>(null);
-  const learning = useLearningController(APP_VERSION, Boolean(editorNode || deleteNode || enginesOpen || aiSettingsOpen || aiDemoOpen || canvasGuideBlocked || bookmarkState.loading || settingsMenuOpen));
+  const learning = useLearningController(APP_VERSION, Boolean(editorNode || deleteNode || enginesOpen || aiSettingsOpen || bookmarkOrganizerOpen || bookmarkGuideOpen || aiDemoOpen || aiIntroPreview || canvasGuideBlocked || bookmarkState.loading || settingsMenuOpen));
   useEffect(() => {
     if (learning.open && learning.progress?.status === 'active') preferences.setViewMode('canvas');
   }, [learning.open, learning.progress?.status]);
@@ -171,6 +177,10 @@ export function App() {
     if (learning.open && learning.progress?.chapter === 'ai') void learning.configureAI();
     setAISettingsOpen(true);
   };
+  const closeAIIntro = () => {
+    setAIIntroPreview(false);
+    void learning.dismissAIIntro();
+  };
 
   return (
     <main className={`app-shell card-size-${preferences.cardSize}`} data-view={preferences.viewMode}>
@@ -199,6 +209,9 @@ export function App() {
           <button className="primary-button" onClick={() => openCreate(activeFolder && activeFolder.readonlyReason !== 'root' && activeFolder.readonlyReason !== 'managed' ? activeFolder.id : defaultWritableFolder?.id)} aria-label={t('newChromeBookmark')} title={t('newChromeBookmark')}><Plus size={16} /> {t('newChromeBookmark')}</button>
           <SettingsMenu version={APP_VERSION} onManageEngines={() => setEnginesOpen(true)}
             onOpenChange={setSettingsMenuOpen}
+            onOrganizeBookmarks={() => setBookmarkOrganizerOpen(true)}
+            onOpenBookmarkGuide={() => setBookmarkGuideOpen(true)}
+            onOpenAIIntro={() => setAIIntroPreview(true)}
             updateUnread={learning.unread}
             newAI={learning.newFeatures.includes('ai')}
             onAISettings={openAIConfiguration}
@@ -232,6 +245,7 @@ export function App() {
                   nodes={visibleNodes}
                   currentFolderId={activeFolderId}
                   onNavigate={(folder) => setActiveFolderId(folder?.id)}
+                  onOrganize={() => setBookmarkOrganizerOpen(true)}
                 />
                 <GridView
                   bookmarks={managedBookmarks}
@@ -265,18 +279,32 @@ export function App() {
       )}
       {deleteNode && <DeleteConfirm node={deleteNode} onConfirm={confirmDelete} onClose={() => setDeleteNode(null)} />}
       {enginesOpen && <EngineManager engines={preferences.engines} onChange={preferences.setEngines} onClose={() => setEnginesOpen(false)} />}
+      {bookmarkOrganizerOpen && bookmarkState.tree && !aiSettingsOpen && <BookmarkOrganizer tree={bookmarkState.tree} selectedIds={bookmarkState.selectedIds} initialFolderId={activeFolderId}
+        onClose={() => setBookmarkOrganizerOpen(false)} onOpenAISettings={openAIConfiguration}
+        onOpenGuide={() => { setBookmarkOrganizerOpen(false); setBookmarkGuideOpen(true); }} onChanged={() => void bookmarkState.refresh()} />}
+      {bookmarkGuideOpen && <BookmarkOrganizationGuide
+        onClose={() => setBookmarkGuideOpen(false)}
+        onOpenOrganizer={() => { setBookmarkGuideOpen(false); setBookmarkOrganizerOpen(true); }}
+      />}
       {aiSettingsOpen && <AISettings onClose={() => setAISettingsOpen(false)} />}
-      {learning.open && !learning.notesOpen && !aiDemoOpen && !aiSettingsOpen && !canvasGuideBlocked && !editorNode && !deleteNode && !enginesOpen && !settingsMenuOpen && (
+      {(learning.aiIntroOpen || aiIntroPreview) && <AIOrganizationIntro
+        onClose={closeAIIntro}
+        onOpenCanvas={() => { closeAIIntro(); preferences.setViewMode('canvas'); }}
+        onOpenOrganizer={() => { closeAIIntro(); preferences.setViewMode('grid'); setBookmarkOrganizerOpen(true); }}
+        onOpenAISettings={() => { closeAIIntro(); openAIConfiguration(); }}
+      />}
+      {learning.open && !learning.notesOpen && !aiDemoOpen && !aiSettingsOpen && !bookmarkOrganizerOpen && !bookmarkGuideOpen && !canvasGuideBlocked && !editorNode && !deleteNode && !enginesOpen && !settingsMenuOpen && (
         <LearningGuide progress={learning.progress} onStart={(chapter) => void startChapter(chapter)}
           onPause={() => void learning.pause()} onResume={() => void learning.resume()}
           onClose={() => { if (learning.progress?.status !== 'active') void learning.pause(); }}
           onOpenAISettings={openAIConfiguration} onShowAI={() => canvasGuideAction('ai')}
           onPreviewLayout={() => canvasGuideAction('layout')} onLocateBookmarks={() => canvasGuideAction('locate')}
+          onOpenBookmarkGuide={() => setBookmarkGuideOpen(true)}
           onOpenImport={() => canvasGuideAction('import')} onDemo={() => setAIDemoOpen(true)} />
       )}
       {aiDemoOpen && <AIWalkthroughDemo onClose={() => setAIDemoOpen(false)} onOpenAISettings={() => { setAIDemoOpen(false); openAIConfiguration(); }} />}
       {learning.notesOpen && <ReleaseNotes version={APP_VERSION} onClose={learning.closeNotes} onStartGuide={(chapter) => void startChapter(chapter)} />}
-      {learning.invitation && !learning.open && !learning.notesOpen && !canvasGuideBlocked && !aiSettingsOpen && !editorNode && !deleteNode && !enginesOpen && !settingsMenuOpen && <ReleaseInvitation
+      {learning.invitation && !learning.open && !learning.notesOpen && !bookmarkGuideOpen && !canvasGuideBlocked && !aiSettingsOpen && !editorNode && !deleteNode && !enginesOpen && !settingsMenuOpen && <ReleaseInvitation
         onStart={() => void startChapter(learning.invitation!)} onDefer={() => void learning.deferInvitation()} onReadNotes={() => void learning.showNotes()} />}
       {learning.error && <div className="toast" role="alert">{getUiLanguage() === 'zh-CN' ? '无法保存或恢复使用指南进度，其他功能仍可正常使用。另一标签页可能正在教学。' : 'Could not save or resume learning. Other features still work; another tab may be using the guide.'}<button type="button" onClick={learning.clearError}>{t('close')}</button></div>}
       {undoVisible && bookmarkState.lastDeleteSnapshot && (

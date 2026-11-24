@@ -21,13 +21,13 @@
 <article class="document">
 
       <h1>Privacy Policy</h1>
-      <p>Last updated: 2026-11-10. Covers Chrome releases through v0.9.8. Feature availability depends on the installed version.</p>
+      <p>Last updated: 2026-11-25. Feature availability depends on the installed version.</p>
       <p>Bookmark Atlas is a local-first Chrome extension. It does not sell your data or send bookmarks, open tabs, browsing history, or canvas content to a developer-operated server by default. Optional AI organization sends only user-approved selected metadata to the model service you choose. It does not include ads, trackers, or remote extension code execution.</p>
 
       <h2>Data handled by the extension</h2>
       <ul>
         <li>Chrome bookmarks are read and modified locally through the Chrome Bookmarks API for user-requested bookmark features.</li>
-        <li>When you explicitly add the current page from the extension icon, the extension reads the active tab’s title and URL. Bookmark card mode saves a native bookmark under Other bookmarks / Bookmark Atlas. Webpage embed mode saves an interactive canvas object and creates a native bookmark only if you leave that option selected (on by default). A local pending queue keeps the request until the canvas saves. It does not read page bodies or modify unrelated bookmarks. The native bookmark follows your browser’s bookmark-sync settings and remains if you remove or undo the canvas object. The pending queue stays local. A saved embed’s full URL, including query and fragment, may be included in eligible canvas sync and exports. Embedded pages connect directly to the target website under the browser’s iframe, cookie, and site rules.</li>
+        <li>When you explicitly add the current page from the extension icon, the extension reads the active tab’s title and URL. Bookmark card mode saves a native bookmark in the folder you choose, or in Other bookmarks / Bookmark Atlas by default. Webpage embed mode saves an interactive canvas object and creates a native bookmark only if you leave that option selected (on by default). A local pending queue keeps the request until the canvas saves. It does not read page bodies or modify unrelated bookmarks. The native bookmark follows your browser’s bookmark-sync settings and remains if you remove or undo the canvas object. The pending queue stays local. A saved embed’s full URL, including query and fragment, may be included in eligible canvas sync and exports. Embedded pages connect directly to the target website under the browser’s iframe, cookie, and site rules.</li>
         <li>Website icons are read from Chrome's local Favicon API cache.</li>
         <li>Open tabs and browsing history are read locally to produce pre-search results.</li>
         <li>The full Excalidraw canvas and user-added binary attachments are stored in local IndexedDB, with <code>chrome.storage.local</code> as a fallback.</li>
@@ -52,7 +52,7 @@
       <p>When the user selects Baidu, Bing, or Google as the active built-in search engine, input text is sent to that provider's fixed suggestion endpoint. Chrome Default and custom engines do not call an extra remote suggestion endpoint. Embedded websites load in sandboxed iframes and may receive normal browser requests, cookies, and account state according to browser rules. Bookmark Atlas does not proxy, inspect, or record those requests.</p>
       <p>For official YouTube <code>/embed/</code> player requests created by Bookmark Atlas, a declarative rule sets a fixed client referrer. The rule does not read request content and does not apply to YouTube players created by other websites.</p>
 
-      <h2>Optional AI organization</h2>
+      <h2>Optional AI organization on the canvas</h2>
       <p>AI is off unless you configure a compatible HTTPS model service and choose to use it. Before generation, select bookmark cards, review the outgoing data, and explicitly agree to send their titles, domains, existing canvas notes, selected card IDs, and your organization instruction to that service. Complete bookmark URLs, folder paths, URL parameters or fragments, history, other tabs, images, other canvas elements, and API keys are not included in the model prompt. The API Key is sent only in the authentication header to your configured endpoint.</p>
       <p>The extension declares optional HTTPS host capability, not installation-time access to every website. Clicking Connect requests permission only for the configured service origin. Requests do not send browser cookies or follow redirects.</p>
       <p>Model discovery and connectivity tests run only on explicit request. Discovery authenticates <code>GET /models</code>; a successful list does not prove the selected model can generate. Test selected model sends only a fixed minimal prompt through <code>POST /chat/completions</code>, without bookmarks or canvas content, and the provider may charge for it. Neither action automatically saves settings.</p>
@@ -65,7 +65,8 @@
 
       <h2>Limited Use</h2>
       <p>The use of information received from Google APIs will adhere to the Chrome Web Store User Data Policy, including the Limited Use requirements.</p>
-    </article>
+    <section><h2>Native bookmark organization</h2><p>In Chrome v0.9.9 and later, AI sorting in the bookmark list sends the titles and domains of bookmarks in the displayed scope, candidate folder names and paths, and your instructions to your configured model provider only after you approve the data shown. When you explicitly request an AI destination recommendation from the toolbar, it sends the active page title and domain and candidate folder names and paths. Complete bookmark URLs from browser records stay in the local execution mapping. Applied native changes may sync through Chrome. Capture origin markers, draft plans and recovery records stay on this device. Recovery records can include a snapshot of the whole bookmark tree with full URLs. Exporting a recovery record creates a local JSON file that may contain this data. The latest ten completed records are kept, with unresolved work retained separately. Clearing a history record removes its recovery entry.</p></section>
+</article>
     </main>
     <footer class="site-footer"><p>Bookmark Atlas <span>A freeform home for the things you save.</span></p><nav aria-label="Footer"><a href="index.html">Home</a><a href="guide.html">Guide</a><a href="changelog.html">Updates</a><a href="privacy.html">Privacy</a><a href="support.html">Help</a><a href="https://github.com/xixi-kitchen/bookmark-atlas/issues/new/choose">Issues / site requests</a></nav></footer>
   </div>

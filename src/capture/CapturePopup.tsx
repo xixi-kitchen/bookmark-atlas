@@ -6,6 +6,10 @@ import { loadCaptureOpenAfterSave, loadCaptureOptions, saveCaptureOpenAfterSave,
 import { getUiLanguage, t } from '../i18n';
 import { advanceLearning } from '../onboarding/learningState';
 import { markReleaseFeatureUsed, readReleaseNotice } from '../onboarding/releaseEducation';
+import { normalizeBookmarkTree } from '../bookmarks/normalize';
+import type { BookmarkTree } from '../bookmarks/types';
+import { loadLocalAISettings, requestAIOriginPermission, type LocalAISettings } from '../ai/client';
+import { nativeFolderChoices, recommendNativeFolders } from '../bookmarks/organization/ai';
 import packageMetadata from '../../package.json';
 
 const appVersion = globalThis.chrome?.runtime?.getManifest?.().version ?? packageMetadata.version;
@@ -31,6 +35,29 @@ export function CapturePopup() {
   const [optionsSaveFailed, setOptionsSaveFailed] = useState(false);
   const [savedWithoutOpening, setSavedWithoutOpening] = useState(false);
   const [newFeature, setNewFeature] = useState(false);
+  const [bookmarkTree, setBookmarkTree] = useState<BookmarkTree | null>(null);
+  const [parentId, setParentId] = useState('');
+  const [folderSearch, setFolderSearch] = useState('');
+  const [foldersFailed, setFoldersFailed] = useState(false);
+  const [recommendationInput, setRecommendationInput] = useState<{ title: string; domain: string; folders: { id: string; title: string; path: string }[] } | null>(null);
+  const [recommendations, setRecommendations] = useState<{ folderId: string; reason: string; confidence: 'high' | 'low' }[]>([]);
+  const [recommendationConsent, setRecommendationConsent] = useState(false);
+  const [recommendationBusy, setRecommendationBusy] = useState(false);
+  const [recommendationError, setRecommendationError] = useState('');
+  const [aiSettings, setAISettings] = useState<LocalAISettings | null>(null);
+  const [aiSettingsLoaded, setAISettingsLoaded] = useState(false);
+  const recommendationController = useRef<AbortController | null>(null);
+  const chinese = getUiLanguage() === 'zh-CN';
+  const folderLabel = chinese ? '保存到' : 'Save to';
+  const folderChoices = bookmarkTree ? nativeFolderChoices(bookmarkTree) : [];
+  const showFolders = typeof globalThis.chrome?.bookmarks?.getTree === 'function';
+  const isDefaultInbox = (id: string) => {
+    const node = bookmarkTree?.nodes[id];
+    const parent = node?.parentId ? bookmarkTree?.nodes[node.parentId] : undefined;
+    return node?.title === 'Bookmark Atlas' && (parent?.folderType === 'other' || parent?.id === '2');
+  };
+  const filteredFolders = folderChoices.filter((folder) => folder.id === parentId
+    || (!isDefaultInbox(folder.id) && folder.path.toLocaleLowerCase().includes(folderSearch.toLocaleLowerCase())));
   const pending = useRef(false);
   const preferencePending = useRef(false);
   const capturedIntent = useRef<{ mode: CaptureMode; id: string } | null>(null);
@@ -38,6 +65,33 @@ export function CapturePopup() {
   const canCapture = tab?.id !== undefined && Boolean(tab.active) && !tab.incognito
     && (mode === 'embed' ? isEmbeddableCaptureUrl(tab.url) : isCapturableUrl(tab.url));
   const choicesLocked = !preferenceReady || savingPreference || busy || saved || attemptStarted;
+  const destinationUnavailable = Boolean(showFolders && bookmarkTree && parentId && (mode === 'bookmark' || saveBookmark)
+    && !capturedIntent.current && !folderChoices.some(folder => folder.id === parentId));
+
+  useEffect(() => {
+    if (!showFolders) return;
+    let stopped = false;
+    let refreshSequence = 0;
+    const refresh = () => {
+      const sequence = ++refreshSequence;
+      void chrome.bookmarks.getTree().then((tree) => {
+        if (!stopped && sequence === refreshSequence) { setBookmarkTree(normalizeBookmarkTree(tree)); setFoldersFailed(false); }
+      }).catch(() => { if (!stopped && sequence === refreshSequence) setFoldersFailed(true); });
+    };
+    refresh();
+    const changes = chrome.bookmarks;
+    const events = [changes.onCreated, changes.onChanged, changes.onMoved, changes.onRemoved, changes.onChildrenReordered];
+    events.forEach((event) => event?.addListener(refresh));
+    return () => { stopped = true; events.forEach((event) => event?.removeListener(refresh)); };
+  }, [showFolders]);
+
+  useEffect(() => {
+    recommendationController.current?.abort();
+    recommendationController.current = null;
+    setRecommendationBusy(false);
+    setRecommendationInput(null); setRecommendations([]); setRecommendationConsent(false); setRecommendationError('');
+    return () => recommendationController.current?.abort();
+  }, [bookmarkTree, tab?.title, tab?.url, mode, saveBookmark, parentId]);
 
   useEffect(() => {
     let cancelled = false;
@@ -71,6 +125,7 @@ export function CapturePopup() {
   }, []);
 
   function offerPendingRecovery(intent: EmbedCaptureIntent) {
+    setParentId(intent.parentId ?? '');
     if (intent.phase === 'preparing') {
       embedAttempt.current = intent.id;
       setAttemptStarted(true);
@@ -149,7 +204,7 @@ export function CapturePopup() {
   }
 
   async function addToCanvas() {
-    if (!canCapture || !preferenceReady || preferencePending.current || pending.current || savedWithoutOpening || tab?.id === undefined) return;
+    if (!canCapture || destinationUnavailable || !preferenceReady || preferencePending.current || pending.current || savedWithoutOpening || tab?.id === undefined) return;
     pending.current = true;
     setBusy(true);
     setError(null);
@@ -167,7 +222,7 @@ export function CapturePopup() {
       let completed = capturedIntent.current;
       if (!completed) {
         if (mode === 'bookmark') {
-          completed = { mode, id: (await captureActiveTab(tab.id)).id };
+          completed = { mode, id: (await (parentId ? captureActiveTab(tab.id, parentId) : captureActiveTab(tab.id))).id };
         } else {
           const recoverExplicitly = reviewIds.length > 0 || error === 'request_ended';
           const recoveredIds = new Set(reviewIds);
@@ -190,7 +245,7 @@ export function CapturePopup() {
             embedAttempt.current = crypto.randomUUID();
             setAttemptStarted(true);
             submittingEmbed = true;
-            const intent = await captureEmbedActiveTab({ id: embedAttempt.current, tabId: tab.id, expectedUrl: tab.url!, saveBookmark });
+            const intent = await captureEmbedActiveTab({ id: embedAttempt.current, tabId: tab.id, expectedUrl: tab.url!, saveBookmark, ...(parentId ? { parentId } : {}) });
             submittingEmbed = false;
             completed = { mode, id: intent.id };
           } else {
@@ -244,9 +299,44 @@ export function CapturePopup() {
     }
   }
 
+  async function changeDestination(value: string) {
+    if (pending.current || busy || saved || (attemptStarted && !preparingEditable)) return;
+    if (embedAttempt.current) await changeSaveBookmark(saveBookmark);
+    if (!embedAttempt.current) { setParentId(isDefaultInbox(value) ? '' : value); setError(null); }
+  }
+
+  async function openRecommendations() {
+    if (!bookmarkTree || !isCapturableUrl(tab?.url) || choicesLocked) return;
+    setRecommendationInput({ title: (tab.title?.trim() || new URL(tab.url).hostname).replace(/https?:\/\/[^\s<>"']+/gi, '[web address]'),
+      domain: new URL(tab.url).hostname, folders: nativeFolderChoices(bookmarkTree) });
+    setRecommendationConsent(false); setRecommendations([]); setRecommendationError('');
+    setAISettingsLoaded(false);
+    try { setAISettings(await loadLocalAISettings()); }
+    catch { setAISettings(null); }
+    finally { setAISettingsLoaded(true); }
+  }
+
+  async function generateRecommendations() {
+    if (!recommendationInput || !recommendationConsent || !aiSettings?.apiKey || recommendationBusy || choicesLocked) return;
+    const controller = new AbortController();
+    recommendationController.current = controller;
+    const permission = requestAIOriginPermission(aiSettings);
+    setRecommendationBusy(true); setRecommendationError('');
+    try {
+      if (!await permission) throw new Error('permission');
+      const result = await recommendNativeFolders(aiSettings, recommendationInput, controller.signal);
+      if (!controller.signal.aborted) {
+        setRecommendations(result.slice(0, 3));
+        if (result.length === 0) setRecommendationError(chinese ? '没有合适建议，请手动选择文件夹。' : 'No suitable suggestions. Choose a folder manually.');
+      }
+    } catch {
+      if (!controller.signal.aborted) setRecommendationError(chinese ? '暂时无法获取建议，请检查 AI 设置或手动选择。' : 'Suggestions unavailable. Check AI settings or choose a folder manually.');
+    } finally { if (recommendationController.current === controller) setRecommendationBusy(false); }
+  }
+
   const hostname = isCapturableUrl(tab?.url) ? new URL(tab.url).hostname : '';
   const recovery = mode === 'embed' && (reviewIds.length > 0 || error === 'request_ended');
-  const status = error === 'request_ended' ? t('captureEmbedRequestEnded')
+  const status = destinationUnavailable ? (chinese ? '所选文件夹已删除或不可用，请选择其他文件夹或默认收件目录。' : 'The selected folder was deleted or is unavailable. Choose another folder or the default inbox.') : error === 'request_ended' ? t('captureEmbedRequestEnded')
     : error && capturedIntent.current?.mode === 'embed' ? t('captureEmbedOpenFailed')
       : error === 'page_changed' ? t('capturePageChanged')
       : reviewIds.length ? t('captureEmbedNeedsReview')
@@ -257,7 +347,7 @@ export function CapturePopup() {
                 : preferenceError === 'load' ? t('captureOpenPreferenceLoadFailed') : preferenceError ? t('captureOpenPreferenceFailed')
                   : savedWithoutOpening ? t(mode === 'embed' ? 'captureEmbedQueued' : 'captureSavedWithoutOpening')
                     : saved ? t(mode === 'embed' ? 'captureEmbedOpening' : 'captureSuccess') : resumePending ? t('captureEmbedPreparing') : '\u00a0';
-  const hasAlert = Boolean(error || preferenceError || optionsSaveFailed || reviewIds.length);
+  const hasAlert = Boolean(destinationUnavailable || error || preferenceError || optionsSaveFailed || reviewIds.length);
   return (
     <main className="capture-popup">
       <header>
@@ -286,7 +376,41 @@ export function CapturePopup() {
         </label>
         <p id="capture-bookmark-help" className="capture-popup__hint">{t('captureEmbedBookmarkIndependent')}</p>
       </>}
-      {(mode === 'bookmark' || saveBookmark) && <p className="capture-popup__destination"><Folder size={15} aria-hidden="true" /><span>{t('captureDestination')}: {t('captureDestinationValue')}</span></p>}
+      {(mode === 'bookmark' || saveBookmark) && (showFolders ? <section className="capture-popup__folders" aria-label={folderLabel}>
+        <label htmlFor="capture-folder-search">{chinese ? '搜索文件夹' : 'Search folders'}</label>
+        <input id="capture-folder-search" type="search" value={folderSearch} disabled={choicesLocked && !preparingEditable}
+          onChange={(event) => setFolderSearch(event.currentTarget.value)} />
+        <label htmlFor="capture-folder">{folderLabel}</label>
+        <select id="capture-folder" value={parentId} disabled={(choicesLocked && !preparingEditable) || busy}
+          onChange={(event) => void changeDestination(event.currentTarget.value)}>
+          <option value="">{t('captureDestinationValue')}</option>
+          {filteredFolders.map((folder) => <option key={folder.id} value={folder.id}>{folder.path}</option>)}
+          {parentId && !folderChoices.some((folder) => folder.id === parentId) && <option value={parentId}>{chinese ? '所选文件夹已不可用' : 'Selected folder unavailable'}</option>}
+        </select>
+        {foldersFailed && <p className="capture-popup__hint" role="status">{chinese ? '目录暂时无法读取，添加时会重新检查目标。' : 'Folders could not be loaded. The destination will be checked when adding.'}</p>}
+        <button type="button" className="capture-popup__secondary" disabled={!bookmarkTree || choicesLocked || !canCapture}
+          onClick={() => void openRecommendations()}>{chinese ? 'AI 推荐' : 'AI recommendations'}</button>
+        {recommendationInput && <div className="capture-popup__recommendations">
+          <strong>{chinese ? '将发送给所配置 AI 的内容' : 'Data sent to your configured AI'}</strong>
+          <p>{recommendationInput.title}<br />{recommendationInput.domain}</p>
+          <details><summary>{chinese ? `候选目录（${recommendationInput.folders.length}）` : `Candidate folders (${recommendationInput.folders.length})`}</summary>
+            <ul>{recommendationInput.folders.map((folder) => <li key={folder.id}>{folder.path}</li>)}</ul>
+          </details>
+          <p className="capture-popup__hint">{chinese ? '标题、域名和以上目录名称与层级会发送至你配置的服务，适用服务商费用。' : 'The title, domain and listed folder names and hierarchy are sent to your provider. Provider fees apply.'}</p>
+          {aiSettingsLoaded && !aiSettings?.apiKey ? <p className="capture-popup__hint">{chinese ? '请先保存本机 AI 配置。' : 'Save local AI settings first.'} <a target="_blank" rel="noreferrer" href={chrome.runtime?.getURL?.('newtab.html?settings=ai')}>{chinese ? '打开 AI 设置' : 'Open AI settings'}</a></p> : <>
+            <label className="capture-popup__option"><input type="checkbox" checked={recommendationConsent} disabled={recommendationBusy}
+              onChange={(event) => setRecommendationConsent(event.currentTarget.checked)} /><span>{chinese ? '同意发送以上内容' : 'Allow sending the listed data'}</span></label>
+            <button type="button" className="capture-popup__secondary" disabled={!aiSettingsLoaded || !recommendationConsent || recommendationBusy || choicesLocked}
+              onClick={() => void generateRecommendations()}>{recommendationBusy ? (chinese ? '正在推荐…' : 'Getting suggestions…') : (chinese ? '生成目录建议' : 'Get folder suggestions')}</button>
+          </>}
+          {recommendationError && <p role="alert" className="capture-popup__hint">{recommendationError}</p>}
+          {recommendations.map((item) => <button type="button" className="capture-popup__recommendation" key={item.folderId}
+            disabled={choicesLocked} onClick={() => void changeDestination(item.folderId)}>
+            <strong>{folderChoices.find((folder) => folder.id === item.folderId)?.path}</strong><span>{item.reason}</span>
+            {item.confidence === 'low' && <small>{chinese ? '需要确认' : 'Review suggested'}</small>}
+          </button>)}
+        </div>}
+      </section> : <p className="capture-popup__destination"><Folder size={15} aria-hidden="true" /><span>{t('captureDestination')}: {t('captureDestinationValue')}</span></p>)}
       {mode === 'embed' && <p className="capture-popup__hint">{t('captureEmbedPrivacy')}</p>}
       <label className="capture-popup__option">
         <input type="checkbox" checked={openAfterSave} disabled={!preferenceReady || savingPreference || busy || saved}
@@ -297,7 +421,7 @@ export function CapturePopup() {
       <p className={`capture-popup__status${hasAlert ? ' is-error' : ''}`} role={hasAlert ? 'alert' : 'status'} aria-live="polite">
         {status}{bookmarkRetained && <> {t('captureEmbedBookmarkRetained')}</>}{optionsSaveFailed && <> {t('captureOptionsSaveFailed')}</>}
       </p>
-      <button type="button" className="capture-popup__submit" disabled={loading || !preferenceReady || savingPreference || !canCapture || busy || savedWithoutOpening} onClick={() => void addToCanvas()}>
+      <button type="button" className="capture-popup__submit" disabled={loading || !preferenceReady || savingPreference || !canCapture || destinationUnavailable || busy || savedWithoutOpening} onClick={() => void addToCanvas()}>
         {saved ? <Check size={18} aria-hidden="true" /> : mode === 'embed' ? <Globe size={18} aria-hidden="true" /> : <BookmarkPlus size={18} aria-hidden="true" />}
         {busy ? t(saved ? 'captureOpening' : 'captureAdding') : recovery ? t('captureEmbedReadd') : resumePending ? t('captureEmbedResume') : error && (error !== 'page_changed' || capturedIntent.current) ? t('retry') : t(mode === 'embed' ? 'captureEmbedSubmit' : 'captureAddToCanvas')}
         {!busy && openAfterSave && <ArrowUpRight size={16} aria-hidden="true" />}

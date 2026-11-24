@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { completeOnboarding, dismissWhatsNew, getGuideStartup, readOnboardingState, skipOnboarding, subscribeToGuideState } from './onboardingState';
+import { completeOnboarding, dismissWhatsNew, getGuideStartup, markAIOrganizationIntroSeen, readOnboardingState, skipOnboarding, subscribeToGuideState } from './onboardingState';
 import { advanceLearning, beginAIConfiguration, pauseLearning, readLearningProgress, resumeLearning, startLearning, subscribeLearningProgress, type LearningChapter, type LearningProgress } from './learningState';
 import { subscribeLearningEvents } from './learningEvents';
 import { claimReleaseInvitation, dismissReleaseInvitation, getReleaseEducation, markReleaseFeatureUsed, markReleaseNotesRead, readReleaseNotice, recordReleaseEducation, subscribeReleaseEducation } from './releaseEducation';
@@ -14,12 +14,16 @@ export function useLearningController(version: string, blocked: boolean) {
   const [newFeatures, setNewFeatures] = useState<LearningChapter[]>([]);
   const [expiresAt, setExpiresAt] = useState<number>();
   const [invitation, setInvitation] = useState<LearningChapter | null>(null);
+  const [aiIntroOpen, setAIIntroOpen] = useState(false);
   const [error, setError] = useState(false);
   const mounted = useRef(true);
   const blockedRef = useRef(blocked);
   blockedRef.current = blocked;
   const openRef = useRef(false);
+  const notesOpenRef = useRef(false);
   const invitationRef = useRef<LearningChapter | null>(null);
+  const aiIntroRef = useRef(false);
+  const aiIntroDismissed = useRef(false);
   const owner = useRef<(() => void) | null>(null);
   const claiming = useRef(false);
   const dismissed = useRef(false);
@@ -52,27 +56,30 @@ export function useLearningController(version: string, blocked: boolean) {
       try {
         const startup = await getGuideStartup(version);
         if (startup?.surface === 'whats-new') await recordReleaseEducation(getReleaseEducation(version));
-        const [next, notice] = await Promise.all([readLearningProgress(), readReleaseNotice(version)]);
+        const [next, notice, onboarding] = await Promise.all([readLearningProgress(), readReleaseNotice(version), readOnboardingState()]);
         if (cancelled) return;
         setProgress(next); setUnread(notice.unread); setExpiresAt(notice.expiresAt); setNewFeatures(notice.featureChapters ?? []);
         await finishLegacy(next);
-        if (cancelled || blockedRef.current || dismissed.current || openRef.current || invitationRef.current
+        if (cancelled || blockedRef.current || dismissed.current || openRef.current || notesOpenRef.current || invitationRef.current || aiIntroRef.current
           || document.visibilityState === 'hidden') return;
-        if (startup?.surface !== 'onboarding' && next?.status !== 'active' && !notice.invitationChapter) return;
+        const introPending = onboarding.aiOrganizationIntro === 'pending' && !aiIntroDismissed.current;
+        if (startup?.surface !== 'onboarding' && next?.status !== 'active' && !notice.invitationChapter && !introPending) return;
         if (!await own()) return;
-        if (cancelled || blockedRef.current || dismissed.current) { release(); return; }
+        if (cancelled || blockedRef.current || dismissed.current || notesOpenRef.current) { release(); return; }
         // Re-read after acquiring the lock; another tab may just have paused it.
-        const [liveStartup, liveProgress] = await Promise.all([getGuideStartup(version), readLearningProgress()]);
-        if (cancelled || blockedRef.current || dismissed.current) { release(); return; }
+        const [liveStartup, liveProgress, liveOnboarding] = await Promise.all([getGuideStartup(version), readLearningProgress(), readOnboardingState()]);
+        if (cancelled || blockedRef.current || dismissed.current || notesOpenRef.current) { release(); return; }
         if (liveStartup?.surface === 'onboarding' || liveProgress?.status === 'active') {
           setProgress(liveProgress); openRef.current = true; setOpen(true);
+        } else if (liveOnboarding.aiOrganizationIntro === 'pending' && !aiIntroDismissed.current) {
+          aiIntroRef.current = true; setAIIntroOpen(true);
         } else {
           const chapter = await claimReleaseInvitation(version);
           if (cancelled) { release(); return; }
           invitationRef.current = chapter; setInvitation(chapter);
           if (!chapter) release();
         }
-      } catch { if (!openRef.current && !invitationRef.current) release(); if (!cancelled) setError(true); }
+      } catch { if (!openRef.current && !invitationRef.current && !aiIntroRef.current) release(); if (!cancelled) setError(true); }
       finally { refreshing = false; if (again && !cancelled) { again = false; void refresh(); } }
     };
     refreshRef.current = () => { void refresh(); };
@@ -110,7 +117,7 @@ export function useLearningController(version: string, blocked: boolean) {
       const next = await readLearningProgress();
       if (!mounted.current) { release(); return; }
       dismissed.current = false; openRef.current = true;
-      invitationRef.current = null; setInvitation(null); setNotesOpen(false);
+      invitationRef.current = null; setInvitation(null); notesOpenRef.current = false; setNotesOpen(false);
       setProgress(next); setOpen(true); setError(false);
     } catch { release(); if (mounted.current) setError(true); }
   }, [own, release]);
@@ -142,18 +149,36 @@ export function useLearningController(version: string, blocked: boolean) {
     finally { release(); }
   }, [release]);
   const showNotes = useCallback(async () => {
+    notesOpenRef.current = true;
     setNotesOpen(true);
     // Reading an update does not mark any tutorial task complete.
     try { await markReleaseNotesRead(version); await dismissWhatsNew(version); if (mounted.current) setUnread(false); }
     catch { if (mounted.current) setError(true); }
   }, [version]);
+  const closeNotes = () => {
+    notesOpenRef.current = false;
+    setNotesOpen(false);
+    refreshRef.current();
+  };
   const deferInvitation = useCallback(async () => {
     invitationRef.current = null; setInvitation(null);
     try { await dismissReleaseInvitation(version); }
     catch { if (mounted.current) setError(true); }
     finally { release(); }
   }, [version, release]);
+  const dismissAIIntro = useCallback(async () => {
+    const wasOpen = aiIntroRef.current;
+    aiIntroDismissed.current = true;
+    setAIIntroOpen(false);
+    try { await markAIOrganizationIntroSeen(); }
+    catch { if (mounted.current) setError(true); }
+    finally {
+      aiIntroRef.current = false;
+      if (wasOpen) release();
+      refreshRef.current();
+    }
+  }, [release]);
 
-  return { progress, open, notesOpen, unread, newFeatures, invitation, error, show, start, resume, pause,
-    showNotes, closeNotes: () => setNotesOpen(false), deferInvitation, configureAI, clearError: () => setError(false) };
+  return { progress, open, notesOpen, unread, newFeatures, invitation, aiIntroOpen, dismissAIIntro, error, show, start, resume, pause,
+    showNotes, closeNotes, deferInvitation, configureAI, clearError: () => setError(false) };
 }

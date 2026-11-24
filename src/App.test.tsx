@@ -106,6 +106,40 @@ describe('App integration', () => {
     expect(await screen.findByRole('dialog', { name: 'Learning guide' })).toBeInTheDocument();
   });
 
+  it('introduces both AI workflows after an update and reopens the introduction from help', async () => {
+    const prototype = HTMLDialogElement.prototype;
+    const original = Object.getOwnPropertyDescriptors(prototype);
+    Object.defineProperties(prototype, {
+      showModal: { configurable: true, value(this: HTMLDialogElement) { this.open = true; } },
+      close: { configurable: true, value(this: HTMLDialogElement) { this.open = false; } },
+    });
+    try {
+      await recordInstallationEvent({ reason: 'update', version: '0.9.6', previousVersion: '0.9.5', announceAIOrganization: true });
+      render(<App />);
+      const title = 'Organize your bookmarks with AI';
+      const introduction = await screen.findByRole('dialog', { name: title });
+      expect(within(introduction).getByRole('heading', { name: /Canvas view/ })).toBeInTheDocument();
+      expect(within(introduction).getByRole('heading', { name: /Bookmark list/ })).toBeInTheDocument();
+      fireEvent.click(within(introduction).getByRole('button', { name: 'Go to canvas' }));
+      expect(await screen.findByTestId('excalidraw-canvas')).toBeInTheDocument();
+      expect(screen.queryByRole('dialog', { name: title })).not.toBeInTheDocument();
+      await waitFor(async () => expect((await readOnboardingState()).aiOrganizationIntro).toBe('seen'));
+
+      fireEvent.click(screen.getByRole('button', { name: 'Settings' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Explore AI organization' }));
+      const replay = await screen.findByRole('dialog', { name: title });
+      fireEvent.click(within(replay).getByRole('button', { name: 'Open bookmark organizer' }));
+      expect(await screen.findByRole('dialog', { name: 'Organize Chrome bookmarks' })).toBeInTheDocument();
+      expect(screen.queryByTestId('excalidraw-canvas')).not.toBeInTheDocument();
+    } finally {
+      cleanup();
+      for (const key of ['showModal', 'close']) {
+        if (original[key]) Object.defineProperty(prototype, key, original[key]);
+        else Reflect.deleteProperty(prototype, key);
+      }
+    }
+  });
+
   it('keeps minor updates quiet and clears their marker when notes are read', async () => {
     await recordInstallationEvent({ reason: 'update', previousVersion: '0.9.5', version: '0.9.6' });
 

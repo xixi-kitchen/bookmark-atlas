@@ -114,6 +114,42 @@ describe('useLearningController storage integration', () => {
     expect(result.current.open).toBe(false);
   });
 
+  it('offers the AI introduction in one unblocked tab and remembers dismissal across updates', async () => {
+    await recordInstallationEvent({ reason: 'update', version, previousVersion: '0.9.4', announceAIOrganization: true });
+    const { result, rerender, unmount } = renderHook(({ blocked }) => [
+      useLearningController(version, blocked),
+      useLearningController(version, blocked),
+    ], { initialProps: { blocked: true }, wrapper: strict });
+    await waitFor(() => expect(result.current.every(controller => controller.unread)).toBe(true));
+    expect(result.current.every(controller => !controller.aiIntroOpen)).toBe(true);
+    rerender({ blocked: false });
+    await waitFor(() => expect(result.current.filter(controller => controller.aiIntroOpen)).toHaveLength(1));
+    await act(async () => { await result.current.find(controller => controller.aiIntroOpen)!.dismissAIIntro(); });
+    await settle();
+    expect(result.current.every(controller => !controller.aiIntroOpen)).toBe(true);
+    expect(result.current.every(controller => controller.unread)).toBe(true);
+    expect(await readLearningProgress()).toBeNull();
+    unmount();
+
+    await recordInstallationEvent({ reason: 'update', version: '0.9.6', previousVersion: version, announceAIOrganization: true });
+    const next = renderHook(() => useLearningController('0.9.6', false));
+    await waitFor(() => expect(next.result.current.unread).toBe(true));
+    expect(next.result.current.aiIntroOpen).toBe(false);
+  });
+
+  it('keeps the standard guide on fresh install and does not introduce an existing feature on a later update', async () => {
+    await recordInstallationEvent({ reason: 'install', version, announceAIOrganization: true });
+    const first = renderHook(() => useLearningController(version, false));
+    await waitFor(() => expect(first.result.current.open).toBe(true));
+    expect(first.result.current.aiIntroOpen).toBe(false);
+    first.unmount();
+    await skipOnboarding();
+    await recordInstallationEvent({ reason: 'update', version: '0.9.6', previousVersion: version, announceAIOrganization: true });
+    const next = renderHook(() => useLearningController('0.9.6', false));
+    await waitFor(() => expect(next.result.current.unread).toBe(true));
+    expect(next.result.current.aiIntroOpen).toBe(false);
+  });
+
   it('releases the visible guide presentation when its owner unmounts', async () => {
     await startLearning('ai');
     const first = renderHook(() => useLearningController(version, false));

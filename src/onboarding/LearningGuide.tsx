@@ -15,6 +15,7 @@ export type LearningGuideProps = {
   onShowAI: () => void;
   onOpenImport: () => void;
   onDemo: () => void;
+  onOpenBookmarkGuide?: () => void;
   onClose: () => void;
   onResume?: () => void;
   onPreviewLayout?: () => void;
@@ -37,7 +38,7 @@ const shortTaskTitles: Record<LearningStep, [string, string]> = {
   'ai-done': ['AI 体验已完成', 'AI lesson complete'],
 };
 
-export function LearningGuide({ progress, onStart, onPause, onOpenAISettings, onShowAI, onOpenImport, onDemo, onClose, onResume, onPreviewLayout, onLocateBookmarks, targetsEnabled = true }: LearningGuideProps) {
+export function LearningGuide({ progress, onStart, onPause, onOpenAISettings, onShowAI, onOpenImport, onDemo, onOpenBookmarkGuide, onClose, onResume, onPreviewLayout, onLocateBookmarks, targetsEnabled = true }: LearningGuideProps) {
   useLanguagePreference();
   const language = getUiLanguage();
   const labels = getLearningLabels(language);
@@ -187,6 +188,7 @@ export function LearningGuide({ progress, onStart, onPause, onOpenAISettings, on
     </ul></details>}
     <details className="learning-guide__chapters" open={!progress || paused || done}><summary>{labels.chapters}</summary><div>
       {chapters.map((chapter) => <button type="button" key={chapter} onClick={() => onStart(chapter)}>{labels.chapterNames[chapter]}{progress?.completedChapters.includes(chapter) && <Check size={14} aria-label={language === 'zh-CN' ? '已完成' : 'Completed'} />}</button>)}
+      {onOpenBookmarkGuide && <button type="button" onClick={onOpenBookmarkGuide}>{language === 'zh-CN' ? '书签整理引导' : 'Bookmark organization guide'}</button>}
     </div></details>
     {active && !done && <button type="button" className="learning-guide__quiet learning-guide__pause" onClick={dismiss}>{labels.pause}</button>}
     </div>
