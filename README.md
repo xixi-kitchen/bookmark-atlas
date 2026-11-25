@@ -15,9 +15,9 @@ notes and drawings, and find your way back with one search box.
 
 ![Bookmark Atlas canvas with bookmarks, notes, and drawings](docs/store-assets/screenshots/01-canvas-en-1280x800.png)
 
-Chrome Web Store stable is **v0.9.8**. The store lists **2026-11-10** as its update date.
-Add the current webpage directly to the Excalidraw canvas from the extension popup.
-The [v0.9.8 release](https://github.com/xixi-kitchen/bookmark-atlas/releases/tag/v0.9.8)
+Chrome Web Store stable is **v0.9.9**. The store lists **2026-11-25** as its update date.
+Organize Chrome bookmarks in the list, review an optional AI plan, and restore batches from local history. An upgrade introduction and offline guide explain the workflows.
+The [v0.9.9 release](https://github.com/xixi-kitchen/bookmark-atlas/releases/tag/v0.9.9)
 includes the matching package, checksum, and release notes; previous releases remain available.
 
 Microsoft Edge Add-ons stable: **v0.9.7**, confirmed publicly available on **2026-10-28**.
@@ -60,7 +60,8 @@ You can [star the project](https://github.com/xixi-kitchen/bookmark-atlas) or
 - Keep web pages and supported YouTube/Bilibili players on the canvas. Embedded
   sites must allow iframes and retain their own privacy and account behavior.
 - Choose English or Simplified Chinese, canvas themes, and card presentation
-  preferences. Optional AI previews do not rearrange native bookmarks.
+  preferences.
+- In Chrome v0.9.9, preview and apply native bookmark moves from the list. Use optional AI for folder suggestions or canvas card layouts.
 
 ## Your data and sync
 
@@ -73,16 +74,13 @@ attachments stay on the device where they were added; export a full backup for
 a complete copy. Viewport and drawing-tool preferences stay local.
 
 Current-page capture reads the active page's title and URL only when requested,
-adds a native bookmark under **Other bookmarks / Bookmark Atlas**, and queues its
+adds a native bookmark to the chosen folder (by default **Other bookmarks / Bookmark Atlas**), and queues its
 canvas insertion locally until the canvas saves. It does not read page bodies or
 rearrange unrelated bookmarks. Native bookmark sync follows Chrome's settings.
 
 AI is optional and requires your own compatible HTTPS endpoint, model, and API
 key. Provider fees and data policies apply, including possible charges for model
-tests. After your explicit agreement, only selected card titles, domains, notes,
-card IDs, and your instruction are sent. Full URLs, folder paths, browsing history,
-other tabs, images, and the rest of your canvas are excluded. The API key is sent
-as authentication, never in the prompt.
+tests. After you approve the displayed scope, canvas AI can send selected card titles, domains, notes, card IDs, and instructions. Bookmark-list AI can send bookmark titles, domains, candidate folder names and paths, and instructions. The toolbar’s optional AI recommendation sends the active page title and domain and candidate folder names and paths. The full URLs from bookmark records remain local to the organizer. The API key is sent as authentication, outside the prompt.
 
 Explicitly saved AI settings stay local; the key is encrypted with AES-GCM using
 a device-local key. Configuration and keys are excluded from sync and extension
@@ -143,9 +141,9 @@ Excalidraw 画布，与备注、绘图和网页嵌入一起整理，再通过统
 · [隐私政策](https://xixi-kitchen.github.io/bookmark-atlas/zh/privacy.html)
 · [支持](https://xixi-kitchen.github.io/bookmark-atlas/zh/support.html)
 
-Chrome 商店当前稳定版为 **v0.9.8**，商店显示更新日期为 **2026-11-10**。
-可以从扩展弹窗把当前网页直接嵌入 Excalidraw 画布。
-[v0.9.8 正式发布页](https://github.com/xixi-kitchen/bookmark-atlas/releases/tag/v0.9.8)
+Chrome 商店当前稳定版为 **v0.9.9**，商店显示更新日期为 **2026-11-25**。
+在列表批量整理 Chrome 书签，可选择 AI 建议，检查预览后应用，需要时从本机整理记录恢复。升级介绍和离线引导会带你熟悉流程。
+[v0.9.9 正式发布页](https://github.com/xixi-kitchen/bookmark-atlas/releases/tag/v0.9.9)
 提供对应安装包、校验文件和发布说明；历史版本继续保留。
 
 Edge 当前正式版为 **v0.9.7**，已于 **2026-10-28** 核实公开可安装。
@@ -176,7 +174,8 @@ Edge 当前正式版为 **v0.9.7**，已于 **2026-10-28** 核实公开可安装
 - 本地搜索书签、已打开标签页和浏览历史。提交搜索时连接所选搜索服务；
   部分内置搜索引擎可提供远程联想，默认跟随 Chrome 搜索服务。
 - 嵌入允许 iframe 的网页和支持的 YouTube/Bilibili 播放器，目标网站的隐私与账号规则仍然适用。
-- 选择简体中文或 English、主题和卡片样式。可选 AI 提供画布整理预览，不重新整理原生书签。
+- 选择简体中文或 English、主题和卡片样式。
+- Chrome v0.9.9 支持在列表预览并应用原生书签整理。可选 AI 可为列表建议目录，也可为画布卡片分组排布。
 
 ### 数据与同步
 
@@ -185,12 +184,11 @@ Edge 当前正式版为 **v0.9.7**，已于 **2026-10-28** 核实公开可安装
 同步由事件驱动，通常接近实时，**不承诺固定到达时间**。图片和二进制附件仅在添加它们的设备上保存，
 需要完整副本时请导出完整备份。视口和绘图工具偏好仅保存在本机。
 
-主动收藏当前网页时，仅读取活动标签页的标题和网址，保存到原生「其他书签 / Bookmark Atlas」，
+主动收藏当前网页时，仅读取活动标签页的标题和网址，保存到所选文件夹，默认是「其他书签 / Bookmark Atlas」，
 在本机等待画布成功保存后完成添加；不读取网页正文，不移动无关书签。原生书签遵循 Chrome 的同步设置。
 
 AI 为可选功能，需自备兼容的 HTTPS 接口、模型和 API Key，服务商可能收费，模型测试也可能产生费用。
-你明确同意后，仅发送所选卡片的标题、域名、备注、卡片 ID 和整理要求；
-不发送完整网址、文件夹路径、浏览历史、其他标签页、图片和其余画布。Key 仅用于认证，不进入提示词。
+你核对并确认显示的范围后，画布 AI 可发送选中卡片的标题、域名、备注、卡片 ID 和整理要求。列表 AI 可发送书签标题、域名、候选目录名称与路径及整理要求。工具栏的可选 AI 目录推荐发送当前网页标题、域名及候选目录名称和路径。书签记录中的完整网址留在本机整理流程。Key 用于认证，与提示词分开。
 
 明确保存的 AI 配置仅留本机；Key 通过本机密钥以 AES-GCM 加密，配置和密钥均不同步、不进入扩展备份。
 这**不是操作系统钥匙串**，控制浏览器用户配置或扩展运行环境的人仍可能获得访问能力。
@@ -201,7 +199,7 @@ Bookmark Atlas 无广告或追踪器，默认不将书签、标签页、历史�
 
 ### 浏览器与开发
 
-Chrome v0.9.8 和 Edge v0.9.7 已分别通过各自商店提供。Edge 本机功能已验收，同账号双设备同步仍待测试；
+Chrome v0.9.9 和 Edge v0.9.7 已分别通过各自商店提供。Edge 本机功能已验收，同账号双设备同步仍待测试；
 Safari 仅完成 WebExtension 构建可行性验证，仍需 Apple 打包、运行验证与独立同步方案。
 **不同浏览器之间不会同步数据。**
 
