@@ -10,6 +10,12 @@ const disabled = {
 const enabled = { ...disabled, enabled: true, wechatQrUrl: 'https://assets.example/synthetic-wechat.png' };
 
 describe('project support configuration', () => {
+  it.each(['https://ko-fi.com/', 'https://ko-fi.com.evil.test/atlas', 'https://ko-fi.com/atlas/shop',
+    'https://ko-fi.com/atlas?recipient=other', 'https://ko-fi.com:1234/atlas', 'https://name@ko-fi.com/atlas'])
+  ('rejects non-profile Ko-fi destinations %s', (koFiUrl) => {
+    expect(() => parseProjectSupportConfig({ ...disabled, koFiUrl })).toThrow();
+  });
+
   it('hides disabled support even when valid channel destinations are retained', () => {
     expect(getProjectSupportUrl(disabled)).toBeNull();
     expect(getProjectSupportUrl({ ...enabled, enabled: false })).toBeNull();

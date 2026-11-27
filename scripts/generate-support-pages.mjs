@@ -20,6 +20,7 @@ const config = parseProjectSupportConfig(JSON.parse(source));
 // All input validation and all target comparisons precede any write.
 // This script never reads or copies private QR originals or publishes files.
 const outputs = [
+  ['src/support/support-entry.json', `${JSON.stringify({ enabled: config.enabled, pageUrl: config.pageUrl }, null, 2)}\n`],
   ['docs/index.html', updateHomepageSupportSlot(home, config)],
   ['docs/zh/index.html', updateHomepageSupportSlot(chineseHome, config, 'zh-CN')],
   ['docs/support-project.html', renderProjectSupportPage(config)],

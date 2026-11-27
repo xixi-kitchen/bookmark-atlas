@@ -29,6 +29,31 @@ describe('maintainer voluntary support generation', () => {
     expect(result.status, result.stderr).toBe(0);
   });
 
+  it('renders all three channels but only publishes the website address to the extension entry', () => {
+    const f = fixture();
+    const koFiUrl = 'https://ko-fi.com/atlas_sample';
+    const options = { ...settings, ...qr, enabled: true, koFiUrl, channelEnabled: { koFi: true, wechat: true, alipay: true } };
+    try {
+      f.configure(options);
+      const result = f.run(); expect(result.status, result.stderr).toBe(0);
+      for (const prefix of ['docs/', 'docs/zh/']) {
+        const page = parse(f.read(`${prefix}support-project.html`));
+        const koFi = page.querySelector('a[data-support-channel="ko-fi"]');
+        expect(koFi?.getAttribute('href')).toBe(koFiUrl);
+        expect(koFi?.getAttribute('rel')).toBe('noopener noreferrer');
+        expect(page.querySelectorAll('[data-payment-code]')).toHaveLength(2);
+        expect(page.querySelector('script, iframe')).toBeNull();
+      }
+      expect(JSON.parse(f.read('src/support/support-entry.json'))).toEqual({ enabled: true, pageUrl: settings.pageUrl });
+      f.configure({ ...options, channelEnabled: { koFi: true, wechat: false, alipay: false } });
+      expect(f.run().status).toBe(0);
+      const partial = f.read('docs/zh/support-project.html');
+      expect(partial).toContain(koFiUrl);
+      expect(partial).not.toContain(qr.wechatQrUrl);
+      expect(partial).not.toContain(qr.alipayQrUrl);
+    } finally { f.done(); }
+  });
+
   it('defaults off without links, code images or retained configured payment URLs in output', () => {
     const f = fixture(); f.configure({ ...settings, ...qr });
     try {

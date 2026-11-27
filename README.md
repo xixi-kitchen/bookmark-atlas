@@ -11,6 +11,7 @@ notes and drawings, and find your way back with one search box.
 · [Updates](https://xixi-kitchen.github.io/bookmark-atlas/changelog.html)
 · [Privacy](https://xixi-kitchen.github.io/bookmark-atlas/privacy.html)
 · [Support](https://xixi-kitchen.github.io/bookmark-atlas/support.html)
+· [Support this project](https://xixi-kitchen.github.io/bookmark-atlas/support-project.html)
 · [简体中文](#中文说明)
 
 ![Bookmark Atlas canvas with bookmarks, notes, and drawings](docs/store-assets/screenshots/01-canvas-en-1280x800.png)
@@ -140,6 +141,7 @@ Excalidraw 画布，与备注、绘图和网页嵌入一起整理，再通过统
 · [更新记录](https://xixi-kitchen.github.io/bookmark-atlas/zh/changelog.html)
 · [隐私政策](https://xixi-kitchen.github.io/bookmark-atlas/zh/privacy.html)
 · [支持](https://xixi-kitchen.github.io/bookmark-atlas/zh/support.html)
+· [自愿支持项目](https://xixi-kitchen.github.io/bookmark-atlas/zh/support-project.html)
 
 Chrome 商店当前稳定版为 **v0.9.9**，商店显示更新日期为 **2026-11-25**。
 在列表批量整理 Chrome 书签，可选择 AI 建议，检查预览后应用，需要时从本机整理记录恢复。升级介绍和离线引导会带你熟悉流程。

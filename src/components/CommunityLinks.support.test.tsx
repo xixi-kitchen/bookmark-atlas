@@ -8,16 +8,12 @@ import { SettingsMenu } from './SettingsMenu';
 const fixture = vi.hoisted(() => ({
   enabled: true as unknown,
   pageUrl: 'https://support.example/project/support-project.html',
-  wechatQrUrl: 'https://assets.example/synthetic-wechat.png',
-  alipayQrUrl: '',
 }));
-vi.mock('../support/support.config.json', () => ({ default: fixture }));
+vi.mock('../support/support-entry.json', () => ({ default: fixture }));
 
 beforeEach(async () => {
   fixture.enabled = true;
   fixture.pageUrl = 'https://support.example/project/support-project.html';
-  fixture.wechatQrUrl = 'https://assets.example/synthetic-wechat.png';
-  fixture.alipayQrUrl = '';
   await setLanguagePreference('en');
 });
 
@@ -25,8 +21,6 @@ afterEach(() => {
   cleanup();
   fixture.enabled = false;
   fixture.pageUrl = 'https://support.example/project/support-project.html';
-  fixture.wechatQrUrl = '';
-  fixture.alipayQrUrl = '';
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
 });
@@ -78,8 +72,6 @@ describe('optional project support in Settings Help', () => {
     { pageUrl: 'https://user:secret@support.example/project/support-project.html' },
     { pageUrl: 'javascript:alert(1)' },
     { pageUrl: 'https://support.example/project/support-project.html?recipient=synthetic' },
-    { wechatQrUrl: '/private/synthetic.png' },
-    { wechatQrUrl: '' },
   ])('keeps Settings usable and hides invalid support configuration %#', (change) => {
     Object.assign(fixture, change);
     const help = renderHelp();

@@ -10,30 +10,45 @@ export function renderProjectSupportPage(input, locale = 'en') {
   const assetBase = zh ? '../' : '';
   const enUrl = config.pageUrl;
   const zhUrl = new URL('zh/support-project.html', enUrl).href;
+  const supportAssetsUrl = new URL('support-assets/', enUrl).href;
+  const qrSource = (value) => {
+    const url = new URL(value).href;
+    return url.startsWith(supportAssetsUrl) ? `${assetBase}support-assets/${url.slice(supportAssetsUrl.length)}` : value;
+  };
   const copy = zh ? {
     title: '自愿支持项目', description: '按自己的意愿支持 Bookmark Atlas 的持续维护。',
     skip: '跳到正文', guide: '使用指南', updates: '更新记录', help: '帮助', privacy: '隐私政策', home: '首页',
     primary: '主导航', footer: '页脚', switch: 'English', switchLabel: 'Switch this page to English',
-    off: '自愿支持尚未启用。', offDetail: '目前不展示收款码。你仍可正常使用 Bookmark Atlas 的现有功能，或通过 GitHub 提交反馈。',
+    off: '自愿支持尚未启用。', offDetail: '你仍可正常使用 Bookmark Atlas 的现有功能，或通过 GitHub 提交反馈。',
     intro: '自愿支持用于 Bookmark Atlas 的维护与开发，不解锁功能，也不影响现有功能使用。',
     scan: '使用对应支付应用扫码。确认付款前，请核对应用显示的收款人和金额。',
-    boundary: '付款在你选择的支付应用中完成；Bookmark Atlas 不索取支付凭据，也不会读取或验证付款结果。',
-    wechat: '微信支付', alipay: '支付宝', alt: '自愿支持收款码',
+    boundary: '付款由你选择的平台处理。Bookmark Atlas 官网和扩展不收集支付凭据或付款结果。',
+    koFiButton: '通过 Ko-fi 支持', koFiDetail: '前往 Ko-fi 进行一次性支持。可用付款方式以结账页为准。', mainland: '中国大陆扫码支持',
+    wechat: '微信支付', alipay: '支付宝', alt: '自愿支持收款码', fullSize: '查看原图',
   } : {
     title: 'Support Bookmark Atlas', description: 'Optional, voluntary support for the maintenance of Bookmark Atlas.',
     skip: 'Skip to content', guide: 'Guide', updates: 'Updates', help: 'Help', privacy: 'Privacy', home: 'Home',
     primary: 'Primary', footer: 'Footer', switch: '中文', switchLabel: '切换此页为简体中文',
-    off: 'Voluntary support is not enabled.', offDetail: 'No payment codes are displayed. Existing Bookmark Atlas features remain available; you can also share feedback on GitHub.',
+    off: 'Voluntary support is not enabled.', offDetail: 'Existing Bookmark Atlas features remain available. You can also share feedback on GitHub.',
     intro: 'Voluntary support helps maintain and develop Bookmark Atlas. It does not unlock features or change access to existing features.',
     scan: 'Scan with the indicated payment app. Check the recipient and amount in that app before confirming payment.',
-    boundary: 'Payment happens in your chosen payment app. Bookmark Atlas does not request payment credentials or read or verify payment results.',
-    wechat: 'WeChat Pay', alipay: 'Alipay', alt: 'QR code for voluntary support',
+    boundary: 'Payment is handled by your chosen provider. The Bookmark Atlas website and extension do not collect payment credentials or results.',
+    koFiButton: 'Support on Ko-fi', koFiDetail: 'Make a one-time contribution on Ko-fi. Available payment methods appear at checkout.', mainland: 'Scan to support in mainland China',
+    wechat: 'WeChat Pay', alipay: 'Alipay', alt: 'QR code for voluntary support', fullSize: 'Open full-size QR code',
   };
   const methods = config.enabled ? [
     ['wechat', copy.wechat, config.wechatQrUrl], ['alipay', copy.alipay, config.alipayQrUrl],
-  ].filter(([, , url]) => url) : [];
+  ].filter(([id, , url]) => url && config.channelEnabled?.[id] !== false) : [];
+  const koFi = config.enabled && config.koFiUrl && config.channelEnabled?.koFi !== false
+    ? `<section class="project-support-section"><h2>Ko-fi</h2><p>${copy.koFiDetail}</p><div class="actions"><a data-support-channel="ko-fi" href="${escape(config.koFiUrl)}" target="_blank" rel="noopener noreferrer">${copy.koFiButton}</a></div></section>` : '';
+  const renderQr = ([id, label, url]) => {
+    const src = escape(qrSource(url));
+    return `<figure><figcaption><h3>${label}</h3></figcaption><img data-payment-code="${id}" src="${src}" alt="${label}: ${copy.alt}" referrerpolicy="no-referrer" decoding="async"><a class="text-link" href="${src}" target="_blank" rel="noopener noreferrer" aria-label="${label} · ${copy.fullSize}">${copy.fullSize}</a></figure>`;
+  };
+  const mainland = methods.length > 0
+    ? `<section class="project-support-section"><h2>${copy.mainland}</h2><p>${copy.scan}</p><div class="project-support-methods">${methods.map(renderQr).join('')}</div></section>` : '';
   const body = config.enabled
-    ? `<p class="lede">${copy.intro}</p><p>${copy.scan}</p><div class="project-support-methods">${methods.map(([id, label, url]) => `<figure><figcaption><h2>${label}</h2></figcaption><img data-payment-code="${id}" src="${escape(url)}" alt="${label}: ${copy.alt}" referrerpolicy="no-referrer" decoding="async"></figure>`).join('')}</div><p class="small-copy">${copy.boundary}</p>`
+    ? `<p class="lede">${copy.intro}</p>${koFi}${mainland}<p class="small-copy">${copy.boundary}</p>`
     : `<p class="lede">${copy.off}</p><p>${copy.offDetail}</p>`;
   return `<!doctype html>
 <html lang="${locale}">

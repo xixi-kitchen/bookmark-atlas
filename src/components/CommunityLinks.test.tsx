@@ -5,11 +5,9 @@ import { SettingsMenu } from './SettingsMenu';
 
 // Pin this regression's disabled scenario, not the maintainer's editable setting.
 // Enabled and malformed settings are exercised by CommunityLinks.support.test.tsx.
-vi.mock('../support/support.config.json', () => ({ default: {
+vi.mock('../support/support-entry.json', () => ({ default: {
   enabled: false,
   pageUrl: 'https://support.example/support-project.html',
-  wechatQrUrl: '',
-  alipayQrUrl: '',
 } }));
 
 beforeEach(async () => {

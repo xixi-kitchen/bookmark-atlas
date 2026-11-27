@@ -1,6 +1,6 @@
 import { BookOpen, Github, Heart, Mail, MessageSquare } from 'lucide-react';
 import { getUiLanguage } from '../i18n';
-import supportConfig from '../support/support.config.json';
+import supportConfig from '../support/support-entry.json';
 import { getProjectSupportUrl } from '../support/config.mjs';
 import './CommunityLinks.css';
 

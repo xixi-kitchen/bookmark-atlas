@@ -1,6 +1,8 @@
 {
-  "enabled": false,
+  "enabled": true,
   "pageUrl": "https://xixi-kitchen.github.io/bookmark-atlas/support-project.html",
-  "wechatQrUrl": "",
-  "alipayQrUrl": ""
+  "koFiUrl": "https://ko-fi.com/xixikitchen/",
+  "wechatQrUrl": "https://xixi-kitchen.github.io/bookmark-atlas/support-assets/wechat.jpg",
+  "alipayQrUrl": "https://xixi-kitchen.github.io/bookmark-atlas/support-assets/alipay.jpg",
+  "channelEnabled": { "koFi": true, "wechat": true, "alipay": true }
 }

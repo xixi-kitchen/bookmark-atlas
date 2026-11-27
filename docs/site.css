@@ -66,6 +66,14 @@ figcaption { display: flex; justify-content: space-between; flex-wrap: wrap; gap
 .provider-list dt { font-size: 19px; font-weight: 700; }
 .provider-list dd { margin: 6px 0 0; color: var(--muted); }
 .community-section .actions { margin-top: 0; }
+.project-support-section { margin-block: 28px; padding-top: 22px; border-top: 1px solid var(--line); }
+.project-support-section > h2 { margin: 0 0 10px; }
+.project-support-section .actions { margin-block: 16px 0; }
+.project-support-methods { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 24px; margin-top: 20px; }
+.project-support-methods figure { min-width: 0; margin: 0; }
+.project-support-methods figcaption { display: block; margin: 0 0 16px; }
+.project-support-methods figcaption h3 { margin: 0; font-size: 19px; }
+.project-support-methods img { width: min(100%, 280px); height: auto; border: 1px solid var(--line); border-radius: 8px; }
 .workflow-list { list-style: none; padding: 0; margin: 0; }
 .workflow-list li { display: flex; gap: 24px; padding: 26px 0; border-bottom: 1px solid var(--line); }
 .workflow-list li:first-child { padding-top: 0; }

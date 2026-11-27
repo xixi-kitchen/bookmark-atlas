@@ -3,6 +3,8 @@ export interface ProjectSupportConfig {
   pageUrl: string;
   wechatQrUrl: string;
   alipayQrUrl: string;
+  koFiUrl?: string;
+  channelEnabled?: { koFi: boolean; wechat: boolean; alipay: boolean };
 }
 
 /** Throws for malformed values, unsupported fields, and unsafe destinations. */
