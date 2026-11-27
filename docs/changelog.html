@@ -21,16 +21,37 @@
       <header class="document release-header">
         <h1>Updates</h1>
         <p class="lede">What changed, why it helps, and where to begin.</p>
-        <p class="release-status">Chrome Web Store: 0.9.9. Published on 2026-11-25.</p>
+        <p class="release-status">Chrome Web Store: 0.9.9. Candidate 0.9.10 is being prepared for release.</p>
         <p>From v0.9.6, the version date is the package freeze date. Store submission and publication are separate events; a prepared package does not imply store approval.</p>
         <nav class="release-links" aria-label="Release links"><a href="https://chromewebstore.google.com/detail/bookmark-atlas/bkdplfepaegfdabniedlkaodllnmnbfl">Install the current Chrome version</a><a href="https://github.com/xixi-kitchen/bookmark-atlas/releases">GitHub release archive</a></nav>
       </header>
       <section aria-label="Release history">
+        <article class="document release-entry" id="v0.9.10-en">
+          <p class="eyebrow">v0.9.10 · Candidate</p>
+          <h2>A better way to embed webpages</h2>
+          <p class="release-meta">Package freeze date: <time datetime="2026-11-28">2026-11-28</time></p>
+
+          <p class="release-summary">Open webpages on the canvas, expand them with the new toolbar, and use optional read-only previews for supported links. The redesigned support page links to Ko-fi, WeChat Pay and Alipay.</p>
+          <section class="release-section"><h3>Added</h3><ul>
+            <li><strong>Show bookmark content on the canvas</strong><p>Open the webpage from an existing bookmark card and restore the card when you want it back.</p><p class="small-copy">Where: Select a bookmark card → Show on canvas</p></li>
+            <li><strong>Website compatibility and public previews</strong><p>Look up site compatibility and opt in to read-only previews for supported public links.</p><p class="small-copy">Where: Settings → Help → Website compatibility</p></li>
+          </ul></section>
+          <section class="release-section"><h3>Changed</h3><ul>
+            <li><strong>Controls at the top right of each embed</strong><p>Refresh, open the original or enter fullscreen. The More menu holds applicable shortcuts on narrow embeds.</p><p class="small-copy">Where: Click the center of the webpage embed</p></li>
+            <li><strong>Voluntary project support</strong><p>The orange heart at the top of Settings opens the project support page, where you can choose Ko-fi, WeChat Pay or Alipay.</p><p class="small-copy">Where: Settings → Support this project</p></li>
+          </ul></section>
+          <section class="release-section"><h3>Fixed</h3><ul>
+            <li><strong>Keep the original webpage in view</strong><p>The canvas tries the normal embed first. A slow load reports status in the toolbar, and leaving a read-only preview returns to the original frame.</p><p class="small-copy">Where: Canvas webpage embed</p></li>
+          </ul></section>
+          <section class="release-section"><h3>Getting started</h3><ol><li>Select a bookmark card and choose Show on canvas, or paste a URL with the canvas embed tool.</li><li>Click the center of the embed to reach the toolbar. Choose More for loading help or optional actions.</li></ol></section>
+          <section class="release-section"><h3>Notices</h3><ul><li>Sites can restrict embedding, sign-in and playback. Open the original page if its content is unavailable in the canvas.</li><li>Read-only previews request the public provider directly and may ask permission for its HTTPS origin. The package uses the existing optional HTTPS permission.</li><li>Support is voluntary and never changes access to features. Payment is handled by the provider you choose.</li></ul></section>
+          <p class="release-links"><a href="https://github.com/xixi-kitchen/bookmark-atlas/blob/main/docs/releases/v0.9.10.md">Candidate release notes (source)</a><a href="guide.html">Getting started guide</a></p>
+        </article>
         <article class="document release-entry" id="v0.9.9-en">
           <p class="eyebrow">v0.9.9</p>
           <h2>Organize your Chrome bookmarks with AI</h2>
           <p class="release-meta">Package freeze date: <time datetime="2026-11-25">2026-11-25</time></p>
-          <p class="release-meta">Chrome publication date: <time datetime="2026-11-25">2026-11-25</time></p>
+
           <p class="release-summary">AI organization now reaches your browser’s bookmark list. Sort saved links into existing folders or plan a new structure, and review the changes before applying them. Canvas AI still helps you arrange selected cards.</p>
           <section class="release-section"><h3>Added</h3><ul>
             <li><strong>Organize native bookmarks in batches</strong><p>Choose recent extension captures, a folder, selected bookmarks or the whole library. Move items manually, or request an AI plan for existing folders or a new folder structure. Review before applying and restore from history when needed.</p><p class="small-copy">Where: Bookmark list → Organize bookmarks</p></li>

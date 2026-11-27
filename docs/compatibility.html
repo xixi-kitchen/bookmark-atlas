@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The canvas tries to load the webpage first. Find optional read-only previews and advice for pages that have trouble loading.">
+  <title>Website compatibility · Bookmark Atlas</title>
+  <link rel="canonical" href="https://xixi-kitchen.github.io/bookmark-atlas/compatibility.html">
+  <link rel="alternate" hreflang="en" href="https://xixi-kitchen.github.io/bookmark-atlas/compatibility.html">
+  <link rel="alternate" hreflang="zh-CN" href="https://xixi-kitchen.github.io/bookmark-atlas/zh/compatibility.html">
+  <link rel="stylesheet" href="compatibility.css">
+  <script type="module" src="compatibility.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="compatibility-nav page-width">
+    <a class="brand" href="index.html"><img src="store-assets/icon-128.png" alt="" width="36" height="36">Bookmark Atlas</a>
+    <nav aria-label="Primary">
+      <a href="index.html">Home</a><a href="guide.html">Guide</a><a href="support.html">Help</a>
+      <a data-language-switch href="zh/compatibility.html" lang="zh-CN" hreflang="zh-CN">中文</a>
+    </nav>
+  </header>
+  <main class="page-width" id="main">
+    <section class="compatibility-intro">
+      <h1>Website compatibility</h1>
+      <p>The canvas tries to load the webpage first. Find optional read-only previews and advice for pages that have trouble loading.</p>
+      <div class="compatibility-edition"><strong>Available in v0.9.10</strong><p>Verified means a sample was checked with the named browser. Site access settings can change.</p></div>
+    </section>
+    <section class="compatibility-filters" aria-label="Filter websites" data-compatibility-filters hidden>
+      <label>Search by site or paste a URL<input type="search" id="compatibility-query" placeholder="Example: github.com or a page URL" autocomplete="off" spellcheck="false"></label>
+      <label>Recommended option<select id="compatibility-mode"><option value="">All</option><option value="embed">Webpage embed</option><option value="preview">Read-only preview</option><option value="link">Open original</option></select></label>
+      <label>Browser<select id="compatibility-browser"><option value="">All</option><option value="chrome">Chrome</option><option value="edge">Edge</option><option value="safari">Safari</option></select></label>
+    </section>
+    <section class="compatibility-catalogue" aria-label="Website compatibility">
+      <p class="compatibility-lookup" role="status" hidden></p>
+      <p class="compatibility-empty" role="status" hidden>No matching entry. You can still try embedding this HTTPS page on the canvas.</p>
+      <article class="compatibility-entry" id="the-pudding" data-mode="embed" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#the-pudding">The Pudding articles and homepage</a></h2>
+          <p class="compatibility-reason">The homepage and two visual articles opened in Chrome. A navigation button also responded in the Kevin Bacon article.</p>
+          <p class="compatibility-hosts"><code>pudding.cool</code> <code>www.pudding.cool</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Webpage embed</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="verified">Sample verified</p>
+      </article>
+      <article class="compatibility-entry" id="feishu-public-docx" data-mode="embed" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#feishu-public-docx">Feishu public documents</a></h2>
+          <p class="compatibility-reason">A public document worked in a Chrome extension. Documents that require sign-in may need to open in Feishu.</p>
+          <p class="compatibility-hosts"><code>feishu.cn</code> <code>*.feishu.cn</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Webpage embed</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="verified">Sample verified</p>
+      </article>
+      <article class="compatibility-entry" id="feishu-other" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#feishu-other">Other Feishu document types</a></h2>
+          <p class="compatibility-reason">These document types have not been verified in the extension.</p>
+          <p class="compatibility-hosts"><code>feishu.cn</code> <code>*.feishu.cn</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Open original</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="unverified">Not confirmed</p>
+      </article>
+      <article class="compatibility-entry" id="openai-docs" data-mode="embed" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#openai-docs">OpenAI API documentation</a></h2>
+          <p class="compatibility-reason">Public documentation opened in a Chrome extension.</p>
+          <p class="compatibility-hosts"><code>developers.openai.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Webpage embed</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="verified">Sample verified</p>
+      </article>
+      <article class="compatibility-entry" id="deepseek-docs" data-mode="embed" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#deepseek-docs">DeepSeek API documentation</a></h2>
+          <p class="compatibility-reason">Public documentation opened in a Chrome extension.</p>
+          <p class="compatibility-hosts"><code>api-docs.deepseek.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Webpage embed</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="verified">Sample verified</p>
+      </article>
+      <article class="compatibility-entry" id="kimi-code-docs" data-mode="embed" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#kimi-code-docs">Kimi Code documentation</a></h2>
+          <p class="compatibility-reason">Public Kimi Code documentation worked. Kimi API platform documentation has a separate entry.</p>
+          <p class="compatibility-hosts"><code>www.kimi.com</code> <code>kimi.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Webpage embed</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="verified">Sample verified</p>
+      </article>
+      <article class="compatibility-entry" id="mimo-docs" data-mode="embed" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#mimo-docs">Xiaomi MiMo API documentation</a></h2>
+          <p class="compatibility-reason">The public documentation loaded in a Chrome extension.</p>
+          <p class="compatibility-hosts"><code>mimo.mi.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Webpage embed</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="verified">Sample verified</p>
+      </article>
+      <article class="compatibility-entry" id="siliconflow-docs" data-mode="embed" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#siliconflow-docs">SiliconFlow developer documentation</a></h2>
+          <p class="compatibility-reason">The public quickstart loaded in a Chrome extension.</p>
+          <p class="compatibility-hosts"><code>docs.siliconflow.cn</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Webpage embed</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="verified">Sample verified</p>
+      </article>
+      <article class="compatibility-entry" id="boing-boing-home" data-mode="embed" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#boing-boing-home">Boing Boing homepage</a></h2>
+          <p class="compatibility-reason">The homepage displayed in a Chrome extension.</p>
+          <p class="compatibility-hosts"><code>boingboing.net</code> <code>www.boingboing.net</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Webpage embed</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="verified">Sample verified</p>
+      </article>
+      <article class="compatibility-entry" id="boing-boing-articles" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#boing-boing-articles">Boing Boing articles</a></h2>
+          <p class="compatibility-reason">Three article samples hit access checks or failed to display.</p>
+          <p class="compatibility-hosts"><code>boingboing.net</code> <code>www.boingboing.net</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Open original</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="unverified">Not confirmed</p>
+      </article>
+      <article class="compatibility-entry" id="github" data-mode="preview" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#github">GitHub public repositories and Gists</a></h2>
+          <p class="compatibility-reason">GitHub blocks framing. Public API previews cover repositories, default README files, issues, PRs, releases, and Gists. Other paths open the original.</p>
+          <p class="compatibility-hosts"><code>github.com</code> <code>www.github.com</code> <code>gist.github.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Read-only preview</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="verified">Sample verified</p>
+      </article>
+      <article class="compatibility-entry" id="claude-code-commands" data-mode="preview" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#claude-code-commands">Claude Code commands</a></h2>
+          <p class="compatibility-reason">The webpage restricts framing. Its official Markdown endpoint was verified.</p>
+          <p class="compatibility-hosts"><code>code.claude.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Read-only preview</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="verified">Sample verified</p>
+      </article>
+      <article class="compatibility-entry" id="gemini-api-guide" data-mode="preview" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#gemini-api-guide">Gemini API quickstart</a></h2>
+          <p class="compatibility-reason">The webpage restricts framing. Its official Markdown endpoint was verified.</p>
+          <p class="compatibility-hosts"><code>ai.google.dev</code> <code>aistudio.google.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Read-only preview</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="verified">Sample verified</p>
+      </article>
+      <article class="compatibility-entry" id="xai-docs" data-mode="preview" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#xai-docs">xAI API overview</a></h2>
+          <p class="compatibility-reason">The webpage restricts framing. Its official Markdown endpoint was verified.</p>
+          <p class="compatibility-hosts"><code>docs.x.ai</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Read-only preview</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="verified">Sample verified</p>
+      </article>
+      <article class="compatibility-entry" id="perplexity-docs" data-mode="preview" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#perplexity-docs">Perplexity API overview</a></h2>
+          <p class="compatibility-reason">The webpage restricts framing. Its official Markdown endpoint was verified.</p>
+          <p class="compatibility-hosts"><code>docs.perplexity.ai</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Read-only preview</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="verified">Sample verified</p>
+      </article>
+      <article class="compatibility-entry" id="kimi-api-docs" data-mode="preview" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#kimi-api-docs">Kimi API overview</a></h2>
+          <p class="compatibility-reason">The webpage restricts framing. Its official Markdown endpoint was verified.</p>
+          <p class="compatibility-hosts"><code>platform.kimi.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Read-only preview</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="verified">Sample verified</p>
+      </article>
+      <article class="compatibility-entry" id="minimax-api-docs" data-mode="preview" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#minimax-api-docs">MiniMax API quickstart</a></h2>
+          <p class="compatibility-reason">The webpage restricts framing. Its official Markdown endpoint was verified.</p>
+          <p class="compatibility-hosts"><code>platform.minimax.cn</code> <code>platform.minimaxi.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Read-only preview</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="verified">Sample verified</p>
+      </article>
+      <article class="compatibility-entry" id="qianwen-api-docs" data-mode="preview" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#qianwen-api-docs">Qianwen API key guidance</a></h2>
+          <p class="compatibility-reason">The webpage restricts framing. Its official Markdown endpoint was verified.</p>
+          <p class="compatibility-hosts"><code>platform.qianwenai.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Read-only preview</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="verified">Sample verified</p>
+      </article>
+      <article class="compatibility-entry" id="zhipu-api-docs" data-mode="preview" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#zhipu-api-docs">Zhipu BigModel quickstart</a></h2>
+          <p class="compatibility-reason">The webpage restricts framing. Its official Markdown endpoint was verified.</p>
+          <p class="compatibility-hosts"><code>docs.bigmodel.cn</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Read-only preview</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="verified">Sample verified</p>
+      </article>
+      <article class="compatibility-entry" id="restricted-api-docs" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#restricted-api-docs">Other restricted developer docs</a></h2>
+          <p class="compatibility-reason">This documentation section restricts framing. Tested Markdown entries appear separately.</p>
+          <p class="compatibility-hosts"><code>code.claude.com</code> <code>ai.google.dev</code> <code>aistudio.google.com</code> <code>docs.x.ai</code> <code>docs.perplexity.ai</code> <code>platform.kimi.com</code> <code>platform.minimax.cn</code> <code>platform.minimaxi.com</code> <code>platform.qianwenai.com</code> <code>docs.bigmodel.cn</code> <code>open.feishu.cn</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Open original</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="blocked">Embedding restricted</p>
+      </article>
+      <article class="compatibility-entry" id="notion" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#notion">Notion and Notion Sites</a></h2>
+          <p class="compatibility-reason">The tested Notion Sites embed allowed HTTP(S) ancestors. The Chrome extension origin was blocked.</p>
+          <p class="compatibility-hosts"><code>notion.so</code> <code>app.notion.com</code> <code>www.notion.com</code> <code>notion.site</code> <code>*.notion.site</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Open original</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="blocked">Embedding restricted</p>
+      </article>
+      <article class="compatibility-entry" id="figma" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#figma">Figma design and prototypes</a></h2>
+          <p class="compatibility-reason">Official Embed Kit exists. Design and prototype samples returned errors or stayed blank in the extension test.</p>
+          <p class="compatibility-hosts"><code>figma.com</code> <code>www.figma.com</code> <code>embed.figma.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Open original</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="unverified">Not confirmed</p>
+      </article>
+      <article class="compatibility-entry" id="chatgpt" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#chatgpt">ChatGPT conversations</a></h2>
+          <p class="compatibility-reason">The tested site restricts framing to approved origins.</p>
+          <p class="compatibility-hosts"><code>chatgpt.com</code> <code>www.chatgpt.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Open original</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="blocked">Embedding restricted</p>
+      </article>
+      <article class="compatibility-entry" id="gemini" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#gemini">Google Gemini and AI Studio</a></h2>
+          <p class="compatibility-reason">These conversation and sign-in pages deny framing.</p>
+          <p class="compatibility-hosts"><code>gemini.google.com</code> <code>aistudio.google.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Open original</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="blocked">Embedding restricted</p>
+      </article>
+      <article class="compatibility-entry" id="grok" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#grok">Grok conversations</a></h2>
+          <p class="compatibility-reason">The tested chat page restricts embedding to approved origins.</p>
+          <p class="compatibility-hosts"><code>grok.com</code> <code>www.grok.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Open original</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="blocked">Embedding restricted</p>
+      </article>
+      <article class="compatibility-entry" id="ai-account-challenges" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#ai-account-challenges">AI conversation and sign-in tests</a></h2>
+          <p class="compatibility-reason">Public samples returned an access challenge or rate-limit response. Conversation and account screens were not verified.</p>
+          <p class="compatibility-hosts"><code>claude.ai</code> <code>www.perplexity.ai</code> <code>perplexity.ai</code> <code>console.x.ai</code> <code>chat.deepseek.com</code> <code>platform.deepseek.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Open original</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="unverified">Not confirmed</p>
+      </article>
+      <article class="compatibility-entry" id="kimi-chat" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#kimi-chat">Kimi conversations and console</a></h2>
+          <p class="compatibility-reason">The public shell loaded. Signed-in conversation and account tools remain unverified.</p>
+          <p class="compatibility-hosts"><code>kimi.com</code> <code>www.kimi.com</code> <code>kimi.ai</code> <code>www.kimi.ai</code> <code>platform.kimi.com</code> <code>platform.moonshot.cn</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Open original</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="unverified">Not confirmed</p>
+      </article>
+      <article class="compatibility-entry" id="zhipu-chat" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#zhipu-chat">Zhipu Qingyan chat</a></h2>
+          <p class="compatibility-reason">The public interface displayed but requests failed in the test.</p>
+          <p class="compatibility-hosts"><code>chatglm.cn</code> <code>www.chatglm.cn</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Open original</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="unverified">Not confirmed</p>
+      </article>
+      <article class="compatibility-entry" id="qianwen-chat" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#qianwen-chat">Qianwen conversations</a></h2>
+          <p class="compatibility-reason">The tested conversation page only allows specified origins.</p>
+          <p class="compatibility-hosts"><code>qianwen.com</code> <code>www.qianwen.com</code> <code>tongyi.aliyun.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Open original</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="blocked">Embedding restricted</p>
+      </article>
+      <article class="compatibility-entry" id="developer-consoles" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#developer-consoles">OpenAI, Anthropic, Qianwen, BigModel, MiniMax and SiliconCloud consoles</a></h2>
+          <p class="compatibility-reason">Tested account, billing, key management, or sign-in routes restrict framing. Open the original console.</p>
+          <p class="compatibility-hosts"><code>platform.openai.com</code> <code>platform.claude.com</code> <code>console.anthropic.com</code> <code>platform.qianwenai.com</code> <code>bigmodel.cn</code> <code>open.bigmodel.cn</code> <code>platform.minimax.cn</code> <code>platform.minimaxi.com</code> <code>cloud.siliconflow.cn</code> <code>account.siliconflow.cn</code> <code>bailian.console.aliyun.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Open original</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="blocked">Embedding restricted</p>
+      </article>
+      <article class="compatibility-entry" id="mimo-console" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#mimo-console">Xiaomi MiMo account console</a></h2>
+          <p class="compatibility-reason">The public landing page appeared. Signed-in functions remain unverified.</p>
+          <p class="compatibility-hosts"><code>platform.xiaomimimo.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Open original</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="unverified">Not confirmed</p>
+      </article>
+      <article class="compatibility-entry" id="new-yorker" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#new-yorker">The New Yorker</a></h2>
+          <p class="compatibility-reason">The homepage and article samples only allow approved framing origins.</p>
+          <p class="compatibility-hosts"><code>newyorker.com</code> <code>www.newyorker.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Open original</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="blocked">Embedding restricted</p>
+      </article>
+      <article class="compatibility-entry" id="huffpost" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#huffpost">HuffPost</a></h2>
+          <p class="compatibility-reason">The homepage and article samples only allow approved framing origins.</p>
+          <p class="compatibility-hosts"><code>huffpost.com</code> <code>www.huffpost.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Open original</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="blocked">Embedding restricted</p>
+      </article>
+      <article class="compatibility-entry" id="guardian" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#guardian">The Guardian</a></h2>
+          <p class="compatibility-reason">The homepage and article samples only allow same-origin frames.</p>
+          <p class="compatibility-hosts"><code>theguardian.com</code> <code>www.theguardian.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Open original</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="blocked">Embedding restricted</p>
+      </article>
+      <article class="compatibility-entry" id="rest-of-world" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#rest-of-world">Rest of World</a></h2>
+          <p class="compatibility-reason">The homepage and article samples only allow same-origin frames.</p>
+          <p class="compatibility-hosts"><code>restofworld.org</code> <code>www.restofworld.org</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Open original</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="blocked">Embedding restricted</p>
+      </article>
+      <article class="compatibility-entry" id="new-statesman" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#new-statesman">New Statesman</a></h2>
+          <p class="compatibility-reason">The homepage and article samples only allow same-origin frames.</p>
+          <p class="compatibility-hosts"><code>newstatesman.com</code> <code>www.newstatesman.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Open original</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="blocked">Embedding restricted</p>
+      </article>
+      <article class="compatibility-entry" id="the-intercept" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#the-intercept">The Intercept</a></h2>
+          <p class="compatibility-reason">The homepage and article samples return a frame-deny response.</p>
+          <p class="compatibility-hosts"><code>theintercept.com</code> <code>www.theintercept.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Open original</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="blocked">Embedding restricted</p>
+      </article>
+      <article class="compatibility-entry" id="mcsweeneys" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#mcsweeneys">McSweeney’s</a></h2>
+          <p class="compatibility-reason">The homepage and article samples only allow same-origin frames.</p>
+          <p class="compatibility-hosts"><code>mcsweeneys.net</code> <code>www.mcsweeneys.net</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Open original</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="blocked">Embedding restricted</p>
+      </article>
+      <article class="compatibility-entry" id="the-atlantic" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#the-atlantic">The Atlantic</a></h2>
+          <p class="compatibility-reason">The public homepage and article samples failed to display in the test.</p>
+          <p class="compatibility-hosts"><code>theatlantic.com</code> <code>www.theatlantic.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Open original</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="unverified">Not confirmed</p>
+      </article>
+      <article class="compatibility-entry" id="axios" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#axios">Axios</a></h2>
+          <p class="compatibility-reason">The public homepage and article samples failed to display in the test.</p>
+          <p class="compatibility-hosts"><code>axios.com</code> <code>www.axios.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Open original</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="unverified">Not confirmed</p>
+      </article>
+      <article class="compatibility-entry" id="politico" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#politico">Politico</a></h2>
+          <p class="compatibility-reason">The public homepage and article samples failed to display in the test.</p>
+          <p class="compatibility-hosts"><code>politico.com</code> <code>www.politico.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Open original</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="unverified">Not confirmed</p>
+      </article>
+      <article class="compatibility-entry" id="telegraph" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#telegraph">The Telegraph</a></h2>
+          <p class="compatibility-reason">The public homepage and article samples failed to display in the test.</p>
+          <p class="compatibility-hosts"><code>telegraph.co.uk</code> <code>www.telegraph.co.uk</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Open original</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="unverified">Not confirmed</p>
+      </article>
+      <article class="compatibility-entry" id="grid-news" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#grid-news">Grid News</a></h2>
+          <p class="compatibility-reason">The original news service stopped. Its www domain redirected to The Messenger in the test.</p>
+          <p class="compatibility-hosts"><code>grid.news</code> <code>www.grid.news</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>Recommended option</dt><dd>Open original</dd></div>
+          <div><dt>Browser</dt><dd>Chrome</dd></div>
+          <div><dt>Checked</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="unverified">Not confirmed</p>
+      </article>
+    </section>
+  </main>
+  <footer class="compatibility-footer page-width">
+    <div><a href="https://github.com/xixi-kitchen/bookmark-atlas/issues/new/choose" target="_blank" rel="noopener noreferrer">Request another site</a><p>Include a public webpage and the browser and extension versions when reporting a result.</p></div>
+    <a href="privacy.html">Privacy</a>
+  </footer>
+</body>
+</html>

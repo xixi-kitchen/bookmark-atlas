@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="画板会先尝试加载网页。这里可以查找加载遇到问题时的建议，以及哪些页面提供可选的只读预览。">
+  <title>网站兼容性 · Bookmark Atlas</title>
+  <link rel="canonical" href="https://xixi-kitchen.github.io/bookmark-atlas/zh/compatibility.html">
+  <link rel="alternate" hreflang="en" href="https://xixi-kitchen.github.io/bookmark-atlas/compatibility.html">
+  <link rel="alternate" hreflang="zh-CN" href="https://xixi-kitchen.github.io/bookmark-atlas/zh/compatibility.html">
+  <link rel="stylesheet" href="../compatibility.css">
+  <script type="module" src="../compatibility.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到正文</a>
+  <header class="compatibility-nav page-width">
+    <a class="brand" href="index.html"><img src="../store-assets/icon-128.png" alt="" width="36" height="36">Bookmark Atlas</a>
+    <nav aria-label="主导航">
+      <a href="index.html">首页</a><a href="guide.html">指南</a><a href="support.html">帮助</a>
+      <a data-language-switch href="../compatibility.html" lang="en" hreflang="en">English</a>
+    </nav>
+  </header>
+  <main class="page-width" id="main">
+    <section class="compatibility-intro">
+      <h1>网站兼容性</h1>
+      <p>画板会先尝试加载网页。这里可以查找加载遇到问题时的建议，以及哪些页面提供可选的只读预览。</p>
+      <div class="compatibility-edition"><strong>适用于 v0.9.10</strong><p>「样本已验证」指用于验证的样例在所列浏览器通过测试。网站访问设置可能变化。</p></div>
+    </section>
+    <section class="compatibility-filters" aria-label="筛选网站" data-compatibility-filters hidden>
+      <label>按网站查找或粘贴网址<input type="search" id="compatibility-query" placeholder="例如 github.com 或具体网页网址" autocomplete="off" spellcheck="false"></label>
+      <label>建议方式<select id="compatibility-mode"><option value="">全部</option><option value="embed">嵌入网页</option><option value="preview">只读预览</option><option value="link">打开原页</option></select></label>
+      <label>浏览器<select id="compatibility-browser"><option value="">全部</option><option value="chrome">Chrome</option><option value="edge">Edge</option><option value="safari">Safari</option></select></label>
+    </section>
+    <section class="compatibility-catalogue" aria-label="网站兼容性">
+      <p class="compatibility-lookup" role="status" hidden></p>
+      <p class="compatibility-empty" role="status" hidden>没有匹配条目。你仍可在画板上尝试嵌入此 HTTPS 网页。</p>
+      <article class="compatibility-entry" id="the-pudding" data-mode="embed" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#the-pudding">The Pudding 文章与首页</a></h2>
+          <p class="compatibility-reason">Chrome 已验证首页和两篇视觉文章，Kevin Bacon 专题的下一步按钮也可操作。</p>
+          <p class="compatibility-hosts"><code>pudding.cool</code> <code>www.pudding.cool</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>嵌入网页</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="verified">样本已验证</p>
+      </article>
+      <article class="compatibility-entry" id="feishu-public-docx" data-mode="embed" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#feishu-public-docx">飞书公开文档</a></h2>
+          <p class="compatibility-reason">公开文档样本已在 Chrome 扩展来源验证。需要登录的文档可能需要在飞书原页打开。</p>
+          <p class="compatibility-hosts"><code>feishu.cn</code> <code>*.feishu.cn</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>嵌入网页</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="verified">样本已验证</p>
+      </article>
+      <article class="compatibility-entry" id="feishu-other" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#feishu-other">飞书其他文档类型</a></h2>
+          <p class="compatibility-reason">这些文档类型尚未在扩展中验证。</p>
+          <p class="compatibility-hosts"><code>feishu.cn</code> <code>*.feishu.cn</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>打开原页</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="unverified">尚未确认</p>
+      </article>
+      <article class="compatibility-entry" id="openai-docs" data-mode="embed" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#openai-docs">OpenAI API 文档</a></h2>
+          <p class="compatibility-reason">公开开发文档已在 Chrome 扩展来源显示。</p>
+          <p class="compatibility-hosts"><code>developers.openai.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>嵌入网页</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="verified">样本已验证</p>
+      </article>
+      <article class="compatibility-entry" id="deepseek-docs" data-mode="embed" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#deepseek-docs">DeepSeek API 文档</a></h2>
+          <p class="compatibility-reason">公开开发文档已在 Chrome 扩展来源显示。</p>
+          <p class="compatibility-hosts"><code>api-docs.deepseek.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>嵌入网页</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="verified">样本已验证</p>
+      </article>
+      <article class="compatibility-entry" id="kimi-code-docs" data-mode="embed" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#kimi-code-docs">Kimi Code 文档</a></h2>
+          <p class="compatibility-reason">公开 Kimi Code 文档已通过验证。Kimi API 平台文档见独立条目。</p>
+          <p class="compatibility-hosts"><code>www.kimi.com</code> <code>kimi.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>嵌入网页</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="verified">样本已验证</p>
+      </article>
+      <article class="compatibility-entry" id="mimo-docs" data-mode="embed" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#mimo-docs">小米 MiMo API 文档</a></h2>
+          <p class="compatibility-reason">公开开发文档已在 Chrome 扩展来源显示。</p>
+          <p class="compatibility-hosts"><code>mimo.mi.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>嵌入网页</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="verified">样本已验证</p>
+      </article>
+      <article class="compatibility-entry" id="siliconflow-docs" data-mode="embed" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#siliconflow-docs">硅基流动开发文档</a></h2>
+          <p class="compatibility-reason">公开快速开始文档已在 Chrome 扩展来源显示。</p>
+          <p class="compatibility-hosts"><code>docs.siliconflow.cn</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>嵌入网页</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="verified">样本已验证</p>
+      </article>
+      <article class="compatibility-entry" id="boing-boing-home" data-mode="embed" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#boing-boing-home">Boing Boing 首页</a></h2>
+          <p class="compatibility-reason">首页已在 Chrome 扩展来源显示。</p>
+          <p class="compatibility-hosts"><code>boingboing.net</code> <code>www.boingboing.net</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>嵌入网页</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="verified">样本已验证</p>
+      </article>
+      <article class="compatibility-entry" id="boing-boing-articles" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#boing-boing-articles">Boing Boing 文章</a></h2>
+          <p class="compatibility-reason">三个文章样本触发访问验证或未能显示。</p>
+          <p class="compatibility-hosts"><code>boingboing.net</code> <code>www.boingboing.net</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>打开原页</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="unverified">尚未确认</p>
+      </article>
+      <article class="compatibility-entry" id="github" data-mode="preview" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#github">GitHub 公开仓库及 Gist</a></h2>
+          <p class="compatibility-reason">GitHub 拒绝框内加载。公开 API 可预览仓库、默认 README、Issue、PR、Release 和 Gist，其他链接打开原页。</p>
+          <p class="compatibility-hosts"><code>github.com</code> <code>www.github.com</code> <code>gist.github.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>只读预览</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="verified">样本已验证</p>
+      </article>
+      <article class="compatibility-entry" id="claude-code-commands" data-mode="preview" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#claude-code-commands">Claude Code 命令</a></h2>
+          <p class="compatibility-reason">原网页限制嵌入，官方 Markdown 地址已验证可读取。</p>
+          <p class="compatibility-hosts"><code>code.claude.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>只读预览</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="verified">样本已验证</p>
+      </article>
+      <article class="compatibility-entry" id="gemini-api-guide" data-mode="preview" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#gemini-api-guide">Gemini API 入门</a></h2>
+          <p class="compatibility-reason">原网页限制嵌入，官方 Markdown 地址已验证可读取。</p>
+          <p class="compatibility-hosts"><code>ai.google.dev</code> <code>aistudio.google.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>只读预览</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="verified">样本已验证</p>
+      </article>
+      <article class="compatibility-entry" id="xai-docs" data-mode="preview" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#xai-docs">xAI API 概览</a></h2>
+          <p class="compatibility-reason">原网页限制嵌入，官方 Markdown 地址已验证可读取。</p>
+          <p class="compatibility-hosts"><code>docs.x.ai</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>只读预览</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="verified">样本已验证</p>
+      </article>
+      <article class="compatibility-entry" id="perplexity-docs" data-mode="preview" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#perplexity-docs">Perplexity API 概览</a></h2>
+          <p class="compatibility-reason">原网页限制嵌入，官方 Markdown 地址已验证可读取。</p>
+          <p class="compatibility-hosts"><code>docs.perplexity.ai</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>只读预览</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="verified">样本已验证</p>
+      </article>
+      <article class="compatibility-entry" id="kimi-api-docs" data-mode="preview" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#kimi-api-docs">Kimi API 概览</a></h2>
+          <p class="compatibility-reason">原网页限制嵌入，官方 Markdown 地址已验证可读取。</p>
+          <p class="compatibility-hosts"><code>platform.kimi.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>只读预览</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="verified">样本已验证</p>
+      </article>
+      <article class="compatibility-entry" id="minimax-api-docs" data-mode="preview" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#minimax-api-docs">MiniMax API 入门</a></h2>
+          <p class="compatibility-reason">原网页限制嵌入，官方 Markdown 地址已验证可读取。</p>
+          <p class="compatibility-hosts"><code>platform.minimax.cn</code> <code>platform.minimaxi.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>只读预览</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="verified">样本已验证</p>
+      </article>
+      <article class="compatibility-entry" id="qianwen-api-docs" data-mode="preview" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#qianwen-api-docs">千问 API 密钥文档</a></h2>
+          <p class="compatibility-reason">原网页限制嵌入，官方 Markdown 地址已验证可读取。</p>
+          <p class="compatibility-hosts"><code>platform.qianwenai.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>只读预览</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="verified">样本已验证</p>
+      </article>
+      <article class="compatibility-entry" id="zhipu-api-docs" data-mode="preview" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#zhipu-api-docs">智谱 BigModel 快速开始</a></h2>
+          <p class="compatibility-reason">原网页限制嵌入，官方 Markdown 地址已验证可读取。</p>
+          <p class="compatibility-hosts"><code>docs.bigmodel.cn</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>只读预览</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="verified">样本已验证</p>
+      </article>
+      <article class="compatibility-entry" id="restricted-api-docs" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#restricted-api-docs">其他受限开发文档</a></h2>
+          <p class="compatibility-reason">该文档区限制嵌入，已验证的 Markdown 路径见对应独立条目。</p>
+          <p class="compatibility-hosts"><code>code.claude.com</code> <code>ai.google.dev</code> <code>aistudio.google.com</code> <code>docs.x.ai</code> <code>docs.perplexity.ai</code> <code>platform.kimi.com</code> <code>platform.minimax.cn</code> <code>platform.minimaxi.com</code> <code>platform.qianwenai.com</code> <code>docs.bigmodel.cn</code> <code>open.feishu.cn</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>打开原页</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="blocked">嵌入受限</p>
+      </article>
+      <article class="compatibility-entry" id="notion" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#notion">Notion 与公开站点</a></h2>
+          <p class="compatibility-reason">测试的 Notion Sites 嵌入地址仅允许 HTTP(S) 上层页面，Chrome 扩展来源被拦截。</p>
+          <p class="compatibility-hosts"><code>notion.so</code> <code>app.notion.com</code> <code>www.notion.com</code> <code>notion.site</code> <code>*.notion.site</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>打开原页</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="blocked">嵌入受限</p>
+      </article>
+      <article class="compatibility-entry" id="figma" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#figma">Figma 设计与原型</a></h2>
+          <p class="compatibility-reason">Figma 有官方嵌入入口，扩展测试中设计稿、原型样本返回错误或空白。</p>
+          <p class="compatibility-hosts"><code>figma.com</code> <code>www.figma.com</code> <code>embed.figma.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>打开原页</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="unverified">尚未确认</p>
+      </article>
+      <article class="compatibility-entry" id="chatgpt" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#chatgpt">ChatGPT 对话</a></h2>
+          <p class="compatibility-reason">测试页面只允许指定来源嵌入。</p>
+          <p class="compatibility-hosts"><code>chatgpt.com</code> <code>www.chatgpt.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>打开原页</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="blocked">嵌入受限</p>
+      </article>
+      <article class="compatibility-entry" id="gemini" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#gemini">Google Gemini 与 AI Studio</a></h2>
+          <p class="compatibility-reason">对话和登录页面拒绝第三方嵌入。</p>
+          <p class="compatibility-hosts"><code>gemini.google.com</code> <code>aistudio.google.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>打开原页</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="blocked">嵌入受限</p>
+      </article>
+      <article class="compatibility-entry" id="grok" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#grok">Grok 对话</a></h2>
+          <p class="compatibility-reason">测试的对话页只允许指定来源嵌入。</p>
+          <p class="compatibility-hosts"><code>grok.com</code> <code>www.grok.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>打开原页</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="blocked">嵌入受限</p>
+      </article>
+      <article class="compatibility-entry" id="ai-account-challenges" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#ai-account-challenges">AI 对话与登录测试</a></h2>
+          <p class="compatibility-reason">公开样本触发访问验证或限流，对话和账号页面尚未验证可用。</p>
+          <p class="compatibility-hosts"><code>claude.ai</code> <code>www.perplexity.ai</code> <code>perplexity.ai</code> <code>console.x.ai</code> <code>chat.deepseek.com</code> <code>platform.deepseek.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>打开原页</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="unverified">尚未确认</p>
+      </article>
+      <article class="compatibility-entry" id="kimi-chat" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#kimi-chat">Kimi 对话与控制台</a></h2>
+          <p class="compatibility-reason">公开界面可显示。登录后的对话和账号管理仍未验证。</p>
+          <p class="compatibility-hosts"><code>kimi.com</code> <code>www.kimi.com</code> <code>kimi.ai</code> <code>www.kimi.ai</code> <code>platform.kimi.com</code> <code>platform.moonshot.cn</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>打开原页</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="unverified">尚未确认</p>
+      </article>
+      <article class="compatibility-entry" id="zhipu-chat" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#zhipu-chat">智谱清言对话</a></h2>
+          <p class="compatibility-reason">公开界面可显示，测试时对话请求失败。</p>
+          <p class="compatibility-hosts"><code>chatglm.cn</code> <code>www.chatglm.cn</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>打开原页</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="unverified">尚未确认</p>
+      </article>
+      <article class="compatibility-entry" id="qianwen-chat" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#qianwen-chat">千问对话</a></h2>
+          <p class="compatibility-reason">测试的对话页面只允许指定来源嵌入。</p>
+          <p class="compatibility-hosts"><code>qianwen.com</code> <code>www.qianwen.com</code> <code>tongyi.aliyun.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>打开原页</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="blocked">嵌入受限</p>
+      </article>
+      <article class="compatibility-entry" id="developer-consoles" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#developer-consoles">OpenAI、Anthropic、千问、智谱、MiniMax、硅基流动控制台</a></h2>
+          <p class="compatibility-reason">测试的账号、账单、密钥管理或登录入口限制嵌入，请打开控制台原页。</p>
+          <p class="compatibility-hosts"><code>platform.openai.com</code> <code>platform.claude.com</code> <code>console.anthropic.com</code> <code>platform.qianwenai.com</code> <code>bigmodel.cn</code> <code>open.bigmodel.cn</code> <code>platform.minimax.cn</code> <code>platform.minimaxi.com</code> <code>cloud.siliconflow.cn</code> <code>account.siliconflow.cn</code> <code>bailian.console.aliyun.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>打开原页</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="blocked">嵌入受限</p>
+      </article>
+      <article class="compatibility-entry" id="mimo-console" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#mimo-console">小米 MiMo 账号控制台</a></h2>
+          <p class="compatibility-reason">公共落地页可显示，登录后的控制台功能尚未验证。</p>
+          <p class="compatibility-hosts"><code>platform.xiaomimimo.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>打开原页</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="unverified">尚未确认</p>
+      </article>
+      <article class="compatibility-entry" id="new-yorker" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#new-yorker">纽约客</a></h2>
+          <p class="compatibility-reason">首页及文章样本只放行指定的嵌入来源。</p>
+          <p class="compatibility-hosts"><code>newyorker.com</code> <code>www.newyorker.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>打开原页</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="blocked">嵌入受限</p>
+      </article>
+      <article class="compatibility-entry" id="huffpost" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#huffpost">赫芬顿邮报</a></h2>
+          <p class="compatibility-reason">首页及文章样本只放行指定的嵌入来源。</p>
+          <p class="compatibility-hosts"><code>huffpost.com</code> <code>www.huffpost.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>打开原页</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="blocked">嵌入受限</p>
+      </article>
+      <article class="compatibility-entry" id="guardian" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#guardian">卫报</a></h2>
+          <p class="compatibility-reason">首页及文章样本仅允许同源框架。</p>
+          <p class="compatibility-hosts"><code>theguardian.com</code> <code>www.theguardian.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>打开原页</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="blocked">嵌入受限</p>
+      </article>
+      <article class="compatibility-entry" id="rest-of-world" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#rest-of-world">Rest of World</a></h2>
+          <p class="compatibility-reason">首页及文章样本仅允许同源框架。</p>
+          <p class="compatibility-hosts"><code>restofworld.org</code> <code>www.restofworld.org</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>打开原页</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="blocked">嵌入受限</p>
+      </article>
+      <article class="compatibility-entry" id="new-statesman" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#new-statesman">新政治家</a></h2>
+          <p class="compatibility-reason">首页及文章样本仅允许同源框架。</p>
+          <p class="compatibility-hosts"><code>newstatesman.com</code> <code>www.newstatesman.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>打开原页</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="blocked">嵌入受限</p>
+      </article>
+      <article class="compatibility-entry" id="the-intercept" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#the-intercept">The Intercept</a></h2>
+          <p class="compatibility-reason">首页及文章样本明确拒绝 iframe。</p>
+          <p class="compatibility-hosts"><code>theintercept.com</code> <code>www.theintercept.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>打开原页</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="blocked">嵌入受限</p>
+      </article>
+      <article class="compatibility-entry" id="mcsweeneys" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#mcsweeneys">McSweeney’s</a></h2>
+          <p class="compatibility-reason">首页及文章样本仅允许同源框架。</p>
+          <p class="compatibility-hosts"><code>mcsweeneys.net</code> <code>www.mcsweeneys.net</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>打开原页</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="blocked">嵌入受限</p>
+      </article>
+      <article class="compatibility-entry" id="the-atlantic" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#the-atlantic">大西洋月刊</a></h2>
+          <p class="compatibility-reason">公开首页和文章样本在本次测试中无法显示。</p>
+          <p class="compatibility-hosts"><code>theatlantic.com</code> <code>www.theatlantic.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>打开原页</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="unverified">尚未确认</p>
+      </article>
+      <article class="compatibility-entry" id="axios" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#axios">Axios</a></h2>
+          <p class="compatibility-reason">公开首页和文章样本在本次测试中无法显示。</p>
+          <p class="compatibility-hosts"><code>axios.com</code> <code>www.axios.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>打开原页</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="unverified">尚未确认</p>
+      </article>
+      <article class="compatibility-entry" id="politico" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#politico">Politico</a></h2>
+          <p class="compatibility-reason">公开首页和文章样本在本次测试中无法显示。</p>
+          <p class="compatibility-hosts"><code>politico.com</code> <code>www.politico.com</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>打开原页</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="unverified">尚未确认</p>
+      </article>
+      <article class="compatibility-entry" id="telegraph" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#telegraph">每日电讯报</a></h2>
+          <p class="compatibility-reason">公开首页和文章样本在本次测试中无法显示。</p>
+          <p class="compatibility-hosts"><code>telegraph.co.uk</code> <code>www.telegraph.co.uk</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>打开原页</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="unverified">尚未确认</p>
+      </article>
+      <article class="compatibility-entry" id="grid-news" data-mode="link" data-browsers="chrome">
+        <div class="compatibility-entry__body">
+          <h2><a href="#grid-news">Grid News</a></h2>
+          <p class="compatibility-reason">原新闻服务已停运，测试时 www 域名跳转到 The Messenger。</p>
+          <p class="compatibility-hosts"><code>grid.news</code> <code>www.grid.news</code></p>
+        </div>
+        <dl class="compatibility-entry__meta">
+          <div><dt>建议方式</dt><dd>打开原页</dd></div>
+          <div><dt>浏览器</dt><dd>Chrome</dd></div>
+          <div><dt>验证日期</dt><dd><time datetime="2026-11-26">2026-11-26</time></dd></div>
+        </dl>
+        <p class="compatibility-state" data-state="unverified">尚未确认</p>
+      </article>
+    </section>
+  </main>
+  <footer class="compatibility-footer page-width">
+    <div><a href="https://github.com/xixi-kitchen/bookmark-atlas/issues/new/choose" target="_blank" rel="noopener noreferrer">申请网站适配</a><p>反馈时可提供公开网页、浏览器和扩展版本。</p></div>
+    <a href="privacy.html">隐私政策</a>
+  </footer>
+</body>
+</html>

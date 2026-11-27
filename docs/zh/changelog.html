@@ -21,16 +21,37 @@
       <header class="document release-header">
         <h1>更新记录</h1>
         <p class="lede">了解改进内容、带来的帮助，以及从哪里开始。</p>
-        <p class="release-status">Chrome 商店当前版本：0.9.9。实际上架日期：2026-11-25。</p>
+        <p class="release-status">Chrome 商店当前版本：0.9.9。候选版本 0.9.10 正在准备发布。</p>
         <p>从 v0.9.6 起，版本日期为正式包冻结日期。商店提交和实际上架分别记录；正式包准备完成不代表商店审核通过。</p>
         <nav class="release-links" aria-label="发布链接"><a href="https://chromewebstore.google.com/detail/bookmark-atlas/bkdplfepaegfdabniedlkaodllnmnbfl">安装 Chrome 商店当前版本</a><a href="https://github.com/xixi-kitchen/bookmark-atlas/releases">GitHub 发布存档</a></nav>
       </header>
       <section aria-label="版本历史">
+        <article class="document release-entry" id="v0.9.10-zh-CN">
+          <p class="eyebrow">v0.9.10 · 候选版本</p>
+          <h2>更好用的画板网页嵌入</h2>
+          <p class="release-meta">正式包冻结日期: <time datetime="2026-11-28">2026-11-28</time></p>
+
+          <p class="release-summary">在画板上直接加载网页，使用新版工具栏刷新或全屏查看。支持的网站还可主动打开只读预览。新版支持页提供 Ko-fi、微信支付和支付宝入口。</p>
+          <section class="release-section"><h3>新增</h3><ul>
+            <li><strong>已有书签原位显示网页</strong><p>已有书签卡可显示网页，也可随时恢复成书签卡。</p><p class="small-copy">入口: 选中书签卡 → 在画板显示</p></li>
+            <li><strong>网站兼容性与公开预览</strong><p>按网址查询兼容性，支持的公开链接可主动打开只读预览。</p><p class="small-copy">入口: 设置 → 帮助 → 网站兼容性</p></li>
+          </ul></section>
+          <section class="release-section"><h3>改进</h3><ul>
+            <li><strong>网页右上角工具栏</strong><p>网页框可刷新、打开原页或全屏。窄框里的适用快捷操作收进「更多」。</p><p class="small-copy">入口: 点击嵌入网页中央进入交互</p></li>
+            <li><strong>自愿支持项目</strong><p>设置顶部的橙色爱心会打开支持页，可选择 Ko-fi、微信支付或支付宝。</p><p class="small-copy">入口: 设置 → 支持项目</p></li>
+          </ul></section>
+          <section class="release-section"><h3>修复</h3><ul>
+            <li><strong>保留原网页显示</strong><p>画板优先尝试显示原网页。加载慢时在工具栏提示，离开只读预览可回到原网页框。</p><p class="small-copy">入口: 画板网页框</p></li>
+          </ul></section>
+          <section class="release-section"><h3>开始使用</h3><ol><li>选中书签卡并选择「在画板显示」，也可以用画板的网页嵌入工具粘贴地址。</li><li>点击网页中央进入交互，使用右上角工具栏或「更多」里的加载帮助和可选操作。</li></ol></section>
+          <section class="release-section"><h3>更新须知</h3><ul><li>站点可能限制嵌入、登录或播放。画板里无法查看时，可打开原页。</li><li>只读预览直接请求公开内容源，并可能按需申请该 HTTPS 域的权限，沿用原有的可选 HTTPS 权限。</li><li>支持完全自愿，所有功能照常使用。支付由你选择的平台处理。</li></ul></section>
+          <p class="release-links"><a href="https://github.com/xixi-kitchen/bookmark-atlas/blob/main/docs/releases/v0.9.10.md">候选版本发布说明（源文件）</a><a href="guide.html">上手指南</a></p>
+        </article>
         <article class="document release-entry" id="v0.9.9-zh-CN">
           <p class="eyebrow">v0.9.9</p>
           <h2>用 AI 整理 Chrome 书签</h2>
           <p class="release-meta">正式包冻结日期: <time datetime="2026-11-25">2026-11-25</time></p>
-          <p class="release-meta">Chrome 实际上架日期: <time datetime="2026-11-25">2026-11-25</time></p>
+
           <p class="release-summary">AI 整理扩展到了浏览器书签列表。你可以把收藏归入已有文件夹或规划新目录，先预览，再确认应用。画布里的 AI 整理仍可用来排布选中的卡片。</p>
           <section class="release-section"><h3>新增</h3><ul>
             <li><strong>批量整理浏览器原生书签</strong><p>可选插件收藏、指定文件夹、当前选中项或全部书签。手动移动，或让 AI 建议归入已有文件夹和规划新目录。应用前可预览，应用后可从整理记录发起恢复。</p><p class="small-copy">入口: 书签列表 → 整理书签</p></li>

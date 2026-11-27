@@ -21,14 +21,14 @@
 <article class="document">
 
       <h1>Privacy Policy</h1>
-      <p>Last updated: 2026-10-28. This policy applies to the published Bookmark Atlas for Microsoft Edge v0.9.7, including optional AI organization and current-page capture. It explains data handling before you enable optional features.</p>
+      <p>Updated 2026-11-28. This policy applies to Bookmark Atlas for Microsoft Edge. Features introduced in v0.9.10 are identified below.</p>
       <p>Bookmark Atlas is a local-first Microsoft Edge extension. It does not sell your data or send bookmarks, open tabs, browsing history, or canvas content to a developer-operated server by default. Optional AI organization sends only user-approved selected metadata to the model service you choose. It does not include ads, trackers, or remote extension code execution.</p>
 
       <p>The <code>chrome.storage.local</code> and <code>chrome.storage.sync</code> names below are extension API namespaces supported by Edge; they do not mean data is sent to a Chrome account.</p>
       <h2>Data handled by the extension</h2>
       <ul>
         <li>Edge favorites are read and modified locally through the Bookmarks API supported by Edge for user-requested bookmark features.</li>
-        <li>Clicking the extension icon and explicitly adding the current page reads the active tab's title and URL and saves a native bookmark in Other favorites / Bookmark Atlas. A local pending queue retains the canvas insertion until the canvas is saved successfully. It does not read page bodies or move or rewrite unrelated bookmarks. The native bookmark follows your browser bookmark-sync settings; the pending queue itself is not synced or shared by Bookmark Atlas.</li>
+        <li>Choosing to add the current page from the extension icon reads the active tab's title and URL. Native favorites go to Other favorites / Bookmark Atlas by default. In Edge v0.9.10 and later, you can choose a destination folder manually when saving a native favorite. Manual selection makes no AI request. When embedding the webpage, you can choose whether to save a native favorite as well. Canvas requests stay in a local queue until the canvas saves. This action does not read page bodies or change unrelated favorites. Native favorites follow your browser's sync settings. The queue stays on the device.</li>
         <li>Website icons are read from Edge’s local Favicon API cache.</li>
         <li>Open tabs and browsing history are read locally to produce pre-search results.</li>
         <li>The full Excalidraw canvas and user-added binary attachments are stored in local IndexedDB, with <code>chrome.storage.local</code> as a fallback.</li>
@@ -52,6 +52,8 @@
       <h2>Remote requests</h2>
       <p>When the user selects Baidu, Bing, or Google as the active built-in search engine, input text is sent to that provider's fixed suggestion endpoint. Edge Default and custom engines do not call an extra remote suggestion endpoint. Embedded websites load in sandboxed iframes and may receive normal browser requests, cookies, and account state according to browser rules. Bookmark Atlas does not proxy, inspect, or record those requests.</p>
       <p>For official YouTube <code>/embed/</code> player requests created by Bookmark Atlas, a scoped declarativeNetRequest rule sets a fixed client referrer. The rule does not read request content and does not apply to YouTube players created by other websites.</p>
+      <p>When you choose a read-only preview, Bookmark Atlas requests the selected public resource directly from the GitHub API or a supported documentation source over HTTPS. If access has not already been granted, the browser asks for permission for that source only. The request includes the resource path, with no cookies, referrer, or authentication credentials. The returned content and its URL may be cached temporarily on your device in memory and session storage. The preview does not send your bookmark library or canvas.</p>
+      <p>The optional Support this project link opens the project website. Any payment is handled by the provider you choose. The extension does not collect payment details or confirmation.</p>
 
       <h2>Optional AI organization</h2>
       <p>AI is off unless you configure a compatible HTTPS model service and choose to use it. Before generation, select bookmark cards, review the outgoing data, and explicitly agree to send their titles, domains, existing canvas descriptions (notes), selected card IDs, and your organization instruction to that service. Complete bookmark URLs, folder paths, URL parameters or fragments, history, other tabs, images, other canvas elements, and API keys are not included in the model prompt. The API Key is sent only in the authentication header to your configured endpoint.</p>
@@ -59,6 +61,10 @@
       <p>Model discovery and connectivity tests run only on explicit request. Discovery authenticates <code>GET /models</code>; a successful list does not prove the selected model can generate. Test selected model sends only a fixed minimal prompt through <code>POST /chat/completions</code>, without bookmarks or canvas content, and the provider may charge for it. Neither action automatically saves settings.</p>
       <p>The provider processes the submitted metadata and authentication under its own fees, privacy, retention, and training policies. Review those terms before connecting. Requests use <code>store: false</code>, but Bookmark Atlas cannot guarantee third-party compliance or zero retention. No developer-funded model account or shared key is provided.</p>
       <p>AI output is validated as data, not executed as code. Notes are metadata-based suggestions, not verified page summaries. Preview does not alter the saved canvas; applying it is explicit and undoable. Applied groups and notes may sync with canvas content.</p>
+
+      <h3>Native favorite organization and folder recommendations</h3>
+      <p>In Edge v0.9.10 and later, optional AI organization in the favorites list sends the titles and domains of favorites in the displayed scope, candidate folder names and paths, and your instructions to your configured model provider after you approve the data shown. A toolbar AI folder recommendation requires your approval and an explicit request. It sends the active page title and domain and the candidate folder names and paths. Complete favorite URLs remain in the local execution mapping. Applied native changes may sync through Edge.</p>
+      <p>Capture origin markers, draft plans, and recovery records stay on your device. Recovery records can contain the entire favorites tree with full URLs. A recovery record you export as a local JSON file may contain this data. The extension keeps the latest ten completed records and retains unresolved operations separately. Clearing a history record removes its recovery entry.</p>
 
       <h2>Data deletion</h2>
       <p>Uninstalling the extension removes local extension storage from the device, including learning progress, onboarding flags, and update-notice records. Edge account sync data is managed by Edge. Uninstalling Bookmark Atlas does not delete the user's Edge favorites.</p>
